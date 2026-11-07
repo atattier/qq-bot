@@ -101,7 +101,7 @@ chk("普通聊天不动原上限", cap.get("max_tokens") == 2000, cap.get("max_t
 bot._post_json = _real_post
 
 print("== 提示词允许长文 ==")
-import qbot_persona  # noqa: E402
+from qbot import qbot_persona  # noqa: E402
 chk("恒定律里也有长文例外", "一整篇东西" in qbot_persona.BASE_RULES)
 
 print("== 「写正文」硬要求（模型爱掰扯身份不写东西） ==")

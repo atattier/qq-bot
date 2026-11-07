@@ -30,7 +30,7 @@ def chk(name, ok, detail=""):
 
 
 import bot  # noqa: E402
-import qbot_purpose as P  # noqa: E402
+from qbot import qbot_purpose as P  # noqa: E402
 
 TMP = Path(tempfile.mkdtemp(prefix="phaseC_live_"))
 # 真机验收：发送打桩（绝不真发到群里），其余走真实链路

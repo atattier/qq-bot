@@ -25,8 +25,8 @@ os.environ["QBOT_TEST"] = "1"
 os.environ.pop("QBOT_ARCH_SHADOW", None)
 
 import bot  # noqa: E402
-import qbot_core as C  # noqa: E402
-from qbot_turn import make_turn  # noqa: E402
+from qbot import qbot_core as C  # noqa: E402
+from qbot.qbot_turn import make_turn  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DATA = HERE / "golden_set.json"

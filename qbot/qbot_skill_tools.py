@@ -43,7 +43,7 @@ log = logging.getLogger("qqbot.skilltools")
 
 CFG = {}
 STATE = None
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 _SEND_IMAGE = None          # (cid, path, caption) -> bool
 SELF_QQ = ""                # bot 自己的 QQ 号（bot 登录成功后回填），捏脸的「另一方」用它
 
@@ -151,7 +151,7 @@ def _sdir(sid):
 
 def _settings(sid):
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         return qbot_skills.settings_of(sid)
     except Exception:  # noqa: BLE001
         return {}
@@ -189,7 +189,7 @@ def _get(url, timeout=20, accept="application/json,*/*"):
 
 def _skill_file(sid, *parts):
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         sk = qbot_skills.get(sid)
         if sk:
             return Path(sk["path"]).joinpath(*parts)
@@ -690,7 +690,7 @@ def _pp_mark(cid):
 def _pp_template(name, conf):
     """把用户/模型给的说法解析成模板 id。空值 = 用默认模板。"""
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
     except Exception as e:  # noqa: BLE001
         return None, "捏脸模块没起来：%s" % e
     raw = str(name or "").strip()
@@ -713,7 +713,7 @@ def petpet_send(cid, template="", qq="", caption="", sender_qq="", image_path=""
     if not conf.get("enabled", True):
         return False, "捏脸表情包现在是关的。"
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         if not qbot_skills.is_on("petpet"):
             return False, "捏脸表情包现在是关的。"
     except Exception:  # noqa: BLE001
@@ -728,7 +728,7 @@ def petpet_send(cid, template="", qq="", caption="", sender_qq="", image_path=""
     if not ok:
         return False, why
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
         path, name = pp.make_for(tid, qq, sender_qq=sender_qq or SELF_QQ or qq,
                                  image_path=image_path or None)
     except FileNotFoundError as e:
@@ -745,7 +745,7 @@ def petpet_send(cid, template="", qq="", caption="", sender_qq="", image_path=""
 
 def petpet_list():
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
         return True, pp.list_text()
     except Exception as e:  # noqa: BLE001
         return False, "捏脸模块没起来：%s" % e
@@ -1022,7 +1022,7 @@ def fibi_send(cid, keyword="", pick=0, count=1, caption=""):
     if not conf.get("enabled", True):
         return False, "菲比表情包现在是关的。"
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         if not qbot_skills.is_on("fibi-memes"):
             return False, "菲比表情包现在是关的。"
     except Exception:  # noqa: BLE001
@@ -1582,7 +1582,7 @@ def _mw_tool(name):
     """
     def _call(**kw):
         try:
-            import qbot_memewiki
+            from qbot import qbot_memewiki
         except Exception as e:  # noqa: BLE001
             return False, "梗百科模块没加载（%s）" % e
         return getattr(qbot_memewiki, "tool_" + name)(**kw)

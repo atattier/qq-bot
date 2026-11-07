@@ -27,7 +27,7 @@ if _ROOT not in _sys.path:
 _os.chdir(_ROOT)
 _sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_linkprev as L    # noqa: E402
+from qbot import qbot_linkprev as L    # noqa: E402
 
 ok = True
 

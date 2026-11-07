@@ -34,7 +34,7 @@ def chk(name, ok, detail=""):
         FAIL.append(name)
 
 
-import qbot_purpose as P  # noqa: E402
+from qbot import qbot_purpose as P  # noqa: E402
 
 TMP = Path(tempfile.mkdtemp(prefix="tpurpose_"))
 NOW = time.mktime((2026, 11, 4, 14, 0, 0, 0, 0, -1))      # 下午 2 点，非安静时段

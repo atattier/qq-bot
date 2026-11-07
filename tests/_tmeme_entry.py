@@ -35,7 +35,7 @@ _sys.stdout.reconfigure(encoding="utf-8")
 
 from PIL import Image, ImageDraw  # noqa: E402
 import bot                        # noqa: E402
-import qbot_meme as M             # noqa: E402
+from qbot import qbot_meme as M             # noqa: E402
 
 bot.save_config = lambda: True
 bot.SELF_ID = 123450002

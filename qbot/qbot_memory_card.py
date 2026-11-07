@@ -25,7 +25,7 @@ import threading
 import time
 from pathlib import Path
 
-import qbot_memory as _mem
+from qbot import qbot_memory as _mem
 
 log = __import__("logging").getLogger("memcard")
 

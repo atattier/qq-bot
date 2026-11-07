@@ -28,7 +28,7 @@ from PIL import Image
 
 log = logging.getLogger("qqbot.petpet")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 ASSETS = BASE / "skills" / "petpet" / "assets"
 STATE = BASE / "state"          # bind() 可改；只放同步记账，不放素材
 OUTDIR = BASE / "cache" / "petpet"
@@ -621,7 +621,7 @@ _ANALYZE_CACHE = {"key": None, "val": None}
 
 def _up_analyze(force=False):
     """解析结果缓存（网页每次开抽屉都会问一遍，别每次都重解析）。"""
-    import qbot_petpet_port as PORT
+    from qbot import qbot_petpet_port as PORT
     src = _up_source(force=force)
     key = (len(src), hash(src))
     if not force and _ANALYZE_CACHE["key"] == key:
@@ -799,7 +799,7 @@ def catalog(refresh=False):
     ported = set(ported_names())
     removed = set(removed_names())
     try:
-        import qbot_petpet_port as PORT
+        from qbot import qbot_petpet_port as PORT
         cn = PORT.CN_NAMES
     except Exception:  # noqa: BLE001
         cn = {}
@@ -1682,7 +1682,7 @@ def auto_status():
     st = _auto_state()
     cfg = {}
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         cfg = qbot_skills.settings_of("petpet") or {}
     except Exception:  # noqa: BLE001
         pass

@@ -87,7 +87,7 @@ def _cfg():
          # 2026-10-26 晚：主人问「会每天自动更新吗」——原来只有手动按钮，现在补了每天定时
          "autoSync": True, "autoSyncHour": 4}
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         d.update(qbot_skills.settings_of("memewiki") or {})
     except Exception:  # noqa: BLE001
         pass
@@ -307,7 +307,7 @@ def find_online(term: str):
 
 def _slang_hit(term: str):
     try:
-        import qbot_slang
+        from qbot import qbot_slang
         terms = (qbot_slang.SLANG or {}).get("terms") or {}
     except Exception:  # noqa: BLE001
         return None

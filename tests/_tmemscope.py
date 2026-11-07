@@ -28,8 +28,8 @@ def chk(name, ok, detail=""):
 
 
 import bot  # noqa: E402
-import qbot_memory as M  # noqa: E402
-import qbot_memory_card as MC  # noqa: E402
+from qbot import qbot_memory as M  # noqa: E402
+from qbot import qbot_memory_card as MC  # noqa: E402
 
 GA, GB = 812900001, 812900002
 PA, PB = -19001, -19002

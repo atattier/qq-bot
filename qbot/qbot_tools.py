@@ -32,7 +32,7 @@ RESULT_STATUSES = frozenset({"ok", "error", "denied", "timeout", "invalid",
                             "unsupported"})
 SURFACES = ("omni", "mcp", "http")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 SHADOW_DIR = BASE / "state" / "tools"
 SHADOW_FILE = SHADOW_DIR / "shadow.jsonl"
 _FS_LOCK = threading.Lock()

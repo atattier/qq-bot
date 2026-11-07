@@ -101,7 +101,7 @@ bot._moss_prompt = lambda *a, **kw: ("{\"layout\":\"stub\"}", "离线桩", "")
 bot._moss_vision_call = lambda *a, **kw: "{}"
 bot._moss_layout_llm = lambda: (lambda messages: "{}")
 bot.chat_image_once = lambda *a, **kw: ("（看图问答桩）", "stub/vl")
-_qdb = bot.sys.modules.get("qbot_draw_body")
+_qdb = bot.sys.modules.get("qbot.qbot_draw_body")
 if _qdb is not None:
     _qdb._moss_vision_call = lambda *a, **kw: "{}"
     _qdb._moss_prompt = lambda *a, **kw: ("{\"layout\":\"stub\"}", "离线桩", "")

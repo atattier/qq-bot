@@ -19,7 +19,7 @@ _os.chdir(_ROOT)
 
 _sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_skills as S    # noqa: E402
+from qbot import qbot_skills as S    # noqa: E402
 import bot                 # noqa: E402
 
 ok = True
@@ -123,7 +123,7 @@ chk("带斜杠才强查（不会发出去，只验判定）",
     R.match("/技能 不存在的包") is not None)
 
 print("== 原生工具：查梗 ==")
-import qbot_skill_tools as T     # noqa: E402
+from qbot import qbot_skill_tools as T     # noqa: E402
 st_tmp = Path(tempfile.mkdtemp(prefix="skilltools_test_"))
 SENT = []
 

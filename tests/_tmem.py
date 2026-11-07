@@ -10,7 +10,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE))
-import qbot_memory as M  # noqa: E402
+from qbot import qbot_memory as M  # noqa: E402
 
 ok = True
 

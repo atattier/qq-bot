@@ -14,7 +14,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping
 
-from qbot_turn import MediaRef, Turn
+from qbot.qbot_turn import MediaRef, Turn
 
 SCHEMA_VERSION = 1
 REFERENCE_WORDS = re.compile(

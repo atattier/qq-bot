@@ -24,7 +24,7 @@ if _ROOT not in _sys.path:
 _os.chdir(_ROOT)
 _sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_meme as M          # noqa: E402
+from qbot import qbot_meme as M          # noqa: E402
 from PIL import Image          # noqa: E402
 
 ok = True

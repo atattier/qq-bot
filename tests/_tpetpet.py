@@ -23,9 +23,9 @@ if _ROOT not in _sys.path:
 _os.chdir(_ROOT)
 _sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_skills as S          # noqa: E402
-import qbot_skill_tools as T     # noqa: E402
-import qbot_petpet as P          # noqa: E402
+from qbot import qbot_skills as S          # noqa: E402
+from qbot import qbot_skill_tools as T     # noqa: E402
+from qbot import qbot_petpet as P          # noqa: E402
 import bot                       # noqa: E402
 from PIL import Image, ImageDraw  # noqa: E402
 
@@ -305,7 +305,7 @@ chk("上游总数 3 个模板（按模板算，含没搬的）", st1["upstream_t
 chk("记账文件写下来了", (Path(_tmp) / "petpet" / "sync.json").exists())
 
 print("== 素材市场：解析上游参数（2026-10-27） ==")
-import qbot_petpet_port as PORT   # noqa: E402
+from qbot import qbot_petpet_port as PORT   # noqa: E402
 
 _SRC = '''
 def hug_leg(img: BuildImage = UserImg(), arg=NoArg()):

@@ -36,16 +36,16 @@ def chk(name, ok, why=""):
 
 # ---- 注册清单：模块名, 状态路径属性, 生产落点（供扫描对照）----
 _STATE_FILES = [
-    ("qbot_slang",     "SLANG_FILE",   "state/slang.json"),
-    ("qbot_mood",      "_PATH",        None),          # _PATH 由 bind 注入，无固定生产值
-    ("qbot_expression", "EXP_FILE",    None),
-    ("qbot_timing",    "STATE_FILE",   None),
-    ("qbot_purpose",   "STATE_FILE",   None),
-    ("qbot_memory",    "_DB",          None),
-    ("qbot_memory_card", "_PATHS",     None),          # dict，见下面特判
-    ("qbot_draw",      "DRAW_TIME_FILE", None),       # U12b：出图耗时样本，测试态临时目录
-    ("qbot_shadow",    "DECISIONS_FILE", None),       # M1：影子审计日志，默认关且测试态临时目录
-    ("qbot_tools",     "SHADOW_FILE",  None),          # M3：工具影子审计，默认 legacy 不写
+    ("qbot.qbot_slang",     "SLANG_FILE",   "state/slang.json"),
+    ("qbot.qbot_mood",      "_PATH",        None),          # _PATH 由 bind 注入，无固定生产值
+    ("qbot.qbot_expression", "EXP_FILE",    None),
+    ("qbot.qbot_timing",    "STATE_FILE",   None),
+    ("qbot.qbot_purpose",   "STATE_FILE",   None),
+    ("qbot.qbot_memory",    "_DB",          None),
+    ("qbot.qbot_memory_card", "_PATHS",     None),          # dict，见下面特判
+    ("qbot.qbot_draw",      "DRAW_TIME_FILE", None),       # U12b：出图耗时样本，测试态临时目录
+    ("qbot.qbot_shadow",    "DECISIONS_FILE", None),       # M1：影子审计日志，默认关且测试态临时目录
+    ("qbot.qbot_tools",     "SHADOW_FILE",  None),          # M3：工具影子审计，默认 legacy 不写
 ]
 
 
@@ -71,7 +71,7 @@ for mod_name, attr, _prod in _STATE_FILES:
         chk("%s.%s" % (mod_name, attr), _in_tmp(v), v)
 
 print("== 2 slang 的文件级实锤：save_slang 落盘后文件必须在临时目录 ==")
-import qbot_slang as S   # noqa: E402
+from qbot import qbot_slang as S   # noqa: E402
 S.SLANG["terms"]["__isolation_probe__"] = {"meaning": "探针，不入库"}
 try:
     S.save_slang()

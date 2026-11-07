@@ -47,7 +47,7 @@ def _git_show(rev, path):
 print("== 1 基线函数与类形状 ==")
 old_src = _git_show(BASELINE, "bot.py")
 new_src = (_ROOT / "bot.py").read_text(encoding="utf-8")
-body = (_ROOT / "qbot_draw_body.py").read_text(encoding="utf-8")
+body = (_ROOT / "qbot" / "qbot_draw_body.py").read_text(encoding="utf-8")
 ot, nt = ast.parse(old_src), ast.parse(new_src)
 # 基线 67 函数里，2026-11-06 决策层收口**有意删除**的二次判定层不算「丢失」：
 # _ai_route_draw/_route_json/_route_prompt_grounded（旧 AI 画图路由，收归主脑）。
@@ -97,10 +97,10 @@ chk("U12a 的消息路由 _route_* 全在 bot.py",
 
 print("== 2 桥接字典运行时契约 ==")
 import bot              # noqa: E402
-import qbot_draw        # noqa: E402
+from qbot import qbot_draw        # noqa: E402
 
 chk("bot.qbot_draw 是同一模块", bot.qbot_draw is qbot_draw)
-_qd_ast = ast.parse((_ROOT / "qbot_draw.py").read_text(encoding="utf-8"))
+_qd_ast = ast.parse((_ROOT / "qbot" / "qbot_draw.py").read_text(encoding="utf-8"))
 _imports = [a.name for n in _qd_ast.body if isinstance(n, ast.Import) for a in n.names]
 _imports += [n.module or "" for n in _qd_ast.body if isinstance(n, ast.ImportFrom)]
 chk("qbot_draw 不 import bot（AST 判定，注释不算）",
@@ -153,7 +153,7 @@ for _n in ast.parse(body).body:
         for _t in _n.targets:
             if isinstance(_t, ast.Name):
                 _body_names.add(_t.id)
-_imports = [n for n in nt.body if isinstance(n, ast.ImportFrom) and n.module == "qbot_draw"]
+_imports = [n for n in nt.body if isinstance(n, ast.ImportFrom) and n.module == "qbot.qbot_draw"]
 chk("bot.py 的 qbot_draw 显式登记与 112 个随迁符号全等",
     len(_imports) == 1 and {a.name for a in _imports[0].names} == _body_names,
     (len(_body_names), len(_imports[0].names) if _imports else 0))
@@ -173,7 +173,7 @@ chk("桥接字典 DRAW_TIME_FILE 在临时目录",
     _in_tmp(qbot_draw._est_learn.__globals__["DRAW_TIME_FILE"]),
     qbot_draw._est_learn.__globals__["DRAW_TIME_FILE"])
 chk("_tisolation 已登记 qbot_draw",
-    '"qbot_draw"' in (_ROOT / "tests" / "_tisolation.py").read_text(encoding="utf-8"))
+    '"qbot.qbot_draw"' in (_ROOT / "tests" / "_tisolation.py").read_text(encoding="utf-8"))
 chk("_tstateiso 已保护 state/draw_time.json",
     "state/draw_time.json" in (_ROOT / "tests" / "_tstateiso.py").read_text(encoding="utf-8"))
 # 真写一次，证明 _est_learn 确实只写临时副本

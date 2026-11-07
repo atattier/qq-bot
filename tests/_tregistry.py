@@ -21,7 +21,7 @@ os.environ.pop("QBOT_ARCH_SHADOW", None)
 os.environ.pop("QBOT_ARCH_CONTEXT", None)
 sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_tools as R     # noqa: E402
+from qbot import qbot_tools as R     # noqa: E402
 import bot                 # noqa: E402
 
 bad = 0

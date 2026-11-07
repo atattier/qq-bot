@@ -18,7 +18,7 @@ if _ROOT not in _sys.path:
 _os.chdir(_ROOT)
 _sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_statuscard as S    # noqa: E402
+from qbot import qbot_statuscard as S    # noqa: E402
 import bot                     # noqa: E402
 from PIL import Image          # noqa: E402
 

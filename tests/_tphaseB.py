@@ -35,7 +35,7 @@ def chk(name, ok, detail=""):
 import bot  # noqa: E402
 
 # ⚠️ import bot 的 _bind_modules() 会把 qbot_timing 绑到真实 state 目录 —— 立刻盖回临时目录
-import qbot_timing as T  # noqa: E402
+from qbot import qbot_timing as T  # noqa: E402
 TMP = Path(tempfile.mkdtemp(prefix="phaseB_live_"))
 T.bind(cfg=bot.CFG, names=bot.bot_names, self_id=lambda: bot.SELF_ID,
        context_items=lambda g: list(bot.CONTEXT.get(g) or []),

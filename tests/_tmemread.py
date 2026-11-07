@@ -31,7 +31,7 @@ def chk(name, ok, detail=""):
 
 
 import bot  # noqa: E402
-import qbot_memory as M  # noqa: E402
+from qbot import qbot_memory as M  # noqa: E402
 
 GA, GB = 812910001, 812910002
 PA, PB = -19101, -19102

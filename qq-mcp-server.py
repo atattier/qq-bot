@@ -269,7 +269,7 @@ TOOLS = [
 try:
     if HERE not in sys.path:
         sys.path.insert(0, HERE)
-    import qbot_tools as _arch_tools
+    from qbot import qbot_tools as _arch_tools
     REGISTRY = _arch_tools.build_mcp_registry(TOOLS)
 except Exception:  # noqa: BLE001
     _arch_tools = None

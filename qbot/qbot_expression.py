@@ -25,7 +25,7 @@ from pathlib import Path
 
 log = logging.getLogger("qqbot")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 EXP_FILE = BASE / "state" / "expressions.json"
 
 _lock = threading.RLock()

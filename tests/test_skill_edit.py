@@ -20,7 +20,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 os.environ["QBOT_TEST"] = "1"
 
-import qbot_skills as S          # noqa: E402
+from qbot import qbot_skills as S          # noqa: E402
 
 PASS, FAIL = [], []
 
@@ -32,7 +32,7 @@ def ok(name, cond, extra=""):
 
 def main():
     import bot                                  # 先导入：KNOBS 是导入时建的
-    import qbot_market as M
+    from qbot import qbot_market as M
     real_save = bot.save_config
     real_knobs = list(bot.KNOBS)
     real_cfg = {k: bot.CFG.get(k) for k in ("skills", "market")}
@@ -189,7 +189,7 @@ def main():
 
         # ── [11] 菲比表情包：本机图库 ──────────────────────────────────
         print("\n[11] 菲比表情包：本机图库（不联网、不写素材目录）")
-        import qbot_skill_tools as T
+        from qbot import qbot_skill_tools as T
         pics = os.path.join(tmp, "pics")
         os.makedirs(pics)
         # 拿真实素材里最小的几张「菲比」，保证是真图（发送前要认魔数）；
@@ -441,7 +441,7 @@ def main():
         T.CFG, T.STATE, T.BASE, T._SEND_IMAGE = real_bind
 
         print("\n[15] 梗百科：本地词库 / 卡片 / 预查注入 / 口令")
-        import qbot_memewiki as MW
+        from qbot import qbot_memewiki as MW
         # 词库用只读副本，卡片 / auto.json 全落临时目录：测试不写真实 state。
         wm_state = os.path.join(tmp, "state")
         os.makedirs(os.path.join(wm_state, "memewiki"), exist_ok=True)

@@ -27,7 +27,7 @@ def chk(name, ok, detail=""):
         FAIL.append(name)
 
 
-import qbot_timing as T
+from qbot import qbot_timing as T
 
 TMP = tempfile.mkdtemp(prefix="ttiming_")
 T.bind(cfg={"timing": {"enabled": True}}, names=lambda: ["小鲸"],
@@ -197,7 +197,7 @@ for i in range(30):
 T._evaluate()
 T.note_silent(812)
 T._save(force=True)
-import qbot_timing as T2
+from qbot import qbot_timing as T2
 import importlib
 importlib.reload(T2)
 T2.bind(cfg={"timing": {"enabled": True}}, names=lambda: [], self_id=lambda: "0",

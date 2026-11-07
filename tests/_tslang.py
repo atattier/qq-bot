@@ -24,7 +24,7 @@ def chk(name, ok, detail=""):
         FAIL.append(name)
 
 
-import qbot_slang as S
+from qbot import qbot_slang as S
 
 # 🔴 隔离（2026-11-03 数据事故教训）：slang_observe/learn 都会 save_slang() 落盘，
 # 不把 SLANG_FILE 指到临时目录 = 每跑一次测试就把真 state/slang.json 覆盖掉

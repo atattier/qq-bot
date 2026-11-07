@@ -31,7 +31,7 @@ import threading
 from collections import deque
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 ROLES = BASE / "roles"
 ROLES.mkdir(exist_ok=True)
 
@@ -227,7 +227,7 @@ def session_persona(gid=None):
     if gid is None:
         return ""
     try:
-        import qbot_session      # 延迟导入：qbot_session 反过来不依赖本模块，但别在模块顶层绑死顺序
+        from qbot import qbot_session      # 延迟导入：qbot_session 反过来不依赖本模块，但别在模块顶层绑死顺序
         return qbot_session.persona_of(gid)
     except Exception as e:       # noqa: BLE001
         log.debug("读会话人格失败（当跟随全局）: %s", e)

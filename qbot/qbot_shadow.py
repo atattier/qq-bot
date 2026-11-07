@@ -21,10 +21,10 @@ import time
 from collections import defaultdict, deque
 from pathlib import Path
 
-from qbot_core import Core, Decision, Policy
-from qbot_turn import Turn, make_turn
+from qbot.qbot_core import Core, Decision, Policy
+from qbot.qbot_turn import Turn, make_turn
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 STATE_DIR = BASE / "state" / "shadow"
 DECISIONS_FILE = STATE_DIR / "decisions.jsonl"
 

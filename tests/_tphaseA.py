@@ -33,8 +33,8 @@ def chk(name, ok, detail=""):
 
 # 🔴 先把两个落盘文件都指到临时目录——这个测试会产生真实推断结果，绝不能写进生产词库
 TMP = Path(tempfile.mkdtemp(prefix="phaseA_live_"))
-import qbot_slang as S
-import qbot_expression as E
+from qbot import qbot_slang as S
+from qbot import qbot_expression as E
 S.SLANG_FILE = TMP / "slang.json"
 S.SLANG["terms"] = {}
 

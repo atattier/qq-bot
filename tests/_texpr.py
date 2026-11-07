@@ -27,7 +27,7 @@ def chk(name, ok, detail=""):
         FAIL.append(name)
 
 
-import qbot_expression as E
+from qbot import qbot_expression as E
 
 TMP = tempfile.mkdtemp()
 E.bind(state_dir=TMP, cfg={"expression": {"enabled": True, "checked_only": True}},

@@ -33,7 +33,7 @@ from pathlib import Path
 
 log = logging.getLogger("qqbot")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 STATE_FILE = BASE / "state" / "purpose.json"
 
 CFG = None

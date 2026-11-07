@@ -26,7 +26,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 log = logging.getLogger("qqbot.statuscard")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 OUTDIR = BASE / "cache" / "statuscard"
 
 # ── 配色 ────────────────────────────────────────────────────────────────

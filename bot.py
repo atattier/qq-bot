@@ -2271,9 +2271,9 @@ def _message_link_search(msg):
 # ---------------- 图片混淆 / 解混淆（已抽至 qbot_scramble.py）----------------
 # 链接速览也在这里 import（而不是跟 qbot_statuscard 挤在后面）：
 # 它不依赖 CFG，且 `ai_reply()` 早于那些 import 就会出现，提前引更稳。
-import qbot_linkprev
-import qbot_scramble
-from qbot_scramble import (
+from qbot import qbot_linkprev
+from qbot import qbot_scramble
+from qbot.qbot_scramble import (
     bind as _scramble_bind,
     SCR_DIR,
     wants_scramble,
@@ -5704,7 +5704,7 @@ def _task_chat_with_tools(gid, content, pb, principal=None):
         return "", ""
     if time.time() < _TOOLS_BROKEN["until"]:
         return "", ""      # 刚确认过不支持，直接让 agent 上，别让主人多等一轮 400
-    import qbot_persona as _qp
+    from qbot import qbot_persona as _qp
     sys_text = (str(_qp.BASE_RULES or "").strip() +
                 "\n\n【本次派活】你现在带着 QQ 工具上岗：qq_groups 定位群、qq_members 把昵称"
                 "换成 QQ 号、qq_history 看群在聊什么、qq_send_group 真发消息、qq_wait_new 等回复。"
@@ -6783,7 +6783,7 @@ except Exception as _e:
     log.warning("tts 模块加载失败，语音功能不可用：%s", _e)
 
 try:
-    import qbot_cover
+    from qbot import qbot_cover
 except Exception as _e:
     qbot_cover = None
     log.warning("qbot_cover 模块加载失败，翻唱不可用：%s", _e)
@@ -7416,11 +7416,11 @@ def handle_cover_reply(cid, is_group, uid, text, who=""):
 # 67 个函数 / 45 个模块级状态已原样搬到 qbot_draw_body.py；这里立刻
 # install，让 bot.X 继续指向同一个函数对象，测试桩与 KNOBS 均不破。
 # 桥接字典让 qbot_draw 内的全局读写实时看 bot.__dict__，不是第二套实现。
-import qbot_draw
+from qbot import qbot_draw
 qbot_draw.install(globals(), state_dir=str(STATE))
 # 静态检查器（ruff F821/F811）看不见 install() 注入的名字：这里显式登记
 # 同一批符号，运行时由 install 覆盖，不产生第二套实现也不会双向漂移。
-from qbot_draw import (
+from qbot.qbot_draw import (
     ASPECT_DEFAULT, ASPECT_ORIENT, ASPECT_ORIENT_EN, ASPECT_ORIENT_EN_RE,
     ASPECT_ORIENT_RE, COMFY_CMD_RE, COMFY_ENGINE_RE, COMFY_STYLE_RE,
     DRAW_COLON_RE, DRAW_CTL_WORDS, DRAW_EMPTY_WORDS, DRAW_FAST_RE,
@@ -7459,23 +7459,23 @@ from qbot_draw import (
 # 2026-10-10 抽成独立模块：实现见 qbot_slang.py / qbot_persona.py。
 # 两个模块都不 import bot，宿主回调由文件末尾 _bind_modules() 注入
 # （必须在 import 时就绑好，否则测试里拿到的是降级钩子）。
-from qbot_slang import (
+from qbot.qbot_slang import (
     SLANG, SLANG_FILE, TERM_Q_RE, SLANG_CMD_RE, terms_snapshot as _slang_terms,
     load_slang, save_slang, slang_learn, slang_bump, slang_block,
     slang_learn_from_answer, handle_slang, slang_extract, maybe_slang_extract,
     slang_observe, slang_maybe_infer, slang_context_hits, slang_guess_block,
     bind as _slang_bind,
 )
-from qbot_persona import (
+from qbot.qbot_persona import (
     ROLES, role_names, persona_preset_names, persona_active, persona_load,
     system_prompt, build_messages, bind as _persona_bind,
     BASE_RULES, lint_persona,
 )
 # 长期记忆（2026-10-13 建，2026-10-19 改成「按人存 + 跨场合对话流」）
-import qbot_metrics
-import qbot_mood
-import qbot_reflect
-from qbot_memory import (
+from qbot import qbot_metrics
+from qbot import qbot_mood
+from qbot import qbot_reflect
+from qbot.qbot_memory import (
     note_person, remember_fact, recall, forget, profile_block,
     people as memory_people, stats as memory_stats, bind as _memory_bind,
     log_turn, render_person, render_recent, recall_block, backfill as memory_backfill,
@@ -7483,49 +7483,49 @@ from qbot_memory import (
     private_contacts as memory_private_contacts, person_name as memory_person_name,
 )
 # 拟人化发送（2026-10-19 参考 ai-companion-kit 的 Humanizer）
-import qbot_humanize
+from qbot import qbot_humanize
 # 技能包加载器（2026-10-19）：兼容 QQ Agent 的 skills/<id>/skill.json 清单
-import qbot_skills
+from qbot import qbot_skills
 # 插件市场（2026-10-26）：market/ 里的可选技能包，一键装进 skills/（复制/移动，不联网）
-import qbot_market
+from qbot import qbot_market
 # 衰减记忆卡（2026-11-03）：从 SurfCore 的 memory-card.js 移植的「会遗忘的记忆」——
 # 重要度打分、清晰度衰减（vivid→clear→fuzzy→trace）、复习回升、容量压缩、入库脱敏。
 # 素材来源是 turns 表（每轮真实对话），维护线程每 10 分钟整理一次，注入块接进 _memory_ctx_blocks。
-import qbot_memory_card
+from qbot import qbot_memory_card
 # 表达学习闭环 v1（2026-11-03 人味阶段 A3）：从 MaiBot 的 Expression 表学来的——
 # 「什么场面 → 这个群习惯怎么说话」。例句永远取 INBOX 真实原文（AI 只分类不编），
 # 默认 checked_only=True 只当参考，管理员「表达 确认 编号」才生效。
-import qbot_expression
+from qbot import qbot_expression
 # 时机层 v1（2026-11-04 人味阶段 B）：从 MaiBot turn_trigger 学来的——
 # reply_likelihood 概率门 + 自校准额度 + SILENT 退避 + [WAIT:N] 等待出口。
 # 🔴 总闸 timing.enabled 默认关：关 = 全部恒放行，行为与没有它完全一致。
-import qbot_timing
+from qbot import qbot_timing
 # 主动性层（2026-11-04 人味阶段 C）：purpose-engine 重写 —— goal 池 + 调度闸门 +
 # 主人活跃闸 + 多层去重；`purpose.enabled` 默认关，关 = idle_opener_tick 原样。
-import qbot_purpose
+from qbot import qbot_purpose
 # 技能工具的原生实现（2026-10-19）：index.js 是 Node 模块、本机是纯 Python，
 # 所以把「查梗 / 挑梗图」这两套工具用 Python 重写了一份，这里只管接通道。
-import qbot_skill_tools
+from qbot import qbot_skill_tools
 # 会话总控（2026-10-26）：每个群/私聊能不能插话、能不能调本地工具、用哪个人格。
 # 存 config 的 `session` 段；网页「会话总控」卡和这里读写的是同一份。
-import qbot_session
+from qbot import qbot_session
 # 梗百科（2026-10-26）：6668 条词条的本地梗库 + 卡片渲染，移植自 AstrBot 插件
-import qbot_memewiki
+from qbot import qbot_memewiki
 # 捏脸表情包（2026-10-23 移植；2026-10-26 晚加「跟上游素材更新」）
-import qbot_petpet
+from qbot import qbot_petpet
 # 机器状态卡（2026-10-23）：移植 nonebot-plugin-picstatus 的**效果**、不搬它的 playwright。
 # 纯 Pillow + psutil 画一张深色卡片，口令见 handle_status_card()。
-import qbot_statuscard
+from qbot import qbot_statuscard
 # 本地 meme 生成服务的 Bot 侧客户端（阶段 3-D）：纯标准库 + Pillow，不 import 3.12 venv
 # 的二进制依赖；生成走 127.0.0.1:2233 的本地服务（Python 3.12 venv 跑 meme-generator）。
-import qbot_meme
+from qbot import qbot_meme
 # M1 影子核心（ADR-001）：Turn → 判断 → 审计日志。默认关闭，绝不发送/执行工具。
-import qbot_shadow
+from qbot import qbot_shadow
 # M2 Context Assembler（ADR-001）：18 段统一上下文，只在影子内使用，默认 legacy。
-import qbot_context
-import qbot_core
+from qbot import qbot_context
+from qbot import qbot_core
 # M3 Tool Registry（ADR-001）：三套工具面一套契约；本文件里只做影子校验，默认 legacy。
-import qbot_tools
+from qbot import qbot_tools
 
 
 def skills_block(gid=None):
@@ -7933,7 +7933,7 @@ def handle_petpet_list(gid, text, ats, uid, addressed=False):
     if not m:
         return False
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
         if not qbot_skills.is_on("petpet"):
             return False
         lines = pp.list_numbered()
@@ -8073,7 +8073,7 @@ def handle_petpet(gid, text, ats, uid, imgs, addressed=False):
     返回 True = 这条已经处理掉（调用方别再往下走聊天链路）。
     """
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
     except Exception as e:  # noqa: BLE001
         log.debug("petpet 模块不可用: %s", e)
         return False
@@ -14848,7 +14848,7 @@ def adopt_self_id(sid):
     except Exception as e:
         log.warning("换号后取登录信息失败（%s），先按事件里的 self_id 认", e)
     try:
-        import qbot_skill_tools as _st
+        from qbot import qbot_skill_tools as _st
         _st.SELF_QQ = str(SELF_ID or "")
     except Exception:  # noqa: BLE001
         pass
@@ -16494,7 +16494,7 @@ def action_pp_sync(op="status"):
     规矩跟梗百科/图库一样：**只补缺、只换改、绝不删** —— 素材是资源不是缓存。
     """
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
         if str(op or "status").lower() in ("start", "sync", "go", "开始"):
             st = pp.sync_start()
             log.info("捏脸素材同步: %s", st.get("message") or "已启动")
@@ -16508,7 +16508,7 @@ def action_pp_sync(op="status"):
 def action_pp_catalog(refresh=False):
     """捏脸素材市场（2026-10-27）：上游 99 个模板，哪些本机有、哪些能一键搬、哪些得手工。"""
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
         return pp.catalog(refresh=bool(refresh))
     except Exception as e:  # noqa: BLE001
         log.warning("捏脸素材市场接口失败: %s", e)
@@ -16523,7 +16523,7 @@ def action_pp_market(op="import", name="", hard=False):
     不然浏览器的 fetch 先超时了。
     """
     try:
-        import qbot_petpet as pp
+        from qbot import qbot_petpet as pp
         o = str(op or "import").lower()
         if o in ("status", "状态", "progress"):
             return pp.market_status()
@@ -17215,7 +17215,7 @@ def _api_get_petpet_demo(h, q, gid):
     """示范动图：本机有素材的模板按真参数渲一张（假头像）。"""
     p = None
     try:
-        import qbot_petpet as _pp
+        from qbot import qbot_petpet as _pp
         p = _pp.demo_gif(q.get("tpl") or "")
     except Exception as e:  # noqa: BLE001
         log.debug("示范动图失败: %s", e)
@@ -17229,7 +17229,7 @@ def _api_get_petpet_frame(h, q, gid):
     """预览帧（<img> 带不了 header，token 走 query）：?tpl=hug_leg&i=0"""
     p = None
     try:
-        import qbot_petpet as _pp
+        from qbot import qbot_petpet as _pp
         p = _pp.frame_path(q.get("tpl") or "", q.get("i") or 0)
     except Exception as e:  # noqa: BLE001
         log.debug("预览帧失败: %s", e)
@@ -17997,7 +17997,7 @@ def _seg_gid(turn):
 
 def _seg_hard_rules(ctx):
     try:
-        from qbot_persona import _now_line as _persona_now_line
+        from qbot.qbot_persona import _now_line as _persona_now_line
         now_line = _persona_now_line()
     except Exception:  # noqa: BLE001
         now_line = ""

@@ -109,7 +109,7 @@ def old_voice_line():
 # ---- 跑一条 ------------------------------------------------------------
 def run_one(text, persona_rules_override=None, voice_override=None):
     """用当前生产链路拼 system（可选替换铁律/voice 行），跑一轮真模型。"""
-    import qbot_persona
+    from qbot import qbot_persona
     _old_rules = qbot_persona.BASE_RULES
     _old_voice = None
     if persona_rules_override:

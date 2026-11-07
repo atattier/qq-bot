@@ -31,7 +31,7 @@ def chk(name, ok, detail=""):
 
 
 import bot  # noqa: E402
-import qbot_memory_card as M  # noqa: E402
+from qbot import qbot_memory_card as M  # noqa: E402
 
 GID = 123450001
 M.bind(tempfile.mkdtemp(prefix="topener_card_"),

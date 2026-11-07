@@ -18,9 +18,9 @@ os.environ["QBOT_TEST"] = "1"
 os.environ.pop("QBOT_ARCH_SHADOW", None)
 sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_core as C          # noqa: E402
-import qbot_shadow as S        # noqa: E402
-import qbot_turn as T          # noqa: E402
+from qbot import qbot_core as C          # noqa: E402
+from qbot import qbot_shadow as S        # noqa: E402
+from qbot import qbot_turn as T          # noqa: E402
 
 bad = 0
 
@@ -189,7 +189,7 @@ chk("丢弃率可见", st["drop_rate"] > 0, st)
 S.close()
 
 print("== 5 影子模块不依赖发送/工具执行 ==")
-src = Path(_ROOT, "qbot_shadow.py").read_text(encoding="utf-8")
+src = Path(_ROOT, "qbot", "qbot_shadow.py").read_text(encoding="utf-8")
 chk("不 import 发送函数", "send_group(" not in src and "send_segments(" not in src)
 chk("不执行工具", "executor=" not in src and "tool_executed" not in src)
 

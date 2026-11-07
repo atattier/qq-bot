@@ -30,7 +30,7 @@ from pathlib import Path
 log = logging.getLogger("qqbot.market")
 
 CFG = {}
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 STATE = None
 
 _DEFAULTS = {"enabled": True, "dir": "market"}
@@ -62,7 +62,7 @@ def market_dir():
 
 def _skills():
     try:
-        import qbot_skills
+        from qbot import qbot_skills
         return qbot_skills
     except Exception:  # noqa: BLE001
         return None

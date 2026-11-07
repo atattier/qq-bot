@@ -21,7 +21,7 @@ import time
 
 _sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_humanize as H    # noqa: E402
+from qbot import qbot_humanize as H    # noqa: E402
 import bot                   # noqa: E402
 
 ok = True

@@ -23,7 +23,7 @@ def chk(name, ok, detail=""):
         FAIL.append(name)
 
 
-import qbot_memory as M  # noqa: E402
+from qbot import qbot_memory as M  # noqa: E402
 
 M.embed = lambda q: None          # 不联网：走字符二元组语义
 _CFG = {"memory": {"hybrid": True, "enabled": True}}

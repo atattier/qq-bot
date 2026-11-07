@@ -39,7 +39,7 @@ from pathlib import Path
 log = logging.getLogger("qqbot.skills")
 
 CFG = {}
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 
 _DEFAULTS = {
     "enabled": True,          # 总开关
@@ -409,7 +409,7 @@ def save_section(sid, sec_id, content):
 def _native_tools():
     """本机有没有这些技能工具的原生实现（qbot_skill_tools）。没装就当没有。"""
     try:
-        import qbot_skill_tools as st
+        from qbot import qbot_skill_tools as st
         return dict(getattr(st, "NATIVE", {}) or {}), dict(getattr(st, "USAGE", {}) or {})
     except Exception:  # noqa: BLE001
         return {}, {}

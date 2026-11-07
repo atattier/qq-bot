@@ -19,8 +19,8 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-import qbot_memory as M          # noqa: E402
-import qbot_reflect as R         # noqa: E402
+from qbot import qbot_memory as M          # noqa: E402
+from qbot import qbot_reflect as R         # noqa: E402
 
 PASS, FAIL = [], []
 

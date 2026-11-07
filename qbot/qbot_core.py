@@ -14,7 +14,7 @@ import time
 from dataclasses import dataclass, field, replace
 from typing import Any, Callable, Iterable, Mapping
 
-from qbot_turn import ACTIONS, Turn
+from qbot.qbot_turn import ACTIONS, Turn
 
 FORBIDDEN_TOOLS = frozenset({"shell", "exec", "write_file", "http_post"})
 MASTER_ONLY_TOOLS = frozenset({"qq_send_group", "remember"})

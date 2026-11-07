@@ -42,7 +42,7 @@ from pathlib import Path
 
 log = logging.getLogger("qqbot")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 STATE = BASE / "state"
 CACHE_FILE = STATE / "linkprev.json"
 

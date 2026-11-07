@@ -39,7 +39,7 @@ from pathlib import Path
 log = logging.getLogger("qqbot.meme")
 
 CFG = {}
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 STATE = BASE / "state"
 
 # 宿主注入的回调：fetch_image(seg)->本地路径 / send_image(cid, path, caption)->bool

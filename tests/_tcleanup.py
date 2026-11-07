@@ -23,9 +23,9 @@ def chk(name, ok, why=""):
 
 
 BOT = (ROOT / "bot.py").read_text(encoding="utf-8")
-DRAW = (ROOT / "qbot_draw_body.py").read_text(encoding="utf-8")
+DRAW = (ROOT / "qbot" / "qbot_draw_body.py").read_text(encoding="utf-8")
 PY = "\n".join(p.read_text(encoding="utf-8", errors="ignore")
-               for p in sorted(ROOT.glob("*.py")))
+               for p in sorted(list(ROOT.glob("*.py")) + list((ROOT / "qbot").glob("*.py"))))
 
 # 单一主脑决策：M4 在旧路由前另跑一次 chat()、用 TLS 关旧路径的整个包装删掉。
 for token in ("_route_draw_core(", "_core_draw_chat", "_CORE_TLS",
@@ -113,7 +113,7 @@ for name in ("handle_comfy_cmd", "handle_engine_switch",
     chk(name + " 仍为显式协议回执", "send_group(" in fn_src(DRAW, name))
 
 chk("删除 _omni_fallback_say", "def _omni_fallback_say(" not in BOT)
-chk("已删除 M4 意图模块", not (ROOT / "qbot_draw_intent.py").exists())
+chk("已删除 M4 意图模块", not (ROOT / "qbot" / "qbot_draw_intent.py").exists())
 
 print("结果：%s" % ("全部通过" if not BAD else "失败 %d 项：%s" % (len(BAD), ", ".join(BAD))))
 sys.exit(1 if BAD else 0)

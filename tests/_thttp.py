@@ -144,7 +144,7 @@ except urllib.error.HTTPError as e:
     chk("无 token 的写返回 401（改不了配置）", e.code == 401, e.code)
 
 print("\n=== /api/skill 技能工具（本地桩，不联网） ===")
-import qbot_skill_tools as _T   # noqa: E402
+from qbot import qbot_skill_tools as _T   # noqa: E402
 _real_call = _T.call
 _T.call = lambda s, t, **kw: (True, "stub %s.%s %s" % (s, t, kw))
 st, body = post("/api/skill", {"skill": "trendy-memes", "tool": "lookup",

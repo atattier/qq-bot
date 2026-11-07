@@ -28,7 +28,7 @@
 双头像（`SenderImg`/`user_head`/`self_head`）。
 
 用法：
-    import qbot_petpet_port as PORT
+    from qbot import qbot_petpet_port as PORT
     spec, why = PORT.analyze(src_text, "hug_leg")
 """
 import ast

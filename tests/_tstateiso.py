@@ -34,14 +34,14 @@ def chk(name, ok, detail=""):
 
 
 import bot  # noqa: E402
-import qbot_mood as M  # noqa: E402
-import qbot_expression as E  # noqa: E402
-import qbot_timing as T  # noqa: E402
-import qbot_scramble as SC  # noqa: E402
-import qbot_slang as S  # noqa: E402
-import qbot_purpose as PU  # noqa: E402
-import qbot_draw as D  # noqa: E402
-import qbot_shadow as SH  # noqa: E402
+from qbot import qbot_mood as M  # noqa: E402
+from qbot import qbot_expression as E  # noqa: E402
+from qbot import qbot_timing as T  # noqa: E402
+from qbot import qbot_scramble as SC  # noqa: E402
+from qbot import qbot_slang as S  # noqa: E402
+from qbot import qbot_purpose as PU  # noqa: E402
+from qbot import qbot_draw as D  # noqa: E402
+from qbot import qbot_shadow as SH  # noqa: E402
 
 # 生产 state 里绝不能被测试写的文件（取 hash 时只读）
 _PROD = ["config.json", "state/mood.json", "state/slang.json", "state/expressions.json",

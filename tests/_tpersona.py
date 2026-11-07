@@ -134,7 +134,7 @@ else:
     print("FAIL: 人设正文上限还是 %s" % (_ent or {}).get("max_len")); bad += 1
 
 # 9) 网页人格管理保存也必须遵守文件模式（预设=role，自定义=system，二者互斥）
-import qbot_persona as QP
+from qbot import qbot_persona as QP
 _saved_ai = dict(bot.CFG.get("ai", {}))
 _saved_roles = (bot.ROLES, QP.ROLES)
 _saved_state = bot.STATE

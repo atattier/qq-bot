@@ -22,7 +22,7 @@ os.environ.pop("QBOT_ARCH_SHADOW", None)
 os.environ["QBOT_ARCH_CONTEXT"] = "assembler"
 
 import bot  # noqa: E402
-import qbot_context as X  # noqa: E402
+from qbot import qbot_context as X  # noqa: E402
 import run_shadow_m1 as M1R  # noqa: E402
 
 HERE = Path(__file__).resolve().parent

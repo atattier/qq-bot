@@ -104,7 +104,7 @@ GET http://127.0.0.1:8088/admin?token=...  # 网页控制台
 | `admin_html.py` | `/admin` 控制台页面 |
 | `comfy_gen.py` | ComfyUI 出图客户端：工作流拼装、排队、超时、显存卸载 |
 | `reverser.py` | 提示词反推 + 图生图链路 |
-| `qbot_*.py` | 独立能力模块：记忆、人格、画图、表情包、语音、市场、技能等 |
+| `qbot/` | 能力模块包：记忆、人格、画图、表情包、语音、市场、技能等（`qbot/qbot_*.py`） |
 | `jm_bot.py` / `videoparse.py` / `scramble.py` / `tts.py` | 漫画、视频解析、图片混淆、语音 |
 | `qq-mcp-server.py` | stdio MCP server，把 bot 的 `/api/*` 暴露给外部 agent |
 | `_oneclick.py` / `_keeper.py` | 一键启动与保活（拉 NapCat、拉 bot、掉了自动重启） |

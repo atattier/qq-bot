@@ -25,7 +25,7 @@ import threading
 import time
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 STATE = BASE / "state"
 
 log = logging.getLogger("qqbot")

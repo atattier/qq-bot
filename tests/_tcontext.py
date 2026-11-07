@@ -18,10 +18,10 @@ os.environ.pop("QBOT_ARCH_SHADOW", None)
 os.environ.pop("QBOT_ARCH_CONTEXT", None)
 sys.stdout.reconfigure(encoding="utf-8")
 
-import qbot_context as X     # noqa: E402
-import qbot_core as C        # noqa: E402
-import qbot_shadow as S      # noqa: E402
-import qbot_turn as T        # noqa: E402
+from qbot import qbot_context as X     # noqa: E402
+from qbot import qbot_core as C        # noqa: E402
+from qbot import qbot_shadow as S      # noqa: E402
+from qbot import qbot_turn as T        # noqa: E402
 
 bad = 0
 
@@ -255,7 +255,7 @@ chk("回退 legacy 后决策不带 18 段", len(rec2) == 2 and
     not (rec2[-1]["decision"].get("context") or {}).get("segments"),
     len(rec2))
 S.close()
-shadow_src = Path(_ROOT, "qbot_shadow.py").read_text(encoding="utf-8")
+shadow_src = Path(_ROOT, "qbot", "qbot_shadow.py").read_text(encoding="utf-8")
 chk("影子模块仍不 import 发送", "send_group(" not in shadow_src and
     "send_segments(" not in shadow_src)
 
@@ -279,7 +279,7 @@ mg = asm.build(tg, history=[], tools=bot._shadow_tools())
 chk("宿主组装仍是 18 段", len(mg.segments) == 18)
 chk("人格段就是 system_prompt(gid)",
     mg.segment("persona").text == bot.system_prompt(GID))
-from qbot_persona import BASE_RULES  # noqa: E402
+from qbot.qbot_persona import BASE_RULES  # noqa: E402
 
 chk("铁律段含 BASE_RULES + 判定契约",
     BASE_RULES in mg.segment("hard_rules").text and

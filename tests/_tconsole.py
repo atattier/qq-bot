@@ -122,7 +122,7 @@ import tempfile
 from pathlib import Path as _P
 GID = 123450001
 tmp = _P(tempfile.mkdtemp(prefix="console_p2a_"))
-import qbot_memory as _MEM
+from qbot import qbot_memory as _MEM
 _MEM.bind(state_dir=tmp, cfg=bot.CFG)
 bot.qbot_reflect.bind(str(tmp / "maimem.db"), cfg=bot.CFG)
 

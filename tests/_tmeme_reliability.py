@@ -40,7 +40,7 @@ _sys.stdout.reconfigure(encoding="utf-8")
 
 from PIL import Image, ImageDraw  # noqa: E402
 import bot                        # noqa: E402
-import qbot_meme as M             # noqa: E402
+from qbot import qbot_meme as M             # noqa: E402
 
 LAB = Path(_ROOT).parent / "_meme_lab"
 CTL = LAB / "meme_ctl.py"
