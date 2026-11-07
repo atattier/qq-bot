@@ -32,7 +32,7 @@ REF = os.path.join(TMP, "refcurve.json")
 def run_A():
     import numpy as np
     from PIL import Image, ImageDraw
-    import scramble
+    from qbot import scramble
     # 2026-11-05 审计 U2：产物与曲线缓存全部落临时目录，跑完即删——
     # 原版写死 state/scramble/_t 并清空生产曲线缓存，SAFE 里不该碰生产 state。
     OUT = tempfile.mkdtemp(prefix="tscramble_a_")

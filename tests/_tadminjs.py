@@ -13,7 +13,7 @@ os.chdir(_ROOT)
 sys.stdout.reconfigure(encoding="utf-8")
 
 bad = 0
-html = open(os.path.join(_ROOT, "admin_html.py"), encoding="utf-8").read()
+html = open(os.path.join(_ROOT, "qbot", "admin_html.py"), encoding="utf-8").read()
 
 # 1) 页面骨架还在
 for anchor in ("__TOKEN__", "</style>", "openModelPick", "id=\"app\"" if False else "<script>"):

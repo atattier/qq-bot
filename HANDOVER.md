@@ -40,7 +40,7 @@ M5 = Memory Service / Persona / Renderer，M6 = 退役与清理。**M4 不是 Me
 **门面文档是 `README.md`**（定位/启动/依赖/测试/开发规约），本文件是内部作业手册，两者别重复维护。
 
 | 文件 | 作用 |
-> 2026-11-07 起，下表里的 `qbot_*.py` 都已移进 `qbot/` 包，实际路径是 `qbot/qbot_*.py`；导入写 `from qbot import qbot_xxx`。
+> 2026-11-07 起，除入口 `bot.py` / `qq-mcp-server.py` / `_oneclick.py` / `_keeper.py` 外，所有模块都收进 `qbot/` 包：`qbot/qbot_*.py` 与 `qbot/admin_html.py`、`qbot/comfy_gen.py`、`qbot/config_core.py`、`qbot/jm_bot.py`、`qbot/moss_gen.py`、`qbot/moss_layout.py`、`qbot/reverser.py`、`qbot/scramble.py`、`qbot/tts.py`、`qbot/videoparse.py`；导入统一写 `from qbot import xxx`。
 |---|---|
 | `README.md` | **项目门面**（2026-10-10 加）：快速开始、目录结构、依赖、测试入口、**8 条开发规约**。改结构时要同步这里 |
 | `requirements.txt` / `requirements-extra.txt` | 依赖声明（2026-10-10 加）。核心只要 Pillow + numpy，其余是可选功能 |

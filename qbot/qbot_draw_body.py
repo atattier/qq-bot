@@ -64,7 +64,7 @@ def _moss_cfg():
 def _moss_studio_status():
     """「排版链状态」只读旋钮的值：Studio 就绪路径 + 降级说明（主人看得懂的话）。"""
     try:
-        import moss_layout
+        from qbot import moss_layout
         p = moss_layout.studio_dir(_moss_cfg())
         note = str(moss_layout.last_note() or "")
         if p:

@@ -22,7 +22,7 @@ STATE = BASE / "state"
 log = logging.getLogger("qqbot")
 
 try:
-    import scramble
+    from qbot import scramble
 except Exception as _e:
     scramble = None
     log.warning("图片混淆模块加载失败（该功能禁用）：%s", _e)

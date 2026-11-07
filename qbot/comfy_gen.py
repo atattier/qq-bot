@@ -400,7 +400,7 @@ def _dex(path=None):
     """懒加载 animadex.json（官方目录快照，state/_fetch_animadex.py 抓的）。没有就返回 None。"""
     global _DEX
     if _DEX is None:
-        p = Path(path) if path else Path(__file__).with_name("animadex.json")
+        p = Path(path) if path else Path(__file__).resolve().parent.parent / "animadex.json"
         try:
             d = json.loads(p.read_text(encoding="utf-8"))
             ch = [c for c in (d.get("characters") or []) if isinstance(c, dict)]
@@ -3294,7 +3294,7 @@ if __name__ == "__main__":
     ap.add_argument("--landscape", action="store_true", help="横构图（宽高对调）")
     ap.add_argument("--no-enhance", action="store_true", help="不做提示词润色，原样送进模型")
     ap.add_argument("--boot", action="store_true", help="服务没开时先拉起来")
-    ap.add_argument("--config", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"))
+    ap.add_argument("--config", default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.json"))
     a = ap.parse_args()
     c = (json.load(open(a.config, encoding="utf-8")) or {}).get("comfyui") or {}
     if a.no_enhance:

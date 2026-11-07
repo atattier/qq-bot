@@ -90,7 +90,7 @@ bot._vg_state["busy"] = False
 
 # 7) 提示词/成片节点：**当前 config 生效的那份**工作流
 #    （2026-10-08 起 = 「H3fast 一采.json」：只跑一采、latent 传递与二采已删）
-import comfy_gen
+from qbot import comfy_gen
 _HAVE_VG_WF = True
 try:
     comfy_gen.wf_load(bot._comfy_cfg(), bot._vg_cfg()["workflow"])

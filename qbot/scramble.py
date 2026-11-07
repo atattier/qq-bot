@@ -35,7 +35,7 @@ except Exception:      # 没 numpy 也能跑，只是慢
 
 GOLDEN = (math.sqrt(5) - 1.0) / 2.0     # 0.6180339887...
 
-CACHE_DIR = Path(__file__).resolve().parent / "state" / "scramble" / "curve"
+CACHE_DIR = Path(__file__).resolve().parent.parent / "state" / "scramble" / "curve"
 
 
 class ScrambleError(Exception):

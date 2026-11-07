@@ -46,7 +46,7 @@
   └──────────────────────────────────────────────────────────────────┘
 
 用法：
-    import videoparse
+    from qbot import videoparse
     site, url = videoparse.find_link("看这个 https://www.bilibili.com/video/BV1xx")
     res = videoparse.fetch(url, cfg)       # dict: ok / path / title / err
 """

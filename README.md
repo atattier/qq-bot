@@ -101,11 +101,12 @@ GET http://127.0.0.1:8088/admin?token=...  # 网页控制台
 | 路径 | 作用 |
 |---|---|
 | `bot.py` | 主进程：消息路由、AI 大脑、画图/视频、人格、配置注册表、本地 HTTP 服务 |
-| `admin_html.py` | `/admin` 控制台页面 |
-| `comfy_gen.py` | ComfyUI 出图客户端：工作流拼装、排队、超时、显存卸载 |
-| `reverser.py` | 提示词反推 + 图生图链路 |
-| `qbot/` | 能力模块包：记忆、人格、画图、表情包、语音、市场、技能等（`qbot/qbot_*.py`） |
-| `jm_bot.py` / `videoparse.py` / `scramble.py` / `tts.py` | 漫画、视频解析、图片混淆、语音 |
+| `qbot/` | 全部非入口代码：记忆、人格、画图、语音、技能、市场、控制台页面、配置读写等 |
+| └ `qbot/qbot_*.py` | 领域模块（记忆、人格、画图、表情包、市场、技能、影子、会话…） |
+| └ `qbot/comfy_gen.py` / `moss_gen.py` / `moss_layout.py` | ComfyUI 与 Moss 出图客户端、工作流拼装、提示词工程 |
+| └ `qbot/reverser.py` / `scramble.py` | 提示词反推/图生图、图片混淆 |
+| └ `qbot/tts.py` / `videoparse.py` / `jm_bot.py` | 语音合成、视频解析、漫画下载 |
+| └ `qbot/admin_html.py` / `config_core.py` | `/admin` 控制台页面、配置读写 |
 | `qq-mcp-server.py` | stdio MCP server，把 bot 的 `/api/*` 暴露给外部 agent |
 | `_oneclick.py` / `_keeper.py` | 一键启动与保活（拉 NapCat、拉 bot、掉了自动重启） |
 | `roles/*.md` | 人格文件，可在控制台切换 |

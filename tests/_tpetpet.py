@@ -511,7 +511,7 @@ P.ASSETS = _real_assets
 P.sync_start = _orig_start
 
 print("== 素材市场网页：移除后必须走「放回」==")
-_admin = open(Path(_ROOT) / "admin_html.py", encoding="utf-8").read()
+_admin = open(Path(_ROOT) / "qbot" / "admin_html.py", encoding="utf-8").read()
 chk("已移除的模板显示「放回」而不是「搬过来」", 'if(x.removed){' in _admin and 'act("restore",x);}' in _admin)
 chk("恢复成功的提示存在", "已放回" in _admin)
 chk("移除提示不再叫人点「搬过来」", "想要了再点「放回」" in _admin)

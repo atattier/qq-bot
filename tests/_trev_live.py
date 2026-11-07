@@ -7,7 +7,7 @@ sys.path.insert(0, _ROOT)
 os.chdir(_ROOT)
 sys.stdout.reconfigure(encoding="utf-8")
 
-import reverser
+from qbot import reverser
 
 cfg = json.load(open("config.json", encoding="utf-8"))
 img = os.environ.get("QBOT_REV_TEST_IMG") or r"C:\ComfyUI\ComfyUI\input\qqbot_rev\test.jpg"

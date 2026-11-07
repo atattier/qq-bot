@@ -12,7 +12,7 @@ import time
 
 sys.stdout.reconfigure(encoding="utf-8")
 import bot          # noqa: E402
-import comfy_gen    # noqa: E402
+from qbot import comfy_gen    # noqa: E402
 
 _orig_req_at = bot.CFG.get("comfyui", {}).get("require_addressing")
 bot.CFG.setdefault("comfyui", {})["require_addressing"] = False
@@ -355,7 +355,7 @@ print("   清完再画应重新搜:", WEB_Q)
 
 # ---------------- ㉒ 画同款（反推 → 认人 → 图生图） ----------------
 import pathlib        # noqa: E402
-import reverser       # noqa: E402
+from qbot import reverser       # noqa: E402
 
 _orig = (reverser.run, reverser.identify, bot._fetch_rev_image, bot.CFG.get("reverse"))
 reverser.run = lambda path, cfg, engine=None: (

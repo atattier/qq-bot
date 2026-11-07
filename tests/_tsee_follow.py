@@ -17,7 +17,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-import reverser   # noqa: E402
+from qbot import reverser   # noqa: E402
 
 FAILS = []
 

@@ -31,7 +31,7 @@ def check(name, cond, detail=""):
 
 
 def main():
-    import reverser
+    from qbot import reverser
 
     budget = reverser.VL_CLOUD_IMG_BYTES
     side = reverser.VL_CLOUD_IMG_SIDE

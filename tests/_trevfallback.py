@@ -9,7 +9,7 @@ sys.path.insert(0, _ROOT)
 os.chdir(_ROOT)
 sys.stdout.reconfigure(encoding="utf-8")
 
-import reverser
+from qbot import reverser
 
 CALLS = []
 MODE = {"m": "ds_ok"}
@@ -51,7 +51,9 @@ def _req(url, payload, timeout=None):
 
 fake.wf_to_api = wf_to_api
 fake._req = _req
-sys.modules["comfy_gen"] = fake
+sys.modules["qbot.comfy_gen"] = fake
+import qbot as _qbot
+_qbot.comfy_gen = fake   # from qbot import comfy_gen 先看父包属性
 
 bad = 0
 def chk(name, cond, extra=""):

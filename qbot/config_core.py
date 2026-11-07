@@ -21,7 +21,7 @@ from pathlib import Path
 
 log = logging.getLogger("qqbot")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 _CONFIG_PATH = BASE / "config.json"
 
 CFG = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))

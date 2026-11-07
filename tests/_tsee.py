@@ -16,7 +16,8 @@ sys.path.insert(0, _ROOT)
 os.chdir(_ROOT)
 sys.stdout.reconfigure(encoding="utf-8")
 
-import bot, reverser  # noqa: E402
+import bot  # noqa: E402
+from qbot import reverser  # noqa: E402
 
 bad = 0
 

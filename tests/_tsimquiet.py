@@ -26,6 +26,7 @@ sys.path.insert(0, _ROOT)
 os.chdir(_ROOT)
 sys.stdout.reconfigure(encoding="utf-8")
 import bot
+from qbot import reverser as _RV  # noqa: E402
 
 FAIL = []
 
@@ -394,7 +395,7 @@ else:
 # ---- H16~H21：读情绪的输出清洗（**最容易被改坏的一处**）----
 # 🔴 这里是「读情绪」和「描述画面」的分界。模型很容易答「一个笑脸」「画了个人在哭」——
 #    那就是描述画面，正是主人骂的那件事。这种必须在**清洗层**就拒收，不许洗一洗混进来。
-_RV = __import__("reverser")
+_RV = _RV
 _rv_src = inspect.getsource(_RV.read_vibe)
 chk("H16/读情绪走独立提示词（不复用描述画面那条）", "VIBE_SYS" in _rv_src, True)
 chk("H17/提示词明令禁止描述画面", "严禁" in _RV.VIBE_SYS and "描述画面" in _RV.VIBE_SYS, True)
@@ -454,7 +455,7 @@ chk("H29/上下文渲染出「认出来了：蛋黄哥」", "蛋黄哥" in _blk3
 chk("H30/渲染时仍带着「别描述画面」的警示", "别描述画面" in _blk3, True)
 
 # ④ 拆分与清洗：情绪段和角色段**互不影响**，角色段更像描述就更要拒收
-_RV2 = __import__("reverser")
+_RV2 = _RV
 chk("H31/情绪|角色 拆得开", _RV2._vibe_split("笑死|蛋黄哥"), ("笑死", "蛋黄哥"))
 chk("H32/只写情绪时角色为空", _RV2._vibe_split("无语"), ("无语", ""))
 chk("H33/角色那段是描述 ⇒ 拒收（不许变成评头论足）",

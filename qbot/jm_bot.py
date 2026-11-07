@@ -29,7 +29,7 @@ jmcomic 会自动联网拉取当前可用域名（2026-10-09 拉到 `www.cdnhjk.
 
 用法
 --------------------------------------------------------------------------
-    import jm_bot
+    from qbot import jm_bot
     kind, aid = jm_bot.parse_cmd(".jm 472537")   # ('jm', '472537') / (None, None)
     info = jm_bot.fetch_info(aid)                # dict: title / author / page_count
     path, out_kind = jm_bot.build(aid, workdir, cfg)   # ('...\\472537.pdf', 'pdf')
@@ -110,7 +110,7 @@ _RANDOM_KIND = {"随机": "fav", "收藏": "fav", "fav": "fav",
                 "热": "rank", "热门": "rank", "榜": "rank", "hot": "rank",
                 "重置": "reset", "洗牌": "reset", "reset": "reset"}
 
-_ROOT = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FAV_JSON = os.path.join(_ROOT, "state", "jm_favorites.json")
 SENT_JSON = os.path.join(_ROOT, "state", "jm_sent.json")   # 已发过的本子（去重用）
 

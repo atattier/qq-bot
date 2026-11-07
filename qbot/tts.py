@@ -20,7 +20,7 @@ from pathlib import Path
 
 log = logging.getLogger("qqbot")
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent
 # 本地服务一律绕开系统代理（否则 127.0.0.1 会被 Clash 拦成 502）
 _OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 

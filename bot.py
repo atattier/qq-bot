@@ -52,7 +52,7 @@ _IN_TEST = _in_test_env()
 # 2026-11-05 U5：CFG 的加载/落盘收进 config_core（单一可信基座）：
 # save_config 带锁 + 原子写（~15 个调用点散布三个线程，原来裸写有丢更新/半截文件风险）。
 # CFG 是同一个 dict 对象，全部既有读写点零改动。
-from config_core import CFG, save_config, dot_get as _dot_get, dot_set as _dot_set  # noqa: E402
+from qbot.config_core import CFG, save_config, dot_get as _dot_get, dot_set as _dot_set  # noqa: E402
 
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
@@ -1682,7 +1682,7 @@ def handle_random_draw(gid, privileged, who, arg=""):
         # 7b 刚用完就把模型卸了，别占着 8G 显卡等 ComfyUI 装载
         try:
             _pc = ((CFG.get("ai") or {}).get("providers") or {}).get("ollama_text") or {}
-            import reverser as _rev
+            from qbot import reverser as _rev
             _rev._ollama_keep(_pc.get("url") or "", _pc.get("model") or "", 0)
         except Exception:
             pass
@@ -6739,37 +6739,37 @@ def send_bubbles(gid, text, want_image=True, reply_to=0, ctx_text=""):
 
 # ---------------- 本地 ComfyUI 现画（默认档见 config comfyui.default_style：anima，实现见 comfy_gen.py） ----------------
 try:
-    import comfy_gen
+    from qbot import comfy_gen
 except Exception as _e:  # 模块坏了也别把整个 bot 带崩
     comfy_gen = None
     log.warning("comfy_gen 模块加载失败，现画功能不可用：%s", _e)
 
 try:
-    import moss_gen          # MOSI 官方云出图（第二条生图链路，见 moss_gen.py）
+    from qbot import moss_gen          # MOSI 官方云出图（第二条生图链路，见 moss_gen.py）
 except Exception as _e:
     moss_gen = None
     log.warning("moss_gen 模块加载失败，云端生图不可用：%s", _e)
 
 try:
-    import moss_layout       # Studio 那套提示词工程：一句话/一张图 → Layout → Moss 提示词
+    from qbot import moss_layout       # Studio 那套提示词工程：一句话/一张图 → Layout → Moss 提示词
 except Exception as _e:
     moss_layout = None
     log.warning("moss_layout 模块加载失败，Moss 布局提示词不可用：%s", _e)
 
 try:
-    import reverser
+    from qbot import reverser
 except Exception as _e:  # 反推模块坏了也别把整个 bot 带崩
     reverser = None
     log.warning("reverser 模块加载失败，反推功能不可用：%s", _e)
 
 try:
-    import videoparse
+    from qbot import videoparse
 except Exception as _e:  # 视频解析（B站/抖音）同理，坏了一个模块别带崩整个 bot
     videoparse = None
     log.warning("videoparse 模块加载失败，视频解析不可用：%s", _e)
 
 try:
-    import jm_bot
+    from qbot import jm_bot
 except Exception as _e:  # JM 漫画下载（`.jm <本子ID>`）同样隔离，坏了只是这个功能没有
     jm_bot = None
     log.warning("jm_bot 模块加载失败，JM 下载不可用：%s", _e)
@@ -6777,7 +6777,7 @@ except Exception as _e:  # JM 漫画下载（`.jm <本子ID>`）同样隔离，�
 # 语音合成（2026-10-09）：GPT-SoVITS 跑独立常驻服务（HTTP 127.0.0.1:9880），
 # bot 解释器不需要 torch；服务没起/合成失败自动回落 edge-tts。同样隔离，坏了只是没语音。
 try:
-    import tts
+    from qbot import tts
 except Exception as _e:
     tts = None
     log.warning("tts 模块加载失败，语音功能不可用：%s", _e)
@@ -17013,7 +17013,7 @@ def scheduler_loop():
 
 
 # /admin 页面模板已迁至 admin_html.py（2026-09-18 模块化）
-from admin_html import ADMIN_HTML  # noqa: E402
+from qbot.admin_html import ADMIN_HTML  # noqa: E402
 
 
 def admin_page(token=""):
@@ -17029,7 +17029,7 @@ def admin_page(token=""):
     """
     global ADMIN_HTML
     try:
-        import admin_html as _ah
+        from qbot import admin_html as _ah
         ADMIN_HTML = importlib.reload(_ah).ADMIN_HTML
     except Exception as e:
         log.warning("admin_html 热重载失败（继续用启动时的版本）: %s", e)

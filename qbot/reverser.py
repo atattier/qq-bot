@@ -912,7 +912,7 @@ def rev_wf_text(cfg, image_path, timeout=180, wf_name=None, sys_prompt=None):
     跑挂/出错自动换 Ollama joycaption 补上（顺序见 _rev_services，可在 config 调）。
     """
     try:
-        import comfy_gen as cg
+        from qbot import comfy_gen as cg
     except Exception as e:      # 没装/导入失败也别拖垮反推
         raise RevError("反推工作流：comfy_gen 导入失败（%s）" % str(e)[:80])
     ccfg = cfg.get("comfyui") or cfg          # 有些调用方直接传 comfyui 段

@@ -21,7 +21,7 @@ os.chdir(_ROOT)
 sys.stdout.reconfigure(encoding="utf-8")
 
 import bot          # noqa: E402
-import comfy_gen    # noqa: E402
+from qbot import comfy_gen    # noqa: E402
 
 WF_DIR = os.environ.get("QBOT_COMFY_WORKFLOWS") or r"C:\ComfyUI\ComfyUI\user\default\workflows"
 _SRC = os.path.join(WF_DIR, "Moss_int8_t2i.json")
