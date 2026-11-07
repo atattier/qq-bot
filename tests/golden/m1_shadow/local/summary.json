@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-05T20:04:55+0800",
+  "mode": "local_ollama",
+  "provider": "huihui_ai/qwen2.5-vl-abliterated:3b",
+  "scope": 72,
+  "scope_rule": "按 category 分层抽样 72 条",
+  "coverage": 1.0,
+  "completed": 72,
+  "errors": 1,
+  "elapsed_sec": 618.5,
+  "latency_ms": {
+    "p50": 1002,
+    "p95": 22791,
+    "min": 568,
+    "max": 83276,
+    "mean": 6285
+  },
+  "actions": {
+    "reply": 53,
+    "silent": 10,
+    "tool_call": 6,
+    "refuse": 1,
+    "clarify": 2
+  },
+  "diffs": {
+    "match_expected": 61,
+    "forbidden_hit": 10,
+    "invalid": 1
+  },
+  "categories": {
+    "chat": 11,
+    "failure": 11,
+    "memory": 10,
+    "multi": 10,
+    "permission": 10,
+    "tool": 10,
+    "vision": 10
+  },
+  "by_category": {
+    "chat": {
+      "match_expected": 8,
+      "invalid": 1,
+      "forbidden_hit": 2
+    },
+    "failure": {
+      "match_expected": 9,
+      "forbidden_hit": 2
+    },
+    "memory": {
+      "match_expected": 8,
+      "forbidden_hit": 2
+    },
+    "multi": {
+      "match_expected": 8,
+      "forbidden_hit": 2
+    },
+    "permission": {
+      "match_expected": 9,
+      "forbidden_hit": 1
+    },
+    "tool": {
+      "match_expected": 9,
+      "forbidden_hit": 1
+    },
+    "vision": {
+      "match_expected": 10
+    }
+  },
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "cost_note": "本地 Ollama，零 API 费用",
+  "review_sample_ids": [
+    "M0-TOOL-004",
+    "M0-CHAT-006",
+    "M0-MEM-006",
+    "M0-FAIL-007",
+    "M0-MEM-007",
+    "M0-PERM-007",
+    "M0-FAIL-008",
+    "M0-MULTI-009",
+    "M0-CHAT-010",
+    "M0-MULTI-010",
+    "M0-CHAT-011"
+  ]
+}

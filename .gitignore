@@ -1,0 +1,58 @@
+# ---------- 运行产物 ----------
+__pycache__/
+*.py[cod]
+*.log
+_bot.out
+
+# 一次性输出：H3 视频成片 / 下载缓存 / 测试残留
+out/
+cache/
+tests/state/
+jm_downloads/
+
+# ---------- 带密钥，永不入库 ----------
+# 真配置里有 bridge_token 和各家 API key：一律不进版本库。
+# 要模板照抄 config.example.json；密钥写入走 tools/sync_keys.py。
+config.json
+config.json.bak-*
+config.backup-*.json
+
+# ---------- 方案 B：NapCat 容器运行数据 ----------
+# .env 有 WebUI 口令；config/ 里的 onebot11_*.json 抄了 bot 的 token；
+# .config/ 是 QQ 登录态（几十 MB，且是账号凭据）；logs/ 是容器日志。
+docker-napcat/.env
+docker-napcat/config/
+docker-napcat/.config/
+docker-napcat/logs/
+docker-napcat/.bootstrap-state.json
+
+# ---------- 图库与运行状态 ----------
+# 图片即图库；state 里有会话/词典/锁/JM 登录态，属本机运行数据
+images/
+state/
+agent-workspace/
+
+# ---------- 整理归档 ----------
+# 2026-10-10 清理出的历史快照（.bak-*）与一次性脚本，留档可找回但不入库
+_archive/
+_backup_wf/
+
+# ---------- 本机辅助脚本 ----------
+_proc.ps1
+_ps.ps1
+
+# ---------- AI 协作工具产物 ----------
+.workbuddy/
+.workbuddy-ai/
+
+# ---------- 系统垃圾 ----------
+Thumbs.db
+.DS_Store
+nul
+
+
+# 第三方参考库（clone 下来拆料用，不入库）
+_ref/
+
+# ZCode 会话内规划草稿（本地工具产物）
+.zcode/

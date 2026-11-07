@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-05T20:42:33+0800",
+  "samples": 240,
+  "assembled": 240,
+  "errors": 0,
+  "elapsed_sec": 1.7,
+  "budget_chars": 24000,
+  "used_chars": {
+    "p50": 9799,
+    "max": 10682,
+    "mean": 9843
+  },
+  "over_budget": 0,
+  "warnings": {},
+  "media_cases": 32,
+  "media_included": 32,
+  "segments": [
+    {
+      "id": "hard_rules",
+      "title": "铁律与时间",
+      "source": "qbot_persona.BASE_RULES + now",
+      "priority": 0,
+      "critical": true,
+      "included": 240,
+      "coverage": 1.0,
+      "statuses": {
+        "included": 240
+      }
+    },
+    {
+      "id": "persona",
+      "title": "人格卡",
+      "source": "qbot_persona.system_prompt",
+      "priority": 1,
+      "critical": true,
+      "included": 240,
+      "coverage": 1.0,
+      "statuses": {
+        "included": 240
+      }
+    },
+    {
+      "id": "identity",
+      "title": "说话人/主人身份",
+      "source": "bot._identity_block",
+      "priority": 2,
+      "critical": true,
+      "included": 240,
+      "coverage": 1.0,
+      "statuses": {
+        "included": 240
+      }
+    },
+    {
+      "id": "session_policy",
+      "title": "会话策略",
+      "source": "qbot_session/CFG",
+      "priority": 3,
+      "critical": true,
+      "included": 240,
+      "coverage": 1.0,
+      "statuses": {
+        "included": 240
+      }
+    },
+    {
+      "id": "quote",
+      "title": "引用资料",
+      "source": "Turn.quote",
+      "priority": 4,
+      "critical": true,
+      "included": 4,
+      "coverage": 0.0167,
+      "statuses": {
+        "empty": 236,
+        "included": 4
+      }
+    },
+    {
+      "id": "media",
+      "title": "媒体引用",
+      "source": "Turn.media + 最近 Turn",
+      "priority": 5,
+      "critical": false,
+      "included": 32,
+      "coverage": 0.1333,
+      "statuses": {
+        "empty": 208,
+        "included": 32
+      }
+    },
+    {
+      "id": "tools",
+      "title": "工具目录",
+      "source": "ToolSpec 目录",
+      "priority": 6,
+      "critical": false,
+      "included": 240,
+      "coverage": 1.0,
+      "statuses": {
+        "included": 240
+      }
+    },
+    {
+      "id": "history",
+      "title": "对话历史",
+      "source": "HISTORY / Turn",
+      "priority": 7,
+      "critical": false,
+      "included": 125,
+      "coverage": 0.5208,
+      "statuses": {
+        "included": 125,
+        "empty": 115
+      }
+    },
+    {
+      "id": "recent_context",
+      "title": "最近群聊",
+      "source": "bot.context_block",
+      "priority": 8,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "memory_person",
+      "title": "人物账本",
+      "source": "qbot_memory.render_person",
+      "priority": 9,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "memory_recall",
+      "title": "相关旧事",
+      "source": "qbot_memory.recall_block",
+      "priority": 10,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "memory_card",
+      "title": "记忆卡",
+      "source": "qbot_memory_card.render_block",
+      "priority": 11,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "slang",
+      "title": "黑话/语境释义",
+      "source": "qbot_slang",
+      "priority": 12,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "expression",
+      "title": "表达习惯",
+      "source": "qbot_expression",
+      "priority": 13,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "mood",
+      "title": "心情",
+      "source": "qbot_mood.block",
+      "priority": 14,
+      "critical": false,
+      "included": 0,
+      "coverage": 0.0,
+      "statuses": {
+        "empty": 240
+      }
+    },
+    {
+      "id": "skills",
+      "title": "技能说明",
+      "source": "qbot_skills.prompt_block",
+      "priority": 15,
+      "critical": false,
+      "included": 240,
+      "coverage": 1.0,
+      "statuses": {
+        "included": 240
+      }
+    },
+    {
+      "id": "external_evidence",
+      "title": "外部证据",
+      "source": "memewiki/linkprev/search",
+      "priority": 16,
+      "critical": false,
+      "included": 1,
+      "coverage": 0.0042,
+      "statuses": {
+        "empty": 239,
+        "included": 1
+      }
+    },
+    {
+      "id": "task_directive",
+      "title": "本轮硬要求",
+      "source": "bot.turn_directive",
+      "priority": 17,
+      "critical": true,
+      "included": 14,
+      "coverage": 0.0583,
+      "statuses": {
+        "empty": 226,
+        "included": 14
+      }
+    }
+  ],
+  "critical_dropped": [],
+  "error_samples": []
+}

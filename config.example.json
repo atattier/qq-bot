@@ -1,0 +1,746 @@
+{
+  "_说明": "napcat_report_token 填 NapCat httpClients.token（字符串或字符串数组）；留空则 /onebot 沿用旧兼容判据并告警。",
+  "napcat_http": "http://127.0.0.1:3000",
+  "token": "CHANGE_ME",
+  "napcat_report_token": [],
+  "listen_host": "",
+  "listen_port": 8088,
+  "arch": {
+    "shadow": false,
+    "shadow_provider": "ollama_fast",
+    "shadow_timeout_sec": 30,
+    "context": "legacy",
+    "context_budget_chars": 24000,
+    "context_disabled": [],
+    "tools": "legacy",
+    "draw": "legacy"
+  },
+  "groups": [],
+  "ai": {
+    "enabled": true,
+    "prefix": "",
+    "names": [],
+    "send_delay_ms": 400,
+    "max_history": 6,
+    "system": "",
+    "providers": {
+      "zhipu": {
+        "type": "",
+        "url": "https://open.bigmodel.cn/api/paas/v4",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 700,
+        "timeout": 60,
+        "retries": 1,
+        "extra": {
+          "thinking": {
+            "type": ""
+          }
+        },
+        "_说明": "",
+        "web_search_tool": false,
+        "dead": false
+      },
+      "zhipu_fast": {
+        "type": "",
+        "url": "https://open.bigmodel.cn/api/paas/v4",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 500,
+        "timeout": 30,
+        "retries": 1,
+        "_说明": "",
+        "web_search_tool": false,
+        "dead": false
+      },
+      "ollama_fast": {
+        "type": "",
+        "url": "http://127.0.0.1:11434",
+        "model": "",
+        "timeout": 30,
+        "_说明": "",
+        "web_search_tool": false
+      },
+      "deepseek": {
+        "type": "",
+        "url": "https://api.deepseek.com/v1",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 2000,
+        "timeout": 60,
+        "retries": 1,
+        "_说明": "",
+        "web_search_tool": false
+      },
+      "modelscope": {
+        "type": "",
+        "url": "https://api-inference.modelscope.cn/v1",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 700,
+        "timeout": 90,
+        "retries": 1,
+        "_说明": "",
+        "web_search_tool": false
+      },
+      "ollama": {
+        "type": "",
+        "url": "http://127.0.0.1:11434",
+        "model": "",
+        "timeout": 180,
+        "_说明": "",
+        "web_search_tool": false
+      },
+      "ollama_text": {
+        "type": "",
+        "url": "http://127.0.0.1:11434",
+        "model": "",
+        "timeout": 150,
+        "_说明": "",
+        "web_search_tool": false
+      },
+      "siliconflow": {
+        "type": "",
+        "url": "https://api.siliconflow.cn/v1",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 700,
+        "timeout": 90,
+        "retries": 1,
+        "_说明": "",
+        "web_search_tool": false
+      },
+      "ofm": {
+        "type": "",
+        "url": "http://127.0.0.1:18900/v1",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 700,
+        "timeout": 60,
+        "retries": 1,
+        "web_search_tool": false,
+        "_说明": ""
+      },
+      "custom": {
+        "type": "",
+        "url": "http://127.0.0.1:3425/v1",
+        "key": "CHANGE_ME",
+        "model": "",
+        "temperature": 0.9,
+        "max_tokens": 800,
+        "timeout": 120,
+        "web_search_tool": false,
+        "_说明": "",
+        "think": ""
+      }
+    },
+    "provider": "",
+    "brain_sees_image": false,
+    "omni_brain": false,
+    "_brain_sees_image说明": "",
+    "private_provider": "",
+    "_private_provider说明": "",
+    "fallback": "",
+    "search": {
+      "enabled": true,
+      "provider": "",
+      "prefix": "",
+      "url": "https://open.bigmodel.cn/api/paas/v4",
+      "key": "CHANGE_ME",
+      "engine": "",
+      "count": 5,
+      "timeout": 20,
+      "_说明": ""
+    },
+    "role": "",
+    "persona_custom": false
+  },
+  "agent": {
+    "enabled": true,
+    "node": "",
+    "cli_js": "",
+    "python": "",
+    "cwd": "",
+    "model": "",
+    "permission_mode": "",
+    "allowed_tools": [],
+    "allow_write": false,
+    "only_owner": false,
+    "full_tools": false,
+    "allowed_mcp": "",
+    "timeout_sec": 211,
+    "always": false,
+    "_说明": "",
+    "ack_after_sec": 0
+  },
+  "comfyui": {
+    "enabled": true,
+    "url": "http://127.0.0.1:8188",
+    "python": "",
+    "comfy_dir": "",
+    "main": "",
+    "launch_args": [],
+    "boot_wait_sec": 180,
+    "autostart": false,
+    "timeout_sec": 300,
+    "enhance": false,
+    "enhance_provider": "",
+    "subject_lookup": false,
+    "subject_timeout_sec": 30,
+    "subject_max_names": 2,
+    "subject_budget_sec": 45,
+    "prefix": "",
+    "save_dir": "",
+    "default_style": "",
+    "fallback_style": "",
+    "retry_light": false,
+    "members_allowed": false,
+    "cooldown_sec": 9,
+    "max_per_hour": 20,
+    "queue_max": 3,
+    "styles": {
+      "anima": {
+        "engine": "",
+        "workflow": "",
+        "width": 832,
+        "height": 1536,
+        "prompt_prefix": "",
+        "prompt_artist": "",
+        "enhance_style": "",
+        "wf_preset": "",
+        "swap_wh": false,
+        "skip_upscale": false,
+        "timeout_sec": 420,
+        "est_sec": 110,
+        "est_cold_sec": 200,
+        "enhance_provider": "",
+        "negative": "",
+        "_note": "",
+        "i2i_workflow": ""
+      },
+      "krea2": {
+        "engine": "",
+        "workflow": "",
+        "i2i_workflow": "",
+        "i2i_denoise": 80,
+        "prompt_prefix": "",
+        "prompt_artist": "",
+        "enhance_style": "",
+        "wf_preset": "",
+        "swap_wh": false,
+        "skip_upscale": false,
+        "timeout_sec": 420,
+        "est_sec": 110,
+        "est_cold_sec": 200,
+        "enhance_provider": "",
+        "negative": ""
+      },
+      "厚涂": {
+        "engine": "",
+        "workflow": "",
+        "width": 832,
+        "height": 1536,
+        "prompt_prefix": "",
+        "prompt_artist": "",
+        "enhance_style": "",
+        "wf_preset": "",
+        "swap_wh": false,
+        "skip_upscale": false,
+        "timeout_sec": 420,
+        "est_sec": 110,
+        "est_cold_sec": 200,
+        "enhance_provider": "",
+        "negative": "",
+        "_note": "",
+        "i2i_workflow": ""
+      },
+      "宫格": {
+        "engine": "",
+        "workflow": "",
+        "prompt_slot": "",
+        "keep_expand": false,
+        "enhance": false,
+        "prompt_prefix": "",
+        "prompt_artist": "",
+        "skip_upscale": false,
+        "timeout_sec": 900,
+        "est_sec": 210,
+        "est_cold_sec": 330,
+        "_note": ""
+      }
+    },
+    "_说明": "",
+    "wf_texts": {},
+    "artist_pick": "",
+    "delete_after_send": false,
+    "styles_bak": {
+      "krea2": {
+        "engine": "",
+        "unet": "",
+        "clip": "",
+        "clip_type": "",
+        "vae": "",
+        "lora": "",
+        "lora_strength": 3.0,
+        "width": 832,
+        "height": 1536,
+        "steps": 8,
+        "cfg": 1.0,
+        "sampler": "",
+        "scheduler": "",
+        "vsr_scale": 1.5,
+        "vsr_quality": "",
+        "refine": false,
+        "refine_steps": 12,
+        "refine_start": 6,
+        "refine_sampler": "",
+        "refine_scheduler": "",
+        "refine_lora": false,
+        "timeout_sec": 300,
+        "est_sec": 60,
+        "est_cold_sec": 95,
+        "enhance_provider": "",
+        "negative": ""
+      },
+      "anima": {
+        "engine": "",
+        "unet": "",
+        "clip": "",
+        "clip_type": "",
+        "vae": "",
+        "lora": "",
+        "lora_strength": 1.0,
+        "lora2": "",
+        "lora2_strength": 1.0,
+        "shift": 3,
+        "width": 1024,
+        "height": 1536,
+        "steps": 30,
+        "cfg": 5.0,
+        "sampler": "",
+        "scheduler": "",
+        "vsr": false,
+        "refine": false,
+        "timeout_sec": 420,
+        "est_sec": 120,
+        "est_cold_sec": 200,
+        "enhance_provider": "",
+        "prompt_prefix": "",
+        "prompt_artist": "",
+        "negative": ""
+      }
+    },
+    "subject_backend": "",
+    "video_gen": {
+      "enabled": true,
+      "workflow": "",
+      "timeout_sec": 7200,
+      "cooldown_sec": 0,
+      "max_per_hour": 4,
+      "members_allowed": false,
+      "min_desc": 10,
+      "_说明": "",
+      "max_seconds": 30,
+      "aspect": "",
+      "megapixels": ""
+    },
+    "default_aspect": "",
+    "aspect_words": false,
+    "require_addressing": false,
+    "engine": ""
+  },
+  "images": {
+    "enabled": false,
+    "folder": "",
+    "max_per_msg": 2,
+    "fallback_random": false,
+    "marker": "",
+    "_说明": "",
+    "extra_folders": [],
+    "_extra说明": ""
+  },
+  "keywords": [],
+  "admin": {
+    "commands_enabled": false,
+    "welcome_enabled": false,
+    "welcome_text": "",
+    "ban_words": [],
+    "ban_action": "",
+    "owner_qq": [],
+    "silent": false,
+    "_说明": "",
+    "master_qq": ""
+  },
+  "sim": {
+    "enabled": true,
+    "window": 30,
+    "inject": 6,
+    "cooldown_sec": 180,
+    "max_per_hour": 5,
+    "min_activity": 1,
+    "min_gap_msgs": 5,
+    "idle": {
+      "enabled": true,
+      "minutes": 30,
+      "max_per_day": 4,
+      "gap_sec": 3600,
+      "chance": 0.6,
+      "hours": "",
+      "_说明": ""
+    },
+    "_说明": "",
+    "pic_chat_cooldown": 30,
+    "pic_chat": false,
+    "poke_back": false,
+    "gallery_chance": 10,
+    "owner_wake": false,
+    "pic_chat_scene": false,
+    "single_quiet": false
+  },
+  "private": {
+    "enabled": true,
+    "strangers": false,
+    "admin_only": false,
+    "_说明": ""
+  },
+  "video": {
+    "enabled": true,
+    "dir": "",
+    "max_duration_sec": 1200,
+    "max_size_mb": 100,
+    "max_height": 2160,
+    "cookie_file": "",
+    "keep_hours": 6,
+    "cooldown_sec": 20,
+    "max_per_hour": 12,
+    "use_browser": false,
+    "_说明": ""
+  },
+  "slang": {
+    "enabled": true,
+    "auto_extract": false,
+    "extract_min_messages": 30,
+    "extract_every_sec": 1800,
+    "window": 40,
+    "inject_max": 12,
+    "_说明": "",
+    "auto_infer": false,
+    "context_meaning": false
+  },
+  "debug": {
+    "dump_events": false,
+    "_说明": ""
+  },
+  "schedules": [],
+  "bridge_token": "CHANGE_ME",
+  "reverse": {
+    "engine": "",
+    "i2i": false,
+    "vl_local_model": "",
+    "vl_local_max_tokens": 2000,
+    "_vl_local_model_说明": "",
+    "polish": false,
+    "caption_model": "",
+    "_engine_说明": "",
+    "wf_name": "",
+    "wf_timeout": 300,
+    "_说明_engine": "",
+    "wf_vlm_primary": "",
+    "wf_vlm_fallback": "",
+    "_说明_wf_vlm": "",
+    "caption_sys": "",
+    "_caption_sys说明": "",
+    "_caption_model说明": "",
+    "caption_strip_style": false,
+    "enabled": true
+  },
+  "scramble": {
+    "enabled": true,
+    "members_allowed": false,
+    "quality": 95,
+    "max_side": 1536,
+    "max_pixels": 4000000,
+    "keep": 20,
+    "out_dir": "",
+    "_说明": ""
+  },
+  "voice": {
+    "enabled": true,
+    "engine": "",
+    "prob_pct": 10,
+    "max_chars": 60,
+    "min_chars": 2,
+    "cooldown_sec": 0,
+    "max_per_hour": 20,
+    "keep": 20,
+    "out_dir": "",
+    "sovits": {
+      "url": "http://127.0.0.1:9880",
+      "ref_audio": "",
+      "prompt_text": "",
+      "prompt_lang": "",
+      "text_lang": "",
+      "speed": 1.0,
+      "gain": 1.0,
+      "timeout_sec": 240,
+      "home": "",
+      "start_timeout_sec": 150
+    },
+    "edge": {
+      "voice": "",
+      "rate": "",
+      "pitch": ""
+    },
+    "_说明": "",
+    "lazy_start": false,
+    "keep_alive_sec": 600
+  },
+  "see": {
+    "chain": "",
+    "model": "",
+    "follow_brain": false,
+    "local_model": "",
+    "web": false,
+    "_local_model说明": "",
+    "_20261029说明": ""
+  },
+  "jm": {
+    "enabled": true,
+    "allow_group": false,
+    "allow_private": false,
+    "owner_only": false,
+    "recall_seconds": 90,
+    "max_file_mb": 90,
+    "cooldown_sec": 30,
+    "max_per_hour": 6,
+    "queue_max": 3,
+    "max_images": 800,
+    "pdf_max_edge": 1400,
+    "pdf_quality": 82,
+    "threads": 4,
+    "base_dir": "",
+    "_说明": ""
+  },
+  "memory": {
+    "enabled": true,
+    "inject_people": 8,
+    "inject_facts": 3,
+    "auto_person": false,
+    "cross_context": false,
+    "recent_turns": 12,
+    "embed": false,
+    "embed_model": "",
+    "hybrid": false,
+    "decay_days": 180,
+    "recall_n": 4,
+    "recall_chars": 320,
+    "embed_timeout": 3.0,
+    "embed_keepalive": ""
+  },
+  "webai": {
+    "dir": "",
+    "python": "",
+    "backend": "",
+    "timeout": 90,
+    "see_backend": "",
+    "see_timeout": 120,
+    "min_interval": 30,
+    "daily_cap": 150,
+    "conv_url": "https://chat.deepseek.com/a/chat/s/ea5cfab0-c0b2-4573-877b-e2dc7e2e7ecf",
+    "conv_title": "",
+    "_说明": "",
+    "convs": {
+      "deepseek": {
+        "url": "https://chat.deepseek.com/a/chat/s/ea5cfab0-c0b2-4573-877b-e2dc7e2e7ecf",
+        "title": ""
+      },
+      "doubao": {
+        "url": "https://www.doubao.com/chat/38410657898976514",
+        "title": ""
+      }
+    }
+  },
+  "dsh": {
+    "enabled": false,
+    "cli": "",
+    "profile": "",
+    "timeout_sec": 240,
+    "cwd": "",
+    "provider": "",
+    "model": "",
+    "reasoning_effort": "",
+    "only_owner": false
+  },
+  "humanize": {
+    "enabled": true,
+    "night_slow": false,
+    "ms_per_char": 140,
+    "burst_max": 3
+  },
+  "skills": {
+    "enabled": true,
+    "dir": "",
+    "en": {
+      "trendy-memes": false,
+      "whale-memes": false,
+      "petpet": false
+    },
+    "settings": {
+      "whale-memes": {
+        "dedupe": false,
+        "maxPerDay": 100,
+        "maxPerHour": 3,
+        "enabled": true
+      },
+      "fibi-memes": {
+        "match": "",
+        "maxMB": 5,
+        "pins": {},
+        "maxPerDay": 100,
+        "dedupe": false,
+        "animatedFirst": false,
+        "webpToJpg": false
+      },
+      "memewiki": {
+        "replyMode": ""
+      },
+      "petpet": {
+        "enabled": false
+      }
+    },
+    "prompt_max_chars": 4200,
+    "section_max_chars": 1200,
+    "auto_meme_prob": 40,
+    "auto_meme_gap": 45,
+    "scene_on": false,
+    "auto_fibi_prob": 50,
+    "scene_prob": 5
+  },
+  "cover": {
+    "enabled": true,
+    "allow_group": false,
+    "allow_private": false,
+    "require_addressing": false,
+    "min_duration_sec": 60,
+    "max_duration_sec": 420,
+    "video_min_duration_sec": 5,
+    "video_max_duration_sec": 600,
+    "max_file_mb": 60,
+    "cooldown_sec": 180,
+    "max_per_hour": 3,
+    "queue_max": 3,
+    "search_limit": 5,
+    "confirm": false,
+    "pick_ttl_sec": 300,
+    "send_as_voice": false,
+    "voice_segment_sec": 55,
+    "voice_gap_sec": 1.2,
+    "voice_max_segments": 10,
+    "steps": 25,
+    "boost_db": 3.0,
+    "timeout_sec": 1800,
+    "heartbeat_sec": 300,
+    "min_free_vram_mb": 5200,
+    "target_audio": "",
+    "out_dir": "",
+    "src_dir": "",
+    "keep_outputs": 10,
+    "_说明": ""
+  },
+  "napcat": {
+    "container": "",
+    "compose_dir": "",
+    "url": "http://127.0.0.1:6099",
+    "_说明": ""
+  },
+  "moss": {
+    "api_key": "CHANGE_ME",
+    "model": "",
+    "size": "",
+    "steps": 50,
+    "prompt_prefix": "",
+    "negative": "",
+    "watermark": false,
+    "_说明": "",
+    "prompt_mode": "",
+    "layout_provider": "",
+    "studio_dir": "",
+    "_prompt_mode说明": "",
+    "auto_reverse_private": false,
+    "_auto_reverse_private说明": ""
+  },
+  "draw": {
+    "comfyui": {
+      "groups": []
+    },
+    "moss": {
+      "groups": []
+    },
+    "_说明": "",
+    "route": ""
+  },
+  "reflect": {
+    "enabled": true,
+    "min_interval": 1800,
+    "daily_max": 12,
+    "max_input": 40,
+    "speak_threshold": 0.45,
+    "_说明": ""
+  },
+  "mood": {
+    "enabled": true
+  },
+  "market": {
+    "enabled": true,
+    "dir": ""
+  },
+  "send": {
+    "max_per_minute": 20
+  },
+  "linkprev": {
+    "enabled": true
+  },
+  "meme": {
+    "_说明": "",
+    "enabled": true,
+    "api_url": "http://127.0.0.1:2233",
+    "health_path": "",
+    "connect_timeout": 3,
+    "generate_timeout": 60,
+    "max_input_images": 2,
+    "max_input_image_bytes": 8388608,
+    "max_result_bytes": 8388608,
+    "max_concurrency": 2,
+    "info_cache_ttl": 600,
+    "templates": {
+      "shoot": {
+        "keywords": [],
+        "kind": ""
+      },
+      "crawl": {
+        "keywords": [],
+        "kind": ""
+      },
+      "kiss": {
+        "keywords": [],
+        "kind": ""
+      },
+      "bad_news": {
+        "keywords": [],
+        "kind": ""
+      },
+      "petpet": {
+        "keywords": [],
+        "kind": ""
+      }
+    }
+  },
+  "_说明_session": "session 段是运行时按会话生成的（会话总控写回），新装机不用预置，省略",
+  "_说明_groups": "groups 填你自己的群号（int 列表）；示例值已脱敏为 0"
+}

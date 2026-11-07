@@ -1,0 +1,32 @@
+{
+  "id": "translate-buddy",
+  "name": "翻译搭子",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "category": "chat",
+  "description": "群友甩外语或看不懂的梗，先给一句中文意思，不长篇大论。纯提示词插件，不带工具。",
+  "author": "自带",
+  "enabledByDefault": true,
+  "permissions": [],
+  "settings": {
+    "enabled": true,
+    "brief": true
+  },
+  "configSchema": {
+    "brief": {
+      "type": "boolean",
+      "label": "只说一句",
+      "description": "开着：只给中文意思，不逐词解释。关掉：可以多给一两句语感说明。"
+    }
+  },
+  "prompt": {
+    "sections": [
+      {
+        "id": "translate-rule",
+        "title": "翻译搭子（群里的外语）",
+        "priority": 52,
+        "content": "【翻译搭子】群里出现外语、外网梗、缩写时：\n1) **先给一句中文意思**，能意译就别硬直译（「笑死」比「这很好笑」更像人话）。\n2) 别逐词拆解、别加音标、别列语法 —— 群里没人要上英语课。除非对方明确说「讲讲语法」。\n3) 有歧义就挑最可能的那层意思说，顺带一句「也可能是指…」，别把三种解释全铺开。\n4) 是梗不是句子时（比如缩写、谐音、迷因台词），**先点明这是梗**，再说它大概什么场合用。\n5) 拿不准的冷门语言别硬翻，直接说「这个我不确定，别信我」。"
+      }
+    ]
+  }
+}

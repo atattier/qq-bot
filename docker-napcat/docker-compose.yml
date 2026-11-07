@@ -1,0 +1,61 @@
+# NapCat（Linux 无头 QQ）容器 —— 方案 B：换设备指纹 + 容器自启
+#
+# 怎么用（先把 Docker Desktop 装好并重启过一次电脑）：
+#   1) 复制 .env.example 为 .env，填好 ACCOUNT / WEBUI_TOKEN
+#   2) 双击 ../docker_up.bat   （第一次起来后要扫一次码）
+#   3) 双击 ../docker_status.bat 看状态
+#
+# ⚠️ 开容器之前，Windows 上原来的「注入版 NapCat」必须停干净 ——
+#    两套 NapCat 同时登同一个号会抢 Token 互相顶掉（表现为刚登上去就被踢）。
+#
+# 卷说明：
+#   ./config  -> /app/napcat/config  NapCat 配置（含 OneBot 网络配置、token）
+#   ./.config -> /app/.config/QQ     QQ 登录态数据（持久化后就不用每次扫码）
+#   ./logs    -> /app/napcat/logs    日志
+services:
+  napcat:
+    # 🧪 2026-10-28 混合实验镜像：NapCat 4.15.19（抗踢，issue #1728 多人实测）
+    #    + QQ 3.2.34-53644（当前可登录版本，取代已被拒登的 3.2.21）。
+    #    本地构建：docker-napcat/mixed/Dockerfile，构建命令：
+    #      cd docker-napcat && docker build -t napcat-mixed:4.15.19-qq3.2.34 mixed/
+    #    旁证：Windows 注入版时代 = NapCat 4.15.19 + 本机新 QQ，登录正常、票据未被吊销。
+    #    回滚：把 image 改回 docker.m.daocloud.io/mlikiowa/napcat-docker:latest 再 up -d。
+    #    风险：4.15.19 跨 QQ 小版本的 hook 无官方保证，若起不来/发不出消息就回滚。
+    #
+    # 历史（留着当参考）：
+    #  · 2026-10-22 曾锁 v4.15.19（issue #1728 二手信息）；2026-10-26 21:58 实测
+    #    其内置 QQ 3.2.21 被腾讯错误码 45 拒登（版本硬门槛），故换 latest（4.18.41/QQ 3.2.34）。
+    #  · 2026-10-27~28 latest 被风控踢 6 次（40min~4h 一次，快速登录报「用户身份已失效」），
+    #    与 issue #1728 的 4.18.x 案例吻合 ⇒ 4.15.19 稳、其 QQ 太旧的结论两头都坐实，
+    #    于是自建混合镜像取两头之长。
+    image: napcat-mixed:4.15.19-qq3.2.34
+    container_name: napcat
+    restart: always
+    environment:
+      - ACCOUNT=${NAPCAT_ACCOUNT:-}
+      - NAPCAT_UID=${NAPCAT_UID:-1000}
+      - NAPCAT_GID=${NAPCAT_GID:-1000}
+      - MESSAGE_POST_FORMAT=array
+      - WEBUI_TOKEN=${WEBUI_TOKEN:-napcat}
+    ports:
+      - "3000:3000"   # OneBot HTTP API（bot.py 的 napcat_http 走这个）
+      - "3001:3001"   # OneBot WebSocket
+      - "6099:6099"   # NapCat WebUI（扫码登录用）
+    volumes:
+      - ./config:/app/napcat/config
+      - ./.config:/app/.config/QQ
+      - ./logs:/app/napcat/logs
+    stdin_open: true
+    tty: true
+    # ── 资源硬上限（2026-10-26 加）──────────────────────────────────────
+    # 实测占用：整个容器 243 MB（QQ 194M + node 186M + Xvfb 64M + 网络 60M）。
+    # 这里给 1.5G 是 6 倍余量 —— 正常永远碰不到，但万一 NapCat 内存泄漏、
+    # 或者哪天有人往容器里塞重活，它也**不会把宿主机拖垮**（2026-10-26 21:22
+    # 物理内存被压到只剩 0.87 GB，Docker 引擎直接挂了，教训就是这个）。
+    mem_limit: 1536m
+    memswap_limit: 1536m    # 等于 mem_limit ⇒ 不许用 swap，内存吃满就直接 OOM 重启，
+                            # 而不是拖着系统一点点变慢
+    # CPU 上限 4 核（实测常年 1.2%，8 核 WSL 里给 4 核很宽松）。防止它抢 ComfyUI。
+    cpus: 4.0
+    # OOM 时宁愿被内核杀掉重启（restart:always 会拉回来），也别让它慢慢吃掉整个系统
+    oom_kill_disable: false

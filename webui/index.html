@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- qq-bot 新控制台（/console，2026-11 阶段 1 骨架）。设计依据 docs/控制台重设计-2026-11.md。
+     与 /admin 并行过渡：本页不替代 /admin，两者共用同一套 /api/*（bridge_token 门）。
+     __TOKEN__ 注入规则与 /admin 相同：带对 token 才注入，带错注入空串由页面自己提示填。 -->
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>qq-bot 控制中心</title>
+<link rel="stylesheet" href="/console/assets/console.css?v=__VER__">
+</head>
+<body>
+<div id="app"></div>
+<div class="errtoast" id="errtoast" hidden></div>
+<div class="tokbox" id="tokbox" hidden>
+  <div class="tokbox__card">
+    <b>需要桥接密钥</b>
+    <p>和 /admin 用同一个 token（config.json 顶层 bridge_token）。填一次存在本机浏览器。</p>
+    <div class="tokbox__row">
+      <input class="field" type="password" id="tokinput" placeholder="bridge_token" autocomplete="off">
+      <button class="btn" id="tokbtn" type="button">进入</button>
+    </div>
+    <p class="tokbox__err" id="tokerr" hidden>密钥不对（401），重新填一次。</p>
+  </div>
+</div>
+<script>window.__QQ_TOKEN__ = "__TOKEN__";</script>
+<script src="/console/assets/vue.global.prod.js"></script>
+<script src="/console/assets/app.js?v=__VER__"></script>
+</body>
+</html>

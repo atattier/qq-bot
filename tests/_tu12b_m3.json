@@ -1,0 +1,15 @@
+{
+  "_说明": "M3 Tool Registry 改动的非画图顶层函数（在 R2/R4、M1、M2 登记之上）。hash = sha256(ast.dump(FunctionDef))。新增函数不需要登记（基线里没有），本表只锁被改的。",
+  "functions": {
+    "chat_once_tools": "c71f693ce4c298c655431d2064a5f9ec5516f26c2ba19f456d06b861e35bfe81",
+    "_task_chat_with_tools": "2a396cf8f08e83edcfc5cab2611a56cb1d4d6ef85d0f632ad6bd341514b0fbcc",
+    "brain_with_tools": "6e081c32c61d03f844d7ac71c0d7cba7ff09a99ffa5c650854359fc00da146d8",
+    "ai_reply": "979d224e5143bbf1de85c1f85fd1c2a7b0b2d9efc546c911d464bc8ebc56952f"
+  },
+  "reasons": {
+    "chat_once_tools": "M3：接 principal/allow_draw，工具面 offer 与每次调用的影子对账（不改变执行）",
+    "_task_chat_with_tools": "M3：把调用者身份透传给工具循环",
+    "brain_with_tools": "M3：构造本轮 principal 并透传 allow_draw",
+    "ai_reply": "M3：派活轮调用点传入 principal"
+  }
+}

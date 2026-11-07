@@ -1,0 +1,97 @@
+{
+  "id": "fibi-memes",
+  "name": "菲比表情包",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "category": "media",
+  "description": "让机器人发自己的表情包：本地「菲比啾比」动图库（默认 images/emoji，来自 Phoebe Hub 表情包站，可跟网站同步更新）。按语气/关键词从文件名里挑一张发出去 —— 开心、无语、生气、干饭、摆烂、比心都有对应的图。图全在本机，不联网、不依赖图床；同一会话不重发同一张，超大的动图自动跳过（QQ 传不动）。",
+  "author": "本地自建",
+  "links": [
+    {
+      "label": "Phoebe Hub（图源）",
+      "url": "https://phoebehub.top/"
+    },
+    {
+      "label": "GitHub 仓库",
+      "url": "https://github.com/Kato-Shoko705/Phoebe-Hub"
+    }
+  ],
+  "enabledByDefault": true,
+  "permissions": [
+    "fs_read"
+  ],
+  "settings": {
+    "enabled": true,
+    "folder": "images/emoji",
+    "match": "菲比",
+    "maxCount": 1,
+    "maxPerHour": 8,
+    "maxPerDay": 40,
+    "dedupe": true,
+    "maxMB": 4,
+    "animatedFirst": true,
+    "webpToJpg": true
+  },
+  "configSchema": {
+    "enabled": {
+      "type": "boolean",
+      "label": "启用菲比表情包",
+      "description": "关掉之后这个技能注册的发图/翻库工具一起失效，机器人也不会再主动发菲比。"
+    },
+    "folder": {
+      "type": "string",
+      "label": "素材目录",
+      "description": "表情图放哪。相对路径按 bot 根目录算，也可以填绝对路径。默认 images/emoji —— 菲比图库就在这（随网站同步的图也下到这里）。"
+    },
+    "match": {
+      "type": "string",
+      "label": "文件名必须包含",
+      "description": "只收文件名里带这几个字的图，默认「菲比」—— 同一个目录里还混着别的梗图，靠这个把它们挡在外面。填空 = 整个目录都用。"
+    },
+    "maxCount": {
+      "type": "number",
+      "label": "一次最多发几张",
+      "description": "上限保护，防止刷屏。1~3，默认 1。"
+    },
+    "maxPerHour": {
+      "type": "number",
+      "label": "每个会话每小时最多几张",
+      "description": "按会话单独算，默认 8。填 0 = 不限（不建议）。"
+    },
+    "maxPerDay": {
+      "type": "number",
+      "label": "每个会话每天最多几张",
+      "description": "按会话单独算，默认 40。"
+    },
+    "dedupe": {
+      "type": "boolean",
+      "label": "同一会话不重发同一张",
+      "description": "开着（推荐）：发过的图记在 state/skills/fibi-memes/state.json，同一会话里不会重复，直到可用图用尽。"
+    },
+    "maxMB": {
+      "type": "number",
+      "label": "单张体积上限（MB）",
+      "description": "超过这个大小的图直接跳过 —— 库里有 16MB 的动图，QQ 传上去大概率失败还会卡住整条消息。默认 4。"
+    },
+    "animatedFirst": {
+      "type": "boolean",
+      "label": "优先发动图",
+      "description": "开着：同样贴切时先挑 gif/webp 动图（更符合「表情包」的观感）。关掉：只看名字匹配，不动图优先。"
+    },
+    "webpToJpg": {
+      "type": "boolean",
+      "label": "静态 webp 转 jpg",
+      "description": "开着：静态 webp 先转 jpg 再发（老客户端显示不稳）。动图 webp 一律原样发，转了就没动画了。"
+    }
+  },
+  "prompt": {
+    "sections": [
+      {
+        "id": "fibi-memes-playbook",
+        "title": "菲比表情包（我自己的脸）",
+        "priority": 46,
+        "content": "你有一整套自己的表情包：菲比啾比。图都在本机，不联网，随时能发。\n\n什么时候用：\n1) **主动发**：你自己这句话有情绪、而且一张菲比正好替你把话说完（开心、无语、气鼓鼓、干饭、摆烂、比心、嫌弃、震惊…），就发一张。这是「我用自己的脸做个表情」，比贴别人的梗图更自然。\n2) **有人点名**：群里说「来张菲比」「发个表情包」「有没有无语的菲比」→ 直接发。\n\n怎么发（按你手上的能力二选一）：\n· 能调工具 → 调 `qq_fibi_send`（`keyword` 填语气词，如「无语」「开心」「干饭」）；想让人先挑就先调 `qq_fibi_pick` 列候选，再带 `pick` 编号发。\n· 不能调工具 → **在回复最后单独一行**写 `[[菲比:关键词]]`（例如 `[[菲比:无语]]`）。这行会被系统吃掉，图跟在这句话后面发出去。\n\n分寸（重要）：\n· 不是每条都发。对方在认真问事、话题正紧、你刚发过、或者没有贴切的图，就不发 —— 不发完全正常。\n· 一次最多 1 张，别连发。\n· 图发出去之后**不要在正文里描述图里画了什么**，也别写「（发送表情包）」这种旁白，一两句话带过就行。\n· 别在正文里解释标记本身，别预告「我给你找个图」。\n· 工具报错/额度用完时系统会静默放弃，你别反复试，更不要假装发了。"
+      }
+    ]
+  }
+}

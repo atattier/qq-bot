@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>群聊画图口令速查 · qq-bot</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1f2430; --sub:#5b6472;
+    --line:#e4e7ee; --blue:#2f6fed; --blue-bg:#eef3fe;
+    --green:#1a9e6e; --green-bg:#e9f7f1; --orange:#d97a1a; --orange-bg:#fdf3e7;
+    --red:#d64545; --pink:#fdeef0; --code:#f0f2f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+       font-family:"Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;
+       line-height:1.65;padding:28px 16px 60px}
+  .wrap{max-width:960px;margin:0 auto}
+  header{margin-bottom:22px}
+  h1{font-size:26px;letter-spacing:.5px}
+  header p{color:var(--sub);font-size:13.5px;margin-top:6px}
+  h2{font-size:18px;margin:30px 0 12px;padding-left:10px;border-left:4px solid var(--blue)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(20,30,60,.05)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--blue-bg);color:#274b8f;font-weight:600;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  code{background:var(--code);border-radius:5px;padding:1px 7px;
+       font-family:Consolas,"Courier New",monospace;font-size:13px;color:#24304a}
+  .ex{background:var(--blue-bg);border-radius:6px;padding:2px 9px;display:inline-block;
+      font-size:13.5px;color:#274b8f;margin:2px 0}
+  .tag{display:inline-block;border-radius:20px;padding:1px 11px;font-size:12px;
+       font-weight:600;margin-right:6px;vertical-align:1px}
+  .t-blue{background:var(--blue-bg);color:var(--blue)}
+  .t-green{background:var(--green-bg);color:var(--green)}
+  .t-orange{background:var(--orange-bg);color:var(--orange)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .tile{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--card)}
+  .tile h3{font-size:15.5px;margin-bottom:8px}
+  .tile .meta{font-size:13px;color:var(--sub);margin:3px 0}
+  .bar{height:7px;border-radius:4px;background:var(--code);margin:8px 0 4px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:4px}
+  .warn{background:var(--pink);border-left:4px solid var(--red);border-radius:8px;
+        padding:10px 14px;font-size:13.5px;margin-top:10px}
+  .ok{background:var(--green-bg);border-left:4px solid var(--green);border-radius:8px;
+      padding:10px 14px;font-size:13.5px;margin-top:10px}
+  .flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:8px}
+  .flow b{background:var(--code);border:1px solid var(--line);border-radius:6px;
+          padding:3px 10px;font-weight:600}
+  .flow span{color:var(--sub)}
+  footer{margin-top:34px;color:var(--sub);font-size:12px;text-align:center}
+</style>
+</head>
+<body><div class="wrap">
+
+<header>
+  <h1>🎨 群聊画图口令速查</h1>
+  <p>qq-bot 现画三条画风线 · 2026-09-17 版 · 依据 bot.py 一手代码整理</p>
+</header>
+
+<h2>① 画风怎么喊（五种句式都认）</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:170px">句式</th><th>例句</th></tr>
+    <tr><td>用X…</td><td><span class="ex">用动漫画只猫</span> <span class="ex">用写实画同款</span> <span class="ex">用krea2画：城市夜景</span></td></tr>
+    <tr><td>句首 X＋画动词</td><td><span class="ex">动漫画只猫</span> <span class="ex">写实画一张城市夜景</span> <span class="ex">Anima画只猫</span></td></tr>
+    <tr><td><b>逗号式</b><br><span style="font-weight:400;color:var(--sub);font-size:12.5px">被@ / 私聊才认</span></td>
+        <td><span class="ex">写实风景，中世纪高耸塔楼，尖顶，石头墙，阴影层次</span><br>
+            <span class="ex">风景，中世纪高耸塔楼</span> <span class="ex">写真，一个女孩在雨里</span></td></tr>
+    <tr><td><b>动词在前式</b></td><td><span class="ex">画写实风景，中世纪卢浮宫</span> <span class="ex">画动漫，一个少女</span> <span class="ex">画一张风景，山间小屋</span></td></tr>
+    <tr><td>括号式</td><td><span class="ex">画[动漫]猫</span> <span class="ex">画(写实)少女</span></td></tr>
+    <tr><td>句尾式</td><td><span class="ex">画只猫 用动漫档</span> <span class="ex">画同款 用krea2档</span></td></tr>
+  </table>
+  <div class="warn"><b>触发词表</b>：写实 / 真人 / 摄影 / 照片 / 写真 → <code>krea2</code> ｜
+    动漫 / 二次元 / 日系 / 番剧 / 卡通 → <code>anima</code> ｜
+    风景 / 山水 / 景色 → <code>写实风景</code> ｜ 快 / 草稿 → <code>fast</code>。
+    真档名 <code>anima</code>、<code>krea2</code>、<code>写实风景</code> 直接写也认。</div>
+  <div class="warn" style="background:var(--orange-bg);border-color:var(--orange)">
+    <b>逗号式只在被@/私聊时认</b>：群里没@我时「风景，我觉得挺好看」这种闲聊不能被当成指令，所以不认；
+    <b>分隔符必须是标点</b>（，、：；），空格不算 ——「写实风景 中世纪塔楼」不认，得写成「写实风景，中世纪塔楼」。</div>
+  <div class="warn" style="background:var(--orange-bg);border-color:var(--orange)">
+    <b>底下那条老规矩没变：句中不认档位词</b>——「画个动漫展的海报」「画动漫杂志封面」不会被误抢走档
+    （逗号式的正文还得像一段提示词：≥6 字、不带「你我吗」这类语气）。</div>
+</div>
+
+<h2>② 三档画风线怎么工作（2026-09-30 主人定稿）</h2>
+<div class="grid">
+  <div class="tile">
+    <h3><span class="tag t-blue">写实人物</span>krea2</h3>
+    <div class="meta">双工作流：文生图「Krea2_2.5D风格.json」；带参考图（画/画同款）换「Krea2_漫转写实真人V3.json」</div>
+    <div class="meta">漫转写实 = 把动漫原图转写实真人（i2i_denoise 80%）</div>
+    <div class="bar"><i style="width:70%;background:var(--blue)"></i></div>
+    <div class="meta">文生图 ~135s / 画同款 ~104s ｜ 润色 = 自然语言长句</div>
+  </div>
+  <div class="tile">
+    <h3><span class="tag t-green">动画人物</span>anima</h3>
+    <div class="meta">主人工作流「Anima2.5D_恢复版.json」（anima 内核 2.5D 渲染）</div>
+    <div class="meta">尺寸预设 SDXL_832×1216 竖幅</div>
+    <div class="bar"><i style="width:80%;background:var(--green)"></i></div>
+    <div class="meta"><b>能吃参考图</b>（画同款）｜ 润色 = tag 行：画师 <code>@</code> 开头</div>
+  </div>
+  <div class="tile">
+    <h3><span class="tag t-orange">厚涂人物</span>厚涂</h3>
+    <div class="meta">主人工作流「Krea2_古风二次元.json」（krea2 turbo 底模 + 古风 LoRA 栈）</div>
+    <div class="meta">口语「厚涂 / 古风 / 古风二次元」都认</div>
+    <div class="bar"><i style="width:60%;background:var(--orange)"></i></div>
+    <div class="meta">实测 ~165s ｜ <b>能吃参考图</b> ｜ 润色走 anima 口感</div>
+  </div>
+</div>
+<div class="card" style="margin-top:14px">
+  写实风景档已撤（09-30）；口语「写实/动漫/二次元/厚涂/古风」自动落对应档。
+</div>
+
+<h2>③ 图生图（画同款）</h2>
+<div class="card">
+  <div class="flow">
+    <b>发图 +「画同款」</b><span>→</span><b>反推出提示词</b><span>→</span><b>认人（视觉模型）</b>
+    <span>→</span><b>拼上补充描述</b><span>→</span><b>参考图直进一采 latent</b><span>→</span><b>出图</b>
+  </div>
+  <table style="margin-top:12px">
+    <tr><th style="width:190px">说法</th><th>效果</th></tr>
+    <tr><td><code>画同款</code></td><td>照原图重画一张，相似度默认 <b>60%</b></td></tr>
+    <tr><td><code>画同款 举着伞站在雨里</code></td><td>想改动作/场景 → 自动放开到 <b>75%</b>（实测 60 改不动构图、75 才出得来新场景）</td></tr>
+    <tr><td><code>用动漫画同款</code></td><td>换档图生图；档位解析优先落在<b>真能吃参考图的档</b>上，接不了的会明确回绝</td></tr>
+    <tr><td>反推完直接 <code>画同款 描述</code></td><td>刚反推过的图不用重发（15 分钟内有效）</td></tr>
+  </table>
+  <div class="ok"><b>相似度 = 画风旋钮</b>：调 <b>75~85</b> 出底模自己的画风；<b>45~55</b> 复刻原图画风；
+    <b>60</b> 只换人物不改构图。在 /admin「反推」卡「同款相似度」里调。</div>
+  <div class="warn"><b>2026-09-17 起图生图整条链路不碰豆包</b>：参考图直接接进工作流一采
+    （日志「参考图已接进一采」），想恢复老的豆包识图认人，开 /admin「图生图豆包识图」即可。</div>
+</div>
+
+<h2>④ 其它常用口令</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:190px">口令</th><th>作用</th></tr>
+    <tr><td><code>画：描述</code> / <code>画图 描述</code></td><td>文生图，默认走当前画图档；描述带「横图」出横版</td></tr>
+    <tr><td><code>不查：描述</code></td><td>跳过联网查设定直接画（省 20 秒）</td></tr>
+    <tr><td><code>反推</code> / <code>反推 tags</code></td><td>发图+口令 → 英文提示词 / danbooru 标签</td></tr>
+    <tr><td><code>设置 画图档 anima</code></td><td>换默认档（管理）；「设置」看全部开关一张表</td></tr>
+    <tr><td><code>画图 状态/启动/卸载</code></td><td>看显存排队 / 拉起 ComfyUI / 卸模型省显存（管理）</td></tr>
+  </table>
+</div>
+
+<h2>⑤ 生成视频（2026-10-01 新，10-02 更新）</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:190px">口令</th><th>作用</th></tr>
+    <tr><td><code>生成视频 描述</code> / <code>做视频 描述</code> / <code>生视频 描述</code></td>
+        <td>H3 带声视频（<b>成片 8 秒 @24fps</b>）。<b>描述就是片子的分镜+旁白</b>——
+            谁出场、做什么、什么氛围、说什么话，至少 10 字；H3 的音频由这段文本朗读出来。
+            ⚠️ <b>必须拼成一条发</b>：分好几条发只认第一条</td></tr>
+    <tr><td>发图 + <code>生成视频 描述</code></td><td>图当角色参考（当前工作流吃 <b>1 张</b>图）</td></tr>
+    <tr><td>发视频 + <code>生成视频 描述</code></td>
+        <td>⚠️ 当前快链路（精简版工作流）<b>没有参考视频输入</b>，发了会明说用不上；
+            要动作/运镜参考得切回带参考链的老工作流（慢很多）</td></tr>
+    <tr><td>图 + <code>反推视频提示词</code></td>
+        <td>把一张图反推成 H3 视频提示词（7 秒左右出 3000+ 字，分段发回）；
+            拿到后 <code>生成视频 + 那段提示词</code> 即可出片</td></tr>
+    <tr><td><code>参考视频生视频 描述</code> / <code>参考图生视频 描述</code></td>
+        <td>同上的别名写法。⭐ <b>素材可以分条发</b>：先发图/视频、再单独发口令——
+            小鲸记得你<b>前 30 分钟内</b>发的素材（最近 8 张图 + 最后 1 段视频），口令没带就自动回捞；
+            只认你自己发的，别人的捞不到</td></tr>
+    <tr><td><code>视频 复位</code>（管理员）</td>
+        <td>小鲸回「已经有视频在生成了」但其实没在跑（忙闸门卡住）时，发它<b>松闸 + 清排队</b>，
+            不用重启 bot</td></tr>
+    <tr><td><code>画图 启动</code></td><td>ComfyUI 没开时管理员先拉起，再发视频口令</td></tr>
+  </table>
+  <div class="warn"><b>⚠️ 很重</b>：本机 8G 显存硬扛 38G H3 模型（mmap），一条片约 <b>10~15 分钟</b>、
+    期间整机会卡——队列只排 1 个，冷却 0 秒 / 每小时 4 条（/admin →「视频生成」可调）。
+    成片帧率由小鲸强制 24fps，出片消息里会写「成片 X 秒 @24fps」，不对就是有问题。</div>
+</div>
+
+<footer>2026-09-17 初版 · 2026-09-19 补逗号式 · 2026-09-30 三档定稿 · 2026-10-01 加生成视频<br>
+qq-bot 维护记录随 HANDOVER.md 更新 · 顺带赔罪专用 🛠️</footer>
+</div></body>
+</html>

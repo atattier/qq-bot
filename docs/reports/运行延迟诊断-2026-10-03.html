@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>ComfyUI「点运行要等一两分钟」诊断报告 · 2026-10-03</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1a1d21; --ink2:#5a6270; --line:#e3e6ec;
+    --bad:#c0392b; --good:#1e8449; --warn:#b9770e; --info:#2471a3; --mono:ui-monospace,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#15181d;--card:#1e2229;--ink:#e8eaed;--ink2:#a0a8b8;--line:#2b303a;
+          --bad:#e57373;--good:#66bb6a;--warn:#e0b050;--info:#64b5f6;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:32px 20px;background:var(--bg);color:var(--ink);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       line-height:1.75}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--ink2);font-size:14px;margin-bottom:24px}
+  h2{font-size:18px;margin:34px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:14px}
+  .verdict{border-left:4px solid var(--info);background:linear-gradient(90deg,rgba(36,113,163,.07),transparent)}
+  .verdict strong{color:var(--info)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--ink2);font-weight:600;font-size:13px}
+  td.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+  .ok{color:var(--good);font-weight:600}
+  .no{color:var(--bad);font-weight:600}
+  .wu{color:var(--warn);font-weight:600}
+  code{font-family:var(--mono);background:rgba(127,127,127,.14);padding:1px 6px;border-radius:4px;font-size:13px}
+  .bar{height:20px;background:rgba(127,127,127,.12);border-radius:4px;overflow:hidden;position:relative}
+  .bar>i{display:block;height:100%;border-radius:4px}
+  ul{margin:8px 0;padding-left:22px}
+  li{margin:5px 0}
+  .note{font-size:13px;color:var(--ink2);border-left:3px solid var(--line);padding-left:12px;margin:10px 0}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+  .kv b{font-weight:600}
+</style>
+</head>
+<body><div class="wrap">
+
+<h1>ComfyUI「点运行要等一两分钟才开跑」诊断报告</h1>
+<div class="sub">2026-10-03 · 结论：<b>不是服务器问题，是浏览器前端负载爆炸</b> · ComfyUI 0.38.0 · RTX 4060 Laptop</div>
+
+<div class="card verdict">
+  <strong>一句话结论</strong><br>
+  服务器侧从「收到提交」到「开始执行」是 <b>亚秒级</b>（中位 0.35 秒），
+  慢的那一两分钟全部发生在 <b>浏览器把图提交过来之前</b>——
+  前端每次点运行都要重新校验 <b>3754 个节点定义（7.49 MB）</b> 和 <b>39 个插件的 652 个 JS 扩展（20.71 MB）</b>，
+  这是<b>纯浏览器单线程 CPU</b>活。
+  <br><br>
+  <b>「所有工作流都这样」就是最强的证据</b>：开销与工作流内容无关，只与装了��少插件有关。
+</div>
+
+<h2>一、服务器侧实测：完全正常，不该怀疑它</h2>
+<div class="card">
+<table>
+<tr><th>接口</th><th class="num">延迟</th><th class="num">返回体积</th><th>判定</th></tr>
+<tr><td><code>/system_stats</code></td><td class="num">44.3 ms</td><td class="num">1 KB</td><td class="ok">正常</td></tr>
+<tr><td><code>/queue</code></td><td class="num">24.7 ms</td><td class="num">—</td><td class="ok">正常</td></tr>
+<tr><td><code>/object_info/KSampler</code></td><td class="num">16.1 ms</td><td class="num">3 KB</td><td class="ok">正常</td></tr>
+<tr><td><code>/object_info</code>（全量）</td><td class="num">996.6 ms</td><td class="num">7.49 MB</td><td class="wu">每次提交都要过</td></tr>
+<tr><td><code>/extensions</code></td><td class="num">72.2 ms</td><td class="num">42 KB</td><td class="ok">正常</td></tr>
+</table>
+<div class="kv" style="margin-top:14px">
+  <b>队列</b><span>运行 0 / 等待 0（空闲）</span>
+  <b>GPU</b><span>NVIDIA GeForce RTX 4060 Laptop，空闲显存 6.93 / 8.00 GB</span>
+  <b>提交延迟</b><span>历史 14 次采样：最小 0.00s · 中位 <b>0.35s</b> · 最大 91.23s</span>
+</div>
+<div class="note">
+<b>为什么最大 91 秒？</b> 12:44:24 那次前端连着提交 5 次全被拒（<code>prompt_no_outputs</code>，
+即「图里一个输出节点都没有」，<code>execution.py:1167</code>），第 6 次才受理——中间隔 91.2 秒。
+而 12:53:56 那次 0.46 秒就开跑。<b>同一台机器波动 100 倍 ⇒ 客户端 CPU 抖动</b>，不是服务端。
+</div>
+</div>
+
+<h2>二、真因：前端要吃下的东西有多大</h2>
+<div class="card">
+<div class="kv" style="margin-bottom:14px">
+  <b>节点种类</b><span><b class="no">3754</b> 个（<code>object_info</code> 共 7.49 MB）</span>
+  <b>前端插件</b><span><b class="no">39</b> 个</span>
+  <b>前端扩展脚本</b><span><b class="no">652</b> 个 / 合计 <b class="no">20.71 MB</b> JS</span>
+</div>
+<p style="margin:0 0 6px;font-size:14px;color:var(--ink2)">各插件前端体积（Top 12）：</p>
+<table>
+<tr><th>插件</th><th class="num">扩展数</th><th class="num">JS 体积</th><th style="width:38%">占比</th></tr>
+<tr><td><code>vrgdg</code> <span style="color:var(--ok)">（主力，勿动）</span></td><td class="num">63</td><td class="num">4.80 MB</td><td><div class="bar"><i style="width:100%;background:var(--good)"></i></div></td></tr>
+<tr><td><code>ComfyUI-ZML-Image</code></td><td class="num">19</td><td class="num">2.83 MB</td><td><div class="bar"><i style="width:59%;background:var(--warn)"></i></div></td></tr>
+<tr><td><code>ComfyUI_Custom_Nodes_AlekPet</code></td><td class="num">105</td><td class="num">2.71 MB</td><td><div class="bar"><i style="width:56%;background:var(--warn)"></i></div></td></tr>
+<tr><td><code>ComfyUI-Danbooru-Gallery</code></td><td class="num">41</td><td class="num">2.15 MB</td><td><div class="bar"><i style="width:45%;background:var(--warn)"></i></div></td></tr>
+<tr><td><code>ComfyUI-Prompt-Assistant</code></td><td class="num">27</td><td class="num">1.24 MB</td><td><div class="bar"><i style="width:26%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>ComfyUI-Lora-Manager</code></td><td class="num">30</td><td class="num">1.03 MB</td><td><div class="bar"><i style="width:21%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>ComfyUI_MiniMaxH3_Director</code></td><td class="num">9</td><td class="num">0.94 MB</td><td><div class="bar"><i style="width:20%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>comfyui-easy-use</code></td><td class="num">8</td><td class="num">0.78 MB</td><td><div class="bar"><i style="width:16%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>ComfyUI-KJNodes-main</code></td><td class="num">26</td><td class="num">0.63 MB</td><td><div class="bar"><i style="width:13%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>ComfyUI-Manager</code></td><td class="num">16</td><td class="num">0.47 MB</td><td><div class="bar"><i style="width:10%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>rgthree-comfy</code></td><td class="num">53</td><td class="num">0.45 MB</td><td><div class="bar"><i style="width:9%;background:var(--info)"></i></div></td></tr>
+<tr><td><code>ComfyUI-Prompt-Gallery-master</code></td><td class="num">72</td><td class="num">0.45 MB</td><td><div class="bar"><i style="width:9%;background:var(--info)"></i></div></td></tr>
+</table>
+<div class="note">
+浏览器解析 7.5 MB JSON + 注册 3754 个 LiteGraph 节点类型 + 初始化 652 个扩展脚本，
+全是<b>主线程同步 CPU 活</b>。装了 39 个插件的这个规模，几十秒到一两分钟完全在预期内。
+</div>
+</div>
+
+<h2>三、能怎么缓解（等你发话，我没动任何东西）</h2>
+<div class="card">
+<ul>
+<li><b>禁用不用的插件前端扩展</b>——目录改名加 <code>.disabled</code> 后缀即可（<code>nodes.py:2369</code> 会跳过）。<br>
+首选目标：<code>ComfyUI_Custom_Nodes_AlekPet</code>（<b>105 个脚本</b>）、
+<code>ComfyUI-Prompt-Gallery-master</code>（72 个）、<code>ComfyUI-Danbooru-Gallery</code>（41 个）——
+这三类是<b>图库 / 打标</b>用的，平时不出图根本用不到，却占了 5.3 MB 和 218 个脚本。</li>
+<li><b>硬刷新</b> <code>Ctrl+Shift+R</code> 清 JS 缓存，偶尔能缓解前端注册表膨胀（这大概就是 F5 反而变快的原因）。</li>
+<li><b>不要动</b> <code>vrgdg</code>（4.80 MB，单插件最大）——这是你主力用的。</li>
+</ul>
+<div class="note">每禁一个插件都需要重启 ComfyUI 才生效。收益预估：去掉上面三个图库类插件，
+前端 JS 从 20.71 MB 降到约 15.4 MB（−26%），节点种类也会明显减少。</div>
+</div>
+
+<h2>四、排查方法（下次照这个走，别再猜）</h2>
+<div class="card">
+<table>
+<tr><th>步骤</th><th>怎么做</th><th>判读</th></tr>
+<tr><td>1</td><td>先问清是「<b>没反应</b>」还是「<b>等很久才跑</b>」</td><td>失败 vs 延迟，方向完全不同</td></tr>
+<tr><td>2</td><td>问「是所有工作流还是某一个」</td><td>全部→查环境负载；单个→查工作流</td></tr>
+<tr><td>3</td><td>量 <code>/system_stats</code>、<code>/queue</code> 延迟</td><td>毫秒级→服务器无罪</td></tr>
+<tr><td>4</td><td>算日志 <code>got prompt</code> → 首步执行间隔<br><code>tools/_measure_submit_lag.py</code></td><td>亚秒→确认是前端</td></tr>
+<tr><td>5</td><td>量 <code>object_info</code> 体积 + <code>extensions</code> 脚本数<br><code>tools/_diag_submit_delay.py</code></td><td>定位负载来源</td></tr>
+</table>
+<div class="note">
+<b>两个踩过的坑：</b><br>
+① 测本机 <code>127.0.0.1:8188</code> 必须绕过代理——用
+<code>urllib.request.build_opener(urllib.request.ProxyHandler({}))</code>。<br>
+② <code>user/comfyui.log</code> <b>会轮转</b>（还有 <code>comfyui.prev.log</code> / <code>comfyui.prev2.log</code>），
+三个都要扫，否则你会以为「日志里一条都没有」。
+</div>
+</div>
+
+</div></body></html>

@@ -1,0 +1,150 @@
+{
+ "total": 240,
+ "denominator": "240 条冻结样本（M0 Golden Set v1）",
+ "by_category": {
+  "chat": {
+   "n": 56,
+   "pct": 23.3
+  },
+  "tool": {
+   "n": 24,
+   "pct": 10.0
+  },
+  "vision": {
+   "n": 44,
+   "pct": 18.3
+  },
+  "memory": {
+   "n": 25,
+   "pct": 10.4
+  },
+  "multi": {
+   "n": 29,
+   "pct": 12.1
+  },
+  "permission": {
+   "n": 37,
+   "pct": 15.4
+  },
+  "failure": {
+   "n": 25,
+   "pct": 10.4
+  }
+ },
+ "by_role": {
+  "admin": {
+   "n": 11,
+   "pct": 4.6
+  },
+  "master": {
+   "n": 110,
+   "pct": 45.8
+  },
+  "member": {
+   "n": 114,
+   "pct": 47.5
+  },
+  "stranger": {
+   "n": 5,
+   "pct": 2.1
+  }
+ },
+ "by_scope": {
+  "group": {
+   "n": 165,
+   "pct": 68.8
+  },
+  "private": {
+   "n": 75,
+   "pct": 31.2
+  }
+ },
+ "by_source_kind": {
+  "known_failure": {
+   "n": 15,
+   "pct": 6.2
+  },
+  "known_test_case": {
+   "n": 119,
+   "pct": 49.6
+  },
+  "real_observation": {
+   "n": 106,
+   "pct": 44.2
+  },
+  "real_turn": {
+   "n": 0,
+   "pct": 0.0
+  }
+ },
+ "by_baseline": {
+  "fail": {
+   "n": 24,
+   "pct": 10.0
+  },
+  "pass": {
+   "n": 213,
+   "pct": 88.8
+  },
+  "unknown": {
+   "n": 3,
+   "pct": 1.2
+  }
+ },
+ "with_images": 30,
+ "with_quotes": 4,
+ "addressed": 75,
+ "required_tools": {
+  "recall_memory": 14,
+  "web_search": 13,
+  "draw_image": 12,
+  "draw_like_this": 9,
+  "remember": 5,
+  "qq_send_group": 4,
+  "qq_history": 3,
+  "reverse_prompt": 3,
+  "qq_members": 2,
+  "bot_status": 2,
+  "qq_groups": 1,
+  "cloud_draw": 1,
+  "send_meme": 1
+ },
+ "known_failures": [
+  "M0-CHAT-001",
+  "M0-CHAT-002",
+  "M0-CHAT-003",
+  "M0-CHAT-004",
+  "M0-CHAT-005",
+  "M0-CHAT-006",
+  "M0-CHAT-007",
+  "M0-CHAT-008",
+  "M0-CHAT-009",
+  "M0-CHAT-010",
+  "M0-CHAT-011",
+  "M0-TOOL-020",
+  "M0-TOOL-021",
+  "M0-VIS-022",
+  "M0-VIS-023"
+ ],
+ "requirements": {
+  "total_min": 200,
+  "category_min": {
+   "chat": 40,
+   "tool": 20,
+   "vision": 30,
+   "memory": 20,
+   "multi": 20,
+   "permission": 25,
+   "failure": 20
+  },
+  "role_min": {
+   "master": 30,
+   "admin": 10,
+   "member": 80,
+   "stranger": 1
+  },
+  "image_min": 30,
+  "quote_min": 4,
+  "known_failure_min": 8
+ }
+}

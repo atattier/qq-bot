@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "_skill_meta": "4296430e4c37956c5df86841de21007788df9599eafc83fca6ac65bef3f695dc",
+    "knob_set": "490155e88d24a8aedd76fbc5ec2d1279e527e3f6a507646db634c1277f38d9a8"
+  },
+  "why": "2166872 meme 插件卡口令展示 kw_desc 逗号改、分隔；knob_set 加 meme.kw.* 自愈（快照旧于模板列表时重建旋钮）"
+}

@@ -1,0 +1,92 @@
+{
+  "id": "memewiki",
+  "name": "梗百科",
+  "version": "1.5.1",
+  "apiVersion": 1,
+  "category": "knowledge",
+  "description": "让机器人认得群里的梗和黑话：本地内置 6668 条词条（cnmeme.wiki 快照，查一次 1~3 毫秒），查不到才联网。消息像在问梗时会先查好再答，不靠模型硬猜；群内黑话优先用本机的「黑话」口令那套。发「梗 大水理论」回一张卡片，也能切纯文字。词库能跟网站更新，只补新增、不覆盖。",
+  "author": "in1t1a1（移植：本机）",
+  "links": [
+    {
+      "label": "cnmeme.wiki（词条来源）",
+      "url": "https://cnmeme.wiki"
+    },
+    {
+      "label": "GitHub 仓库",
+      "url": "https://github.com/in1t1a1/astrbot_plugin_memewiki"
+    }
+  ],
+  "enabledByDefault": true,
+  "permissions": [
+    "fs_read",
+    "net"
+  ],
+  "settings": {
+    "enabled": true,
+    "replyMode": "图片卡片",
+    "online": true,
+    "inject": true,
+    "shortMax": 8,
+    "maxChars": 1200,
+    "autoSync": true,
+    "autoSyncHour": 4
+  },
+  "configSchema": {
+    "enabled": {
+      "type": "boolean",
+      "label": "启用梗百科",
+      "description": "关掉之后「梗 X」不再回卡片，聊天里也不会自动查梗了。"
+    },
+    "replyMode": {
+      "type": "enum",
+      "label": "「梗 X」的回复形式",
+      "values": [
+        "图片卡片",
+        "纯文字"
+      ],
+      "description": "默认图片卡片（900px 宽、带来源链接）。手机上看卡片更舒服；纯文字更省流量、复制方便。"
+    },
+    "online": {
+      "type": "boolean",
+      "label": "本地没收录时联网查",
+      "description": "开着：本地 6668 条里没有，再去 cnmeme.wiki 查一次（约 2 秒，查到的结果缓存 6 小时）。关掉：只认本地词库，绝对不联网。"
+    },
+    "inject": {
+      "type": "boolean",
+      "label": "聊天里自动查梗",
+      "description": "开着：群友说「XX 是什么梗」或单独发一个像梗的短词时，系统先把词条查好塞给大脑，省得它硬猜。关掉就只能靠「梗 X」口令查。"
+    },
+    "shortMax": {
+      "type": "number",
+      "label": "自动查梗的词长上限",
+      "description": "不是明确问梗时，只有不超过这么多字的短词才会去查（挡掉闲聊整句）。默认 8，别超过 10。"
+    },
+    "maxChars": {
+      "type": "number",
+      "label": "单条词条注入上限（字）",
+      "description": "塞给大脑的正文最多多少字，默认 1200。太长会把上下文挤满，也会让模型念百科。"
+    },
+    "autoSync": {
+      "type": "boolean",
+      "label": "每天自动更新词库",
+      "description": "开着：每天到点自动跟 cnmeme.wiki 对一遍，只补新增（通常几秒到几分钟，没新词就是两页请求）。关掉：只能点「更新词库」或群里说一声。"
+    },
+    "autoSyncHour": {
+      "type": "number",
+      "label": "自动更新时刻（0-23 点）",
+      "description": "默认 4，即凌晨 4 点。挑群最安静的时候跑；跑完当天不会重复跑（中途失败也不重试，免得一直打人家接口）。",
+      "min": 0,
+      "max": 23
+    }
+  },
+  "prompt": {
+    "sections": [
+      {
+        "id": "memewiki-rule",
+        "title": "梗百科（先查再接，别硬编）",
+        "priority": 56,
+        "content": "【梗百科：先查再接，别硬编】\n1) 看到你没有十足把握的网络新词、梗、缩写、黑话，**先查再答**。系统会在上下文里塞一段【梗百科】——有那一段就照着用，别自己另编一个意思。\n2) 查到之后**先接梗、别科普**：照着词条里的【怎么用 / 怎么接】用一句，像本来就会；只有对方明确问「这是什么梗 / 啥意思」才解释出处，一两句就够，别念词条。\n3) 上下文里**没有**【梗百科】那一段 = 这词没收录（或者不是梗）。**不确定就说不知道**，或者反问一句「这什么梗」，绝对不要把两个不相干的梗拼一起。\n4) 群友直接发「梗 X」是要查词，系统会自己回卡片，你不用复述；但可以接着那张卡片往下聊一句。\n5) 群内自造的梗以本机「黑话」库里管理员确认过的为准，别拿网上的意思去套。\n6) 色情、擦边、性暗示的词不查、不接、不解释。"
+      }
+    ]
+  }
+}

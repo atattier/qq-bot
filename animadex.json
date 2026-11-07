@@ -1,0 +1,298 @@
+{
+ "source": "https://github.com/zetaneko/AnimaDex (samples) / animadex.net",
+ "note": "角色/画师的 trigger 与 core_tags 均为 AnimaDex 官方数据，不加工；aliases 是本机补的中日文别名。",
+ "characters": [
+  {
+   "slug": "hatsune_miku",
+   "copyright": "vocaloid",
+   "trigger": "hatsune miku, vocaloid",
+   "core_tags": "1girl, aqua eyes, blue eyes, very long hair, aqua hair, long hair, twintails, detached sleeves",
+   "count": 103500,
+   "aliases": [
+    "初音未来",
+    "初音ミク",
+    "初音",
+    "miku"
+   ]
+  },
+  {
+   "slug": "hakurei_reimu",
+   "copyright": "touhou",
+   "trigger": "hakurei reimu, touhou",
+   "core_tags": "1girl, brown eyes, red eyes, brown hair, long hair, black hair, hair bow, hair tubes, red bow, detached sleeves",
+   "count": 78109,
+   "aliases": [
+    "博丽灵梦",
+    "博麗霊夢",
+    "灵梦",
+    "霊夢"
+   ]
+  },
+  {
+   "slug": "kirisame_marisa",
+   "copyright": "touhou",
+   "trigger": "kirisame marisa, touhou",
+   "core_tags": "1girl, yellow eyes, blonde hair, long hair, single braid, witch hat",
+   "count": 70313,
+   "aliases": [
+    "雾雨魔理沙",
+    "霧雨魔理沙",
+    "魔理沙",
+    "marisa"
+   ]
+  },
+  {
+   "slug": "ganyu_(genshin_impact)",
+   "copyright": "genshin_impact",
+   "trigger": "ganyu (genshin impact), genshin impact",
+   "core_tags": "1girl, purple eyes, blue hair, long hair, ahoge, horns, black gloves, qingxin flower",
+   "count": 26341,
+   "aliases": [
+    "甘雨"
+   ]
+  },
+  {
+   "slug": "hu_tao_(genshin_impact)",
+   "copyright": "genshin_impact",
+   "trigger": "hu tao (genshin impact), genshin impact",
+   "core_tags": "1girl, red eyes, brown hair, long hair, twintails, ribbon, plum blossoms",
+   "count": 22018,
+   "aliases": [
+    "胡桃",
+    "胡堂主"
+   ]
+  },
+  {
+   "slug": "raiden_shogun",
+   "copyright": "genshin_impact",
+   "trigger": "raiden shogun, genshin impact",
+   "core_tags": "1girl, purple eyes, purple hair, very long hair, mole, mole under eye, japanese clothes, kimono",
+   "count": 19850,
+   "aliases": [
+    "雷电将军",
+    "雷電将軍",
+    "雷电影",
+    "影",
+    "raiden"
+   ]
+  },
+  {
+   "slug": "nahida_(genshin_impact)",
+   "copyright": "genshin_impact",
+   "trigger": "nahida (genshin impact), genshin impact",
+   "core_tags": "1girl, green eyes, white hair, long hair, pointy ears, white dress, leaf",
+   "count": 15021,
+   "aliases": [
+    "纳西妲",
+    "納西妲",
+    "草神",
+    "小吉祥草王"
+   ]
+  },
+  {
+   "slug": "nilou_(genshin_impact)",
+   "copyright": "genshin_impact",
+   "trigger": "nilou (genshin impact), genshin impact",
+   "core_tags": "1girl, blue eyes, red hair, long hair, jewelry, dancer",
+   "count": 13044,
+   "aliases": [
+    "妮露"
+   ]
+  },
+  {
+   "slug": "megumin",
+   "copyright": "kono_subarashii_sekai_ni_shukufuku_wo!",
+   "trigger": "megumin, kono subarashii sekai ni shukufuku wo!",
+   "core_tags": "1girl, red eyes, brown hair, short hair, witch hat, eyepatch, black cape",
+   "count": 30277,
+   "aliases": [
+    "惠惠",
+    "めぐみん"
+   ]
+  },
+  {
+   "slug": "frieren",
+   "copyright": "sousou_no_frieren",
+   "trigger": "frieren, sousou no frieren",
+   "core_tags": "1girl, green eyes, white hair, twintails, long hair, pointy ears, earrings, white shirt",
+   "count": 18429,
+   "aliases": [
+    "芙莉莲",
+    "フリーレン",
+    "葬送的芙莉莲"
+   ]
+  },
+  {
+   "slug": "2b_(nier_automata)",
+   "copyright": "nier_(series)",
+   "trigger": "2b (nier_automata), nier (series)",
+   "core_tags": "1girl, blue eyes, white hair, short hair, hairband, gloves, black dress, blindfold",
+   "count": 51800,
+   "aliases": [
+    "2b",
+    "2B"
+   ]
+  },
+  {
+   "slug": "9s_(nier_automata)",
+   "copyright": "nier_(series)",
+   "trigger": "9s (nier_automata), nier (series)",
+   "core_tags": "1boy, blue eyes, white hair, short hair, hairband, gloves, blindfold",
+   "count": 15800,
+   "aliases": [
+    "9s",
+    "9S"
+   ]
+  },
+  {
+   "slug": "misaka_mikoto",
+   "copyright": "toaru_majutsu_no_index",
+   "trigger": "misaka mikoto, toaru majutsu no index",
+   "core_tags": "1girl, brown eyes, brown hair, short hair, school uniform, skirt",
+   "count": 16200,
+   "aliases": [
+    "御坂美琴",
+    "炮姐",
+    "超电磁炮"
+   ]
+  },
+  {
+   "slug": "kamado_tanjirou",
+   "copyright": "kimetsu_no_yaiba",
+   "trigger": "kamado tanjirou, kimetsu no yaiba",
+   "core_tags": "1boy, red eyes, black hair, short hair, scar, earrings, haori",
+   "count": 12450,
+   "aliases": [
+    "灶门炭治郎",
+    "竈門炭治郎",
+    "炭治郎"
+   ]
+  },
+  {
+   "slug": "souryuu_asuka_langley",
+   "copyright": "neon_genesis_evangelion",
+   "trigger": "souryuu asuka langley, neon genesis evangelion",
+   "core_tags": "1girl, blue eyes, orange hair, long hair, twintails, hair clip, plugsuit",
+   "count": 36200,
+   "aliases": [
+    "明日香",
+    "惣流明日香",
+    "asuka"
+   ]
+  },
+  {
+   "slug": "artoria_pendragon_(fate)",
+   "copyright": "fate_(series)",
+   "trigger": "artoria pendragon (fate), fate (series)",
+   "core_tags": "1girl, green eyes, blonde hair, long hair, ahoge, hair ribbon, armor",
+   "count": 40115,
+   "aliases": [
+    "阿尔托莉雅",
+    "阿尔托莉亚",
+    "saber",
+    "塞巴"
+   ]
+  },
+  {
+   "slug": "emilia_(re_zero)",
+   "copyright": "re_zero_kara_hajimeru_isekai_seikatsu",
+   "trigger": "emilia (re_zero), re_zero kara hajimeru isekai seikatsu",
+   "core_tags": "1girl, purple eyes, silver hair, long hair, pointy ears, flower",
+   "count": 18900,
+   "aliases": [
+    "爱蜜莉雅",
+    "エミリア"
+   ]
+  },
+  {
+   "slug": "fubuki_(one-punch_man)",
+   "copyright": "one-punch_man",
+   "trigger": "fubuki (one-punch man), one-punch man",
+   "core_tags": "1girl, green eyes, green hair, long hair, black dress, white shawl",
+   "count": 9800,
+   "aliases": [
+    "吹雪",
+    "地狱的吹雪"
+   ]
+  },
+  {
+   "slug": "kamado_nezuko",
+   "copyright": "kimetsu_no_yaiba",
+   "trigger": "kamado nezuko, kimetsu no yaiba",
+   "core_tags": "1girl, pink eyes, black hair, long hair, bamboo, kimono, mouth hold",
+   "count": 17200,
+   "aliases": [
+    "灶门祢豆子",
+    "竈門禰豆子",
+    "祢豆子",
+    "禰豆子"
+   ]
+  },
+  {
+   "slug": "yor_briar",
+   "copyright": "spy_x_family",
+   "trigger": "yor briar, spy x family",
+   "core_tags": "1girl, red eyes, black hair, long hair, hairband, earrings, red dress",
+   "count": 11400,
+   "aliases": [
+    "约尔",
+    "约尔·福杰",
+    "约尔福杰",
+    "ヨル",
+    "荆棘公主"
+   ]
+  }
+ ],
+ "artists": [
+  {
+   "slug": "0-den",
+   "trigger": "0-den",
+   "count": 52
+  },
+  {
+   "slug": "00047",
+   "trigger": "00047",
+   "count": 38
+  },
+  {
+   "slug": "00kashian00",
+   "trigger": "00kashian00",
+   "count": 71
+  },
+  {
+   "slug": "0725akaba",
+   "trigger": "0725akaba",
+   "count": 42
+  },
+  {
+   "slug": "0930erina",
+   "trigger": "0930erina",
+   "count": 67
+  },
+  {
+   "slug": "108_gou",
+   "trigger": "108 gou",
+   "count": 55
+  },
+  {
+   "slug": "10mo",
+   "trigger": "10mo",
+   "count": 33
+  },
+  {
+   "slug": "1jumangoku",
+   "trigger": "1jumangoku",
+   "count": 48
+  },
+  {
+   "slug": "203wolves",
+   "trigger": "203wolves",
+   "count": 29
+  },
+  {
+   "slug": "218",
+   "trigger": "218",
+   "count": 61
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+  "id": "petpet",
+  "name": "捏脸表情包",
+  "version": "1.2.0",
+  "apiVersion": 1,
+  "category": "media",
+  "entry": "index.js",
+  "description": "把群友（或被 @ 的人、或他自己发的图）的头像做成「摸摸头 / 揉一揉 / 咬一口 / 敲一敲 / 揍一拳 / 捶 / 撞 / 滚 / 扭 / 扔出去 / 猫猫揉 / 支持你 / 抱大腿」这类动图，直接发到当前会话。\n\n【素材从哪来】移植自开源项目 nonebot-plugin-petpet（MIT）。原插件是 NoneBot2 插件，本机 bot 不是 NoneBot，所以只搬它的模板素材 + 合成算法，用 Pillow 重写成 qbot_petpet.py，挂在本项目的技能包体系里。素材在 skills\\petpet\\assets\\。\n\n【跟上游走】上游共 99 个模板，抽屉里两块：\n① 「素材来源」→ 点「更新素材」把已搬模板的帧图按 md5 对一遍（/api/petpet_sync，每天 4 点自动跑）；\n② 「素材市场」→ 99 个模板全列出来，点图能预览，看中哪个点「搬过来」就直接下素材 + 自动解析帧参数（/api/petpet_market）；不喜欢的点「移除」，素材只是挪到 assets/_removed/，随时能放回来。\n约 29 个能自动搬，其余的要人补（透视变形 / 图上排文字 / 双头像 / 随机参数这几类），网页上会写明原因。\n\n【两种触发】① 群口令直通：「摸摸头 @某人」这类不过大脑，认出来就出图；② 大脑主动来一下：合适的时候调 qq_petpet。\n\n【没 @ 人】用发话人自己的头像（上游行为）。",
+  "author": "移植自 nonebot-plugin-petpet（MIT）",
+  "enabledByDefault": true,
+  "permissions": [],
+  "settings": {
+    "enabled": true,
+    "proactive": true,
+    "maxPerHour": 20,
+    "cooldown": 6,
+    "defaultTemplate": "petpet",
+    "autoSync": true,
+    "autoSyncHour": 4
+  },
+  "configSchema": {
+    "enabled": {
+      "type": "boolean",
+      "label": "启用捏脸表情包",
+      "description": "关掉之后「摸摸头 @某人」这类口令直接不认，大脑也调不到 qq_petpet。"
+    },
+    "proactive": {
+      "type": "boolean",
+      "label": "允许主动出图",
+      "description": "开着：大脑觉得这会儿来一下比打字更有味道，可以自己调工具。关掉：只有群友点名才出图。"
+    },
+    "maxPerHour": {
+      "type": "number",
+      "label": "每个会话每小时最多几张",
+      "description": "按会话单独算，默认 20。防止有人刷「摸摸头」把机器人当渲染机。"
+    },
+    "cooldown": {
+      "type": "number",
+      "label": "同一会话冷却（秒）",
+      "description": "默认 6 秒。冷却内的请求会被挡掉并告诉对方稍等。"
+    },
+    "defaultTemplate": {
+      "type": "enum",
+      "label": "默认模板",
+      "description": "只说了「来一下」没指定动作时用哪个。",
+      "values": [
+        "petpet",
+        "pat",
+        "rub",
+        "bite",
+        "knock",
+        "punch",
+        "pound",
+        "thump",
+        "roll",
+        "twist",
+        "throw_gif",
+        "capoo_rub",
+        "support"
+      ]
+    },
+    "autoSync": {
+      "type": "boolean",
+      "label": "每天自动对素材",
+      "description": "开着：每天到点拉一次上游清单，按 md5 比一遍，缺的补、改的换（没变就不下载）。关掉就只能手动点「更新素材」。"
+    },
+    "autoSyncHour": {
+      "type": "number",
+      "label": "每天几点对（0-23）",
+      "min": 0,
+      "max": 23,
+      "description": "默认凌晨 4 点。跟梗百科错开的话可以改到 5 点，别俩一起挤镜像。"
+    }
+  },
+  "prompt": {
+    "sections": [
+      {
+        "id": "petpet-playbook",
+        "title": "捏脸表情包（把人头像做成动图）",
+        "priority": 46,
+        "content": "【什么时候用】有人要「摸摸头」「揉一揉」「咬一口」「敲一敲」这类动作，或者你自己觉得拍一下、揉一下比打字更贴气氛（对方在撒娇、装可怜、讨夸、被调侃）时，可以调 `qq_petpet` 把人头像做成动图发出去。\n\n【怎么调】`qq_petpet` 要两个东西：`group_id`（当前群/会话号）和 `qq`（做谁的头像，填对方 QQ 号）。`template` 填动作：petpet 摸摸头 / pat 拍拍 / rub 揉一揉 / bite 咬一口 / knock 敲一敲 / punch 揍一拳 / pound 捶 / thump 撞 / roll 滚 / twist 扭 / throw_gif 扔出去 / capoo_rub 猫猫揉 / support 支持你。不填就用默认。\n\n【几条硬规矩】\n1) 群里直接说「摸摸头 @某人」这类口令时，系统会**自己出图**，不用你管 —— 别抢着说「我给你做一个」，也别在正文里描述这张动图长什么样。\n2) 有人问「有什么模板」「有哪些互动」「能做什么动作」时，系统会**自己列清单和编号**，你不用列、也别背模板名（背漏了比不背更尴尬）。\n3) 一次只做一个，同一个动作别连着刷；对方在认真问事、话题正紧、或者刚做过，就别硬来。\n4) 做不出来（工具报错、素材缺、冷却中）就**正常说话**，绝不假装发了，也别反复重试。\n5) 擦边、侮辱性的用法（拿别人头像做羞辱性内容）一律不接。"
+      }
+    ]
+  }
+}

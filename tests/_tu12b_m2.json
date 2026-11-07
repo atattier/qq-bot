@@ -1,0 +1,7 @@
+{
+  "rev": "M2 2026-11-05",
+  "note": "M2 Context Assembler：宿主 _bind_modules 多注入 assembler；只允许这个非画图函数在 M1 基线之上再变，且必须更新本 hash",
+  "functions": {
+    "_bind_modules": "4b552a19fb60bb0f3f6a4fdadae32c367737b05a7b9ac43769fb6f826dd2ec6e"
+  }
+}

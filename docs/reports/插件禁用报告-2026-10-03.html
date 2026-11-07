@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>插件禁用执行报告 · 2026-10-03</title>
+<style>
+  :root{--bg:#f7f8fa;--card:#fff;--ink:#1a1d21;--ink2:#5a6270;--line:#e3e6ec;
+        --bad:#c0392b;--good:#1e8449;--warn:#b9770e;--info:#2471a3;--mono:ui-monospace,Consolas,monospace}
+  @media(prefers-color-scheme:dark){:root{--bg:#15181d;--card:#1e2229;--ink:#e8eaed;--ink2:#a0a8b8;
+        --line:#2b303a;--bad:#e57373;--good:#66bb6a;--warn:#e0b050;--info:#64b5f6}}
+  *{box-sizing:border-box}
+  body{margin:0;padding:32px 20px;background:var(--bg);color:var(--ink);line-height:1.75;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--ink2);font-size:14px;margin-bottom:24px}
+  h2{font-size:18px;margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:14px}
+  .ok{border-left:4px solid var(--good);background:linear-gradient(90deg,rgba(30,132,73,.07),transparent)}
+  .no{border-left:4px solid var(--bad);background:linear-gradient(90deg,rgba(192,57,43,.07),transparent)}
+  .wa{border-left:4px solid var(--warn);background:linear-gradient(90deg,rgba(185,119,14,.07),transparent)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--ink2);font-weight:600;font-size:13px}
+  code{font-family:var(--mono);background:rgba(127,127,127,.14);padding:1px 6px;border-radius:4px;font-size:13px}
+  .tag{display:inline-block;padding:2px 9px;border-radius:11px;font-size:12px;font-weight:600}
+  .t-ok{background:rgba(30,132,73,.16);color:var(--good)}
+  .t-no{background:rgba(192,57,43,.16);color:var(--bad)}
+  .t-wa{background:rgba(185,119,14,.16);color:var(--warn)}
+  ul{margin:8px 0;padding-left:22px}li{margin:5px 0}
+  .note{font-size:13px;color:var(--ink2);border-left:3px solid var(--line);padding-left:12px;margin:12px 0}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14px}
+  .kv b{font-weight:600}
+  .big{font-size:30px;font-weight:700;line-height:1.2}
+</style>
+</head>
+<body><div class="wrap">
+<h1>插件禁用执行报告</h1>
+<div class="sub">2026-10-03 16:4x · 目标：降低「点运行→开跑」的一两分钟延迟</div>
+
+<div class="card wa">
+  <b>先说结论，别期待太高：这次只禁了 1 个插件，收益约 10%。</b><br>
+  动手前做了依赖检查，<b>推翻了我自己 12:5x 提的建议</b>——另外两个插件<b>不能禁</b>，
+  禁了会直接搞坏你的主力出图链。所以真正的大头（<code>vrgdg</code> 4.80 MB）保持不动。
+  <br><br>
+  <b>这次改动不是主因的解</b>：1~2 分钟延迟来自「39 插件 / 652 脚本 / 3754 节点」这个量级本身，
+  砍单个插件最多是个位数百分点。<b>下一步该往浏览器端找</b>。
+</div>
+
+<h2>一、三个候选的依赖检查结果</h2>
+<div class="card">
+<table>
+<tr><th>插件</th><th class="num">脚本/体积</th><th>依赖检查</th><th>处置</th></tr>
+<tr>
+  <td><b>ComfyUI-Danbooru-Gallery</b><br><span style="color:var(--ink2);font-size:13px">打标/洗提示词</span></td>
+  <td class="num">41 / 2.15 MB</td>
+  <td><b class="no">零工作流引用</b>、零跨插件 import。<br>10 个节点全是打标洗词类：<code>CharacterFeatureSwap</code> / <code>PromptCleaningMaid</code> / <code>PromptSelector</code> / <code>SimpleImageCompare</code> / <code>VAEImageBatchFix</code>…</td>
+  <td><span class="tag t-ok">已禁用</span></td>
+</tr>
+<tr>
+  <td><b>ComfyUI_Custom_Nodes_AlekPet</b><br><span style="color:var(--ink2);font-size:13px">实用工具集</span></td>
+  <td class="num">105 / 2.71 MB</td>
+  <td>零工作流引用，<b>但注册了 43 个节点</b>：<code>easy poseEditor</code> / <code>IDENode</code> / <code>Painter</code> / <code>CameraPoseVisualizer</code> / <code>BuildPoseFile</code> / <code>OpenposePreprocessor</code> / <code>SDPose*</code>…<br><b class="no">= 你调姿态、身份一致性、画笔的主力</b></td>
+  <td><span class="tag t-no">不禁</span></td>
+</tr>
+<tr>
+  <td><b>ComfyUI-Prompt-Gallery-master</b><br><span style="color:var(--ink2);font-size:13px">提示词收藏</span></td>
+  <td class="num">72 / 0.45 MB</td>
+  <td><b class="no">关键：它参与出图，不只是装饰</b><br>
+      <code>PromptCategoryReader</code>(#173) 的输出<b>接进了 <code>#31 ZML_SelectTextV2</code> 的 inputs[4]</b>，即真正喂给出图的那条链。<br>
+      被 <code>Krea2_2.5D风格.json</code> / <code>Krea2_古风二次元.json</code> / <code>Krea2_风景.json</code> 引用，
+      而这 3 个都在 bot 的 config 工作流里。<br>
+      另外它还是 bot 提示词样本库的来源。</td>
+  <td><span class="tag t-no">不禁</span></td>
+</tr>
+</table>
+<div class="note">
+这就是我为什么改口：<b>「105 个脚本 / 2.71 MB」听着像纯冗余，实际是 43 个在用的功能节点</b>；
+<b>「只有 0.45 MB」看着最小，却卡在出图主链上</b>。按体积禁插件是会出事的。
+</div>
+</div>
+
+<h2>二、已执行的改动</h2>
+<div class="card ok">
+<div class="kv">
+  <b>操作</b><span>目录改名加 <code>.disabled</code> 后缀（<b>没有删除任何文件</b>）</span>
+  <b>命令</b><span><code>mv custom_nodes/ComfyUI-Danbooru-Gallery → ComfyUI-Danbooru-Gallery.disabled</code></span>
+  <b>生效机制</b><span>ComfyUI 只认目录名以 <code>.disabled</code> 结尾（<code>nodes.py:2377</code>）</span>
+  <b>回滚</b><span>去掉 <code>.disabled</code> 后缀即可，目录完整</span>
+  <b>状态</b><span><b class="no">已落盘，等你启动 ComfyUI 生效</b></span>
+</div>
+<div class="note">
+⚠️ <b>运行中改会 Permission denied</b>（进程持锁，12:53 试过失败），必须 ComfyUI 关闭时改。
+启动方式 = <code>绘世启动器.exe</code> 图形启动器，
+所以 <code>--disable_all_custom_nodes</code> 那套白名单参数<b>用不了</b>（改不了启动参数），
+<code>.disabled</code> 目录法是唯一可行手段。
+</div>
+</div>
+
+<h2>三、诚实的收益评估</h2>
+<div class="card">
+<div class="kv" style="margin-bottom:14px">
+  <b>前端 JS</b><span>20.71 MB → <b>18.56 MB</b>（<b class="no">−10.4%</b>）</span>
+  <b>object_info</b><span>7.50 MB → 7.49 MB，少 10 个节点种类（<b class="no">仅 −0.14%</b>）</span>
+  <b>最大头没动</b><span><code>vrgdg</code> 4.80 MB（占 23%）—— <b>你主力，不动</b></span>
+</div>
+<p style="font-size:14px;margin:0"><b>所以：</b>这一改大概能把「一两分钟」往「一分半」拉一点，
+<b>但不会质变</b>。真正的量级问题是 39 插件 / 652 脚本 / 3754 节点这个规模，
+而其中占比最大的几个都不能砍。</p>
+</div>
+
+<h2>四、下一步建议（等你决定，我不动手）</h2>
+<div class="card">
+<ul>
+<li><b>开 F12 → Performance 录一次「点运行」</b>，看时间花在哪。这是唯一能定位真凶的办法。<br>
+<span style="color:var(--ink2)">如果时间大头在 <code>graphToPrompt</code> / 节点注册 → 确实是前端负载；
+如果在别处（比如某个 <code>beforeRegisterNodeDef</code> 钩子）→ 那就是某个插件的锅，能精准定位到单个插件。</span></li>
+<li><b>试无痕窗口</b>跑一次（Ctrl+Shift+N）。无痕没有扩展插件。<br>
+如果无痕明显快 → 是<b>浏览器扩展</b>的锅（广告拦截/脚本注入类），跟 ComfyUI 无关。</li>
+<li><b>排除浏览器因素</b>：换一个浏览器（Edge/Chrome 互切）跑一次。</li>
+</ul>
+<div class="note">
+我倾向让你先做<b>「无痕窗口」</b>那一步——成本最低，而且能一刀切开「ComfyUI 的锅」还是「浏览器的锅」。
+如果无痕也慢，那 F12 剖析就更有必要了。
+</div>
+</div>
+
+<h2>五、工具（可复用）</h2>
+<div class="card">
+<div class="kv">
+  <b>依赖检查</b><span><code>tools/_check_disable_deps.py</code> —— 扫全部工作流节点引用 + 跨插件 import + config 引用。<b>禁任何插件前先跑它。</b></span>
+  <b>接线追踪</b><span><code>tools/_inspect_gallery_nodes.py</code> —— 打印某节点在每个工作流的 mode / widgets / 上下游连线，判「装饰 vs 参与出图」。</span>
+  <b>负载画像</b><span><code>tools/_diag_submit_delay.py</code> —— 接口延迟 + object_info 规模 + 插件体积排名。</span>
+</div>
+</div>
+
+</div></body></html>

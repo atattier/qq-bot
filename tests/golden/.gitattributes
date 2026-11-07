@@ -1,0 +1,5 @@
+# 冻结数据集按字节保存：baseline.json 的 sha256 在任何平台都必须可复现。
+# 关掉换行转换，避免 Windows 检出/提交时 CRLF↔LF 改变文件 hash。
+golden_set.json -text
+coverage.json -text
+baseline.json -text

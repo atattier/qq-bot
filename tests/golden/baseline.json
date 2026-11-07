@@ -1,0 +1,14 @@
+{
+ "phase": "M0",
+ "adr": "docs/架构决策-统一智能核心-2026-11-05.md@810d62a",
+ "created": "2026-11-05",
+ "source_head": "a58a2be",
+ "dataset": "tests/golden/golden_set.json",
+ "dataset_sha256": "cfd14bbe83fb09ba59f61c12e7d487da4acbe7a5877bb3f88d77c5888258ee45",
+ "dataset_bytes": 380183,
+ "samples": 240,
+ "tag": "golden-m0-base-2026-11-05",
+ "coverage": "tests/golden/coverage.json",
+ "eval": "python tests/golden/run_eval.py --validate --self-test",
+ "note": "tag 在 M0 独立提交后创建；数据集任何改动都必须同步更新本文件的 sha256 与 tag。"
+}

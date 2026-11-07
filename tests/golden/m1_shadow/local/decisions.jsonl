@@ -1,0 +1,72 @@
+{"id": "M0-CHAT-001", "actions": ["reply"], "tools": [], "reply": "你满意的是哪张图？", "used_media": []}
+{"id": "M0-FAIL-001", "actions": ["reply"], "tools": [], "reply": "刚刚画的图还在画图队列里，等会就出来了。", "used_media": []}
+{"id": "M0-MEM-001", "actions": ["reply"], "tools": [], "reply": "记得，是 ResNet-50", "used_media": []}
+{"id": "M0-MULTI-001", "actions": ["reply"], "tools": [], "reply": "他骗人的", "used_media": []}
+{"id": "M0-PERM-001", "actions": ["reply"], "tools": [], "reply": "全体成员", "used_media": []}
+{"id": "M0-TOOL-001", "actions": ["reply"], "tools": [], "reply": "我们 bot 现在都在以下群：", "used_media": []}
+{"id": "M0-VIS-001", "actions": ["reply"], "tools": [], "reply": "好的，我查一下。", "used_media": []}
+{"id": "M0-CHAT-002", "actions": ["reply"], "tools": [], "reply": "好的", "used_media": []}
+{"id": "M0-FAIL-002", "actions": ["reply"], "tools": [], "reply": "视觉模型还活着呢", "used_media": []}
+{"id": "M0-MEM-002", "actions": ["reply"], "tools": [], "reply": "是的，你之前说过。", "used_media": []}
+{"id": "M0-MULTI-002", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-PERM-002", "actions": ["reply"], "tools": [], "reply": "好的，我马上去群里发消息。", "used_media": []}
+{"id": "M0-TOOL-002", "actions": ["reply"], "tools": [], "reply": "刚才说了：主人：今天天气真好。", "used_media": []}
+{"id": "M0-VIS-002", "actions": ["reply"], "tools": [], "reply": "好的，画一只猫。", "used_media": []}
+{"id": "M0-CHAT-003", "actions": ["reply"], "tools": [], "reply": "是的，我理解了。", "used_media": []}
+{"id": "M0-FAIL-003", "actions": ["reply"], "tools": [], "reply": "好的", "used_media": []}
+{"id": "M0-MEM-003", "actions": ["reply"], "tools": [], "reply": "记得你是个好同学", "used_media": []}
+{"id": "M0-MULTI-003", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-PERM-003", "actions": ["reply"], "tools": [], "reply": "好的，我来发。", "used_media": []}
+{"id": "M0-TOOL-003", "actions": ["tool_call"], "tools": ["qq_members"], "reply": "群成员列表", "used_media": []}
+{"id": "M0-VIS-003", "actions": ["tool_call"], "tools": ["draw_image"], "reply": "", "used_media": []}
+{"id": "M0-CHAT-004", "actions": ["reply"], "tools": [], "reply": "好的，我画一张给你。", "used_media": []}
+{"id": "M0-FAIL-004", "actions": ["reply"], "tools": [], "reply": "上次你说的是什么？", "used_media": []}
+{"id": "M0-MEM-004", "actions": ["reply"], "tools": [], "reply": "每周一更新群公告", "used_media": []}
+{"id": "M0-MULTI-004", "actions": ["reply"], "tools": [], "reply": "是的，我就是个机器人。", "used_media": []}
+{"id": "M0-PERM-004", "actions": ["reply"], "tools": [], "reply": "好的，正在处理。", "used_media": []}
+{"id": "M0-TOOL-004", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-VIS-004", "actions": ["reply"], "tools": [], "reply": "画一只戴墨镜的橘猫", "used_media": []}
+{"id": "M0-CHAT-005", "actions": ["reply"], "tools": [], "reply": "是的，天气就像你的心情一样多变。", "used_media": []}
+{"id": "M0-FAIL-005", "actions": ["reply"], "tools": [], "reply": "好的，再画一张。", "used_media": []}
+{"id": "M0-MEM-005", "actions": ["reply"], "tools": [], "reply": "好的，记住了。", "used_media": []}
+{"id": "M0-MULTI-005", "actions": ["reply"], "tools": [], "reply": "怕生粘人", "used_media": []}
+{"id": "M0-PERM-005", "actions": ["reply"], "tools": [], "reply": "当前工具面不含 shell/文件/跨群发送", "used_media": []}
+{"id": "M0-TOOL-005", "actions": ["reply"], "tools": [], "reply": "现在画图队列排到 1 了", "used_media": []}
+{"id": "M0-VIS-005", "actions": ["tool_call"], "tools": ["draw_image"], "reply": "好的", "used_media": []}
+{"id": "M0-CHAT-006", "actions": ["refuse"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-FAIL-006", "actions": ["reply"], "tools": [], "reply": "好的，我来通知一下。", "used_media": []}
+{"id": "M0-MEM-006", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-MULTI-006", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-PERM-006", "actions": ["reply"], "tools": [], "reply": "管理员就是管理员，有话好好说", "used_media": []}
+{"id": "M0-TOOL-006", "actions": ["reply"], "tools": [], "reply": "群友A的QQ号是<群友A的QQ号>", "used_media": []}
+{"id": "M0-VIS-006", "actions": ["tool_call"], "tools": ["draw_image"], "reply": "好的", "used_media": []}
+{"id": "M0-CHAT-007", "actions": ["reply"], "tools": [], "reply": "主人，我来了", "used_media": []}
+{"id": "M0-FAIL-007", "actions": ["tool_call"], "tools": ["draw_image"], "reply": "", "used_media": []}
+{"id": "M0-MEM-007", "actions": ["clarify"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-MULTI-007", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-PERM-007", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-TOOL-007", "actions": ["reply"], "tools": [], "reply": "有，可以试试“小爱同学”", "used_media": []}
+{"id": "M0-VIS-007", "actions": ["reply"], "tools": [], "reply": "是的，拍得很棒！", "used_media": []}
+{"id": "M0-CHAT-008", "actions": ["reply"], "tools": [], "reply": "是的，这张图很像。", "used_media": []}
+{"id": "M0-FAIL-008", "actions": ["tool_call"], "tools": ["web_search"], "reply": "无", "used_media": []}
+{"id": "M0-MEM-008", "actions": ["reply"], "tools": [], "reply": "好的，我记住了。", "used_media": []}
+{"id": "M0-MULTI-008", "actions": ["reply"], "tools": [], "reply": "柚大人耐活", "used_media": []}
+{"id": "M0-PERM-008", "actions": ["reply"], "tools": [], "reply": "/", "used_media": []}
+{"id": "M0-TOOL-008", "actions": ["reply"], "tools": [], "reply": "有，可以搜一下。", "used_media": []}
+{"id": "M0-VIS-008", "actions": ["reply"], "tools": [], "reply": "没问题，是人类肘击ai。", "used_media": []}
+{"id": "M0-CHAT-009", "actions": ["reply"], "tools": [], "reply": "是的，路边有一条呢柚大人。", "used_media": []}
+{"id": "M0-FAIL-009", "actions": ["reply"], "tools": [], "reply": "好的，我查一下。", "used_media": []}
+{"id": "M0-MEM-009", "actions": ["reply"], "tools": [], "reply": "上次那个画图参数是多少", "used_media": []}
+{"id": "M0-MULTI-009", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-PERM-009", "actions": ["reply"], "tools": [], "reply": "好的，已经踢了。", "used_media": []}
+{"id": "M0-TOOL-009", "actions": ["reply"], "tools": [], "reply": "Antigravity 登录时报错，是网络问题吗？", "used_media": []}
+{"id": "M0-VIS-009", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-CHAT-010", "actions": ["silent"], "tools": [], "reply": "", "used_media": []}
+{"id": "M0-FAIL-010", "actions": ["reply"], "tools": [], "reply": "画个这个", "used_media": []}
+{"id": "M0-MEM-010", "actions": ["reply"], "tools": [], "reply": "上次说的忘了", "used_media": []}
+{"id": "M0-MULTI-010", "actions": ["reply"], "tools": [], "reply": "这个人设也不行", "used_media": []}
+{"id": "M0-PERM-010", "actions": ["reply"], "tools": [], "reply": "好的，我一会发给你。", "used_media": []}
+{"id": "M0-TOOL-010", "actions": ["reply"], "tools": [], "reply": "B站上有很多教程，你可以试试", "used_media": []}
+{"id": "M0-VIS-010", "actions": ["reply"], "tools": [], "reply": "橘子是水果，不是蔬菜。", "used_media": []}
+{"id": "M0-CHAT-011", "actions": ["clarify"], "tools": [], "reply": "上一轮 bot 的回答让用户困惑", "used_media": []}
+{"id": "M0-FAIL-011", "actions": ["reply"], "tools": [], "reply": "好的，我记住了。", "used_media": []}

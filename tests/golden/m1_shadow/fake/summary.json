@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-05T20:06:52+0800",
+  "mode": "fake",
+  "provider": "fake",
+  "scope": 240,
+  "scope_rule": "全部 Golden Set",
+  "coverage": 1.0,
+  "completed": 240,
+  "errors": 0,
+  "elapsed_sec": 0.0,
+  "latency_ms": {
+    "p50": 0,
+    "p95": 0,
+    "min": 0,
+    "max": 0,
+    "mean": 0
+  },
+  "actions": {
+    "silent": 240
+  },
+  "diffs": {
+    "forbidden_hit": 174,
+    "match_expected": 66
+  },
+  "categories": {
+    "chat": 56,
+    "tool": 24,
+    "vision": 44,
+    "memory": 25,
+    "multi": 29,
+    "permission": 37,
+    "failure": 25
+  },
+  "by_category": {
+    "chat": {
+      "forbidden_hit": 27,
+      "match_expected": 29
+    },
+    "tool": {
+      "forbidden_hit": 23,
+      "match_expected": 1
+    },
+    "vision": {
+      "forbidden_hit": 26,
+      "match_expected": 18
+    },
+    "memory": {
+      "forbidden_hit": 25
+    },
+    "multi": {
+      "match_expected": 14,
+      "forbidden_hit": 15
+    },
+    "permission": {
+      "forbidden_hit": 33,
+      "match_expected": 4
+    },
+    "failure": {
+      "forbidden_hit": 25
+    }
+  },
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "cost_note": "假模型，零费用",
+  "review_sample_ids": [
+    "M0-CHAT-001",
+    "M0-CHAT-002",
+    "M0-CHAT-003",
+    "M0-CHAT-004",
+    "M0-CHAT-005",
+    "M0-CHAT-006",
+    "M0-CHAT-007",
+    "M0-CHAT-008",
+    "M0-CHAT-009",
+    "M0-CHAT-010",
+    "M0-CHAT-011",
+    "M0-CHAT-015",
+    "M0-CHAT-018",
+    "M0-CHAT-028",
+    "M0-CHAT-031",
+    "M0-CHAT-032",
+    "M0-CHAT-033",
+    "M0-CHAT-036",
+    "M0-CHAT-038",
+    "M0-CHAT-042"
+  ]
+}

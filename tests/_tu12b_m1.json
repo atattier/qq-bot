@@ -1,0 +1,10 @@
+{
+  "rev": "M1 2026-11-05",
+  "note": "M1 影子接入：出站观测钩子、入口 Turn、宿主 bind、模型适配；只允许这 4 个非画图函数与 M0 基线不同",
+  "functions": {
+    "send_group": "6a8837ab65153721cbe125d4cb8910f06ccabd954aecb339d970710cc0ec2710",
+    "send_segments": "c840bca8cd7eb5aa13da6e5ec88e7da7596e1ccf6a45ba25b571a114d4aa399a",
+    "_handle_message": "51287e408cc81fc0fa107d6c048cee91c158b6221a3f4fa59390a75d17547b72",
+    "_bind_modules": "274030519e6d762fa2b332cc0251aaba60d858d9040f591b1c2e27d16da84431"
+  }
+}
