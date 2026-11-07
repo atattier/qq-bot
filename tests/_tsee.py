@@ -84,7 +84,7 @@ class _StubRev:
         return {"known": False, "name": "", "via": "stub"}
 
 
-def run_pic(desc, flag, scene_on=True, ident=None):
+def run_pic(desc, flag, scene_on=True):
     """跑一次 sim_pic_chat，返回发出去的话（没发就是 ""）。"""
     SENT.clear()
     CALLED.clear()
@@ -96,7 +96,6 @@ def run_pic(desc, flag, scene_on=True, ident=None):
     bot.CFG.setdefault("ai", {})["brain_sees_image"] = False
     bot.CFG["ai"]["omni_brain"] = False
     bot.reverser = _StubRev(desc, flag)
-    bot.webai_identify_chat = lambda img, timeout=None: ident or {"known": False}
     bot.chat = lambda msgs, **kw: (None, "（模型口吻）" + (desc or "")[:20])
     bot.send_bubbles = lambda gid, ans, **kw: SENT.append(ans)
     bot._fetch_rev_image = lambda x: r"state\_vqa_eggs.png"
@@ -120,9 +119,7 @@ run_pic("动漫截图，一名银发金瞳的二次元少女。", True)
 check("C3/角色图会跑认人", CALLED.get("ident"), 1)
 
 # C4 认出角色 → 发的是角色名那条（认人成功，不走画面描述）
-out = run_pic("动漫截图，一名银发金瞳的二次元少女。", True,
-              ident={"known": True, "name": "Hatsune Miku", "series": "Vocaloid",
-                     "confidence": 0.9, "via": "stub"})
+out = run_pic("动漫截图，一名银发金瞳的二次元少女。", True)
 check("C4/认出角色仍会说话", bool(out), True)
 
 # C5 看图模型没给标记（None）+ 描述像角色 → 兜底判据生效，去认人

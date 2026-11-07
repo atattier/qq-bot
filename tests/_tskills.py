@@ -108,8 +108,6 @@ chk("后台每个技能一个开关",
     "skills.en.whale-memes" in pkeys and "skills.en.trendy-memes" in pkeys, pkeys[:6])
 chk("技能清单是只读项", [i for i in kn if i["key"] == "skills.list"][0]["writable"] is False)
 priv = bot.priv_key(123450003)
-chk("agent 私聊提示词带技能段", "【能用的小技能】" in bot.agent_system_text(priv, "不提了", "123450003"))
-chk("agent 群提示词带技能段", "【能用的小技能】" in bot.agent_system_text(123450001, "甲", "123450005"))
 msgs = bot.build_messages(123450001, "这啥梗", extra=[bot.skills_block()])
 chk("聊天链路 system 里也有", "【能用的小技能】" in msgs[0]["content"])
 

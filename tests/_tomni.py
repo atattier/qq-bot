@@ -215,12 +215,12 @@ def _vis(prov):
     n = 0
     for i in _br:
         b = i.get("brain")
-        if not b or b == prov or (b == "api" and prov not in ("qoder", "dsh", "workbuddy", "zcode")):
+        if not b or b == prov or b == "api":
             n += 1
     return n
 
 
-_cnt = {p: _vis(p) for p in ("qoder", "dsh", "deepseek", "custom")}
+_cnt = {p: _vis(p) for p in ("deepseek", "custom")}
 chk("加完新旋钮大脑组仍 ≤12", max(_cnt.values()) <= 12, _cnt)
 
 # 恢复现场
@@ -547,7 +547,7 @@ bot._SEARCH_COOL["until"] = 0.0
 # （实测 Qwen/Qwen3.8-Flash-Next 聊天 1.8~3.3s、不思考、支持 tools）。
 chk("modelscope 在大脑下拉候选里（不再被 BRAIN_MENU 挡掉）",
     "modelscope" in bot._brain_names(), bot._brain_names())
-chk("modelscope 能当「备用」（不是 NON_API 档）",
+chk("modelscope 能当「备用」（在回落链里）",
     "modelscope" in bot._fallback_names(), bot._fallback_names())
 chk("modelscope 模型是实测快的那个（别退回 34s 的 Qwen3.5-27B）",
     "Flash" in str((bot.provider_cfg("modelscope") or {}).get("model") or ""),
@@ -685,8 +685,8 @@ _orig_chat22 = bot.chat
 bot.chat = lambda msgs, *a, **kw: (_cap.append(msgs) or ("stub", "嗯"))[1]
 _orig_allowed22 = bot.sim_allowed
 bot.sim_allowed = lambda gid, uid="": True
-_orig_paths22 = bot._agent_img_paths
-bot._agent_img_paths = lambda imgs=(), qmid=0: ["C:/tmp/fake_shot.png"]
+_orig_paths22 = bot.first_image_path
+bot.first_image_path = lambda imgs=(), qmid=0: ["C:/tmp/fake_shot.png"]
 _orig_rev22 = bot.reverser
 _orig_sees22 = bot.brain_sees_image_on
 _orig_bstrip22 = bot.send_bubbles
@@ -727,7 +727,7 @@ chk("分段里真有 image_url",
     str(_c22)[:120])
 
 # ③ 取图失败 ⇒ 明说「没看清」，不许回「给我名字/链接」那种话术
-bot._agent_img_paths = lambda imgs=(), qmid=0: []
+bot.first_image_path = lambda imgs=(), qmid=0: []
 _cap.clear()
 bot.sim_join(123450001, "小明", "介绍这家公司", uid="123450005",
              imgs=[{"file": "a.jpg"}], qmid=0)
@@ -736,7 +736,7 @@ chk("取图失败也告诉模型「有张图但没看清」", "没看清" in str
 
 bot.chat = _orig_chat22
 bot.sim_allowed = _orig_allowed22
-bot._agent_img_paths = _orig_paths22
+bot.first_image_path = _orig_paths22
 bot.reverser = _orig_rev22
 bot.brain_sees_image_on = _orig_sees22
 bot._brain_can_take_image = _orig_can22

@@ -8,8 +8,7 @@
 这个用例只做**纯函数断言**（不联网、不花钱、不起进程），守的是四条：
   ① 开关关着 ⇒ 识图仍走自己那套 see.*（零回归，绝不能被改成默认跟随）
   ② 开关打开 ⇒ see_provider/see_model 与大脑**完全一致**
-  ③ 大脑是 qoder/dsh/agent 这类**不收图**的档 ⇒ 必须回落 see.*，不能跟随
-  ④ 大脑档没配 url 或没填模型 ⇒ 也必须回落，**绝不能把识图搞成空档**
+  ③ 大脑档没配 url 或没填模型 ⇒ 必须回落 see.*，**绝不能把识图搞成空档**
 """
 import json
 import os
@@ -32,9 +31,16 @@ def chk(name, cond, detail=""):
 
 
 def base_cfg():
-    p = os.path.join(ROOT, "config.json")
-    with open(p, encoding="utf-8") as f:
-        return json.load(f)
+    """自带一份最小配置：用例不该依赖本机 config.json 里配了哪些后端。"""
+    return {
+        "ai": {"provider": "deepseek", "providers": {
+            "deepseek": {"url": "https://api.deepseek.com", "model": "deepseek-vl2"},
+            "modelscope": {"url": "https://api.modelscope.cn",
+                           "model": "nex-agi/Nex-N2.5-Pro"},
+        }},
+        "see": {"follow_brain": True},
+        "reverse": {},
+    }
 
 
 def main():
@@ -65,18 +71,7 @@ def main():
     chk("see_model 跟随大脑模型", reverser.see_model(c3) == brain_model,
         "%s != %s" % (reverser.see_model(c3), brain_model))
 
-    # ── ③ 大脑是不收图的档（qoder/dsh/agent）：必须回落 ─────────────────
-    for bad in ("qoder", "dsh", "agent"):
-        c4 = json.loads(json.dumps(c3))
-        c4["ai"]["provider"] = bad
-        chk("大脑=%s 时 brain_vl_target 返回空" % bad,
-            reverser.brain_vl_target(c4) == (None, None),
-            str(reverser.brain_vl_target(c4)))
-        # 回落 = 拿回原来的 see.* 值（不是空串、不是 None）
-        chk("大脑=%s 时 see_model 回落成非空档" % bad, bool(reverser.see_model(c4)),
-            "回落成了空值 ⇒ 识图会挂")
-
-    # ── ④ 大脑档没 url / 没模型：也必须回落，不能把识图搞空 ─────────────
+    # ── ③ 大脑档没 url / 没模型：也必须回落，不能把识图搞空 ─────────────
     c5 = json.loads(json.dumps(c3))
     b = c5["ai"]["provider"]
     c5["ai"]["providers"][b]["model"] = ""

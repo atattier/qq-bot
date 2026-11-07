@@ -161,24 +161,6 @@
     "role": "",
     "persona_custom": false
   },
-  "agent": {
-    "enabled": true,
-    "node": "",
-    "cli_js": "",
-    "python": "",
-    "cwd": "",
-    "model": "",
-    "permission_mode": "",
-    "allowed_tools": [],
-    "allow_write": false,
-    "only_owner": false,
-    "full_tools": false,
-    "allowed_mcp": "",
-    "timeout_sec": 211,
-    "always": false,
-    "_说明": "",
-    "ack_after_sec": 0
-  },
   "comfyui": {
     "enabled": true,
     "url": "http://127.0.0.1:8188",
@@ -506,7 +488,6 @@
     "model": "",
     "follow_brain": false,
     "local_model": "",
-    "web": false,
     "_local_model说明": "",
     "_20261029说明": ""
   },
@@ -542,40 +523,6 @@
     "recall_chars": 320,
     "embed_timeout": 3.0,
     "embed_keepalive": ""
-  },
-  "webai": {
-    "dir": "",
-    "python": "",
-    "backend": "",
-    "timeout": 90,
-    "see_backend": "",
-    "see_timeout": 120,
-    "min_interval": 30,
-    "daily_cap": 150,
-    "conv_url": "https://chat.deepseek.com/a/chat/s/ea5cfab0-c0b2-4573-877b-e2dc7e2e7ecf",
-    "conv_title": "",
-    "_说明": "",
-    "convs": {
-      "deepseek": {
-        "url": "https://chat.deepseek.com/a/chat/s/ea5cfab0-c0b2-4573-877b-e2dc7e2e7ecf",
-        "title": ""
-      },
-      "doubao": {
-        "url": "https://www.doubao.com/chat/38410657898976514",
-        "title": ""
-      }
-    }
-  },
-  "dsh": {
-    "enabled": false,
-    "cli": "",
-    "profile": "",
-    "timeout_sec": 240,
-    "cwd": "",
-    "provider": "",
-    "model": "",
-    "reasoning_effort": "",
-    "only_owner": false
   },
   "humanize": {
     "enabled": true,

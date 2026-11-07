@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 """方案 B（NapCat 容器化）的公共零件。
 
-为什么单独抽一个文件：wire.py / docker_mgr.py / docker_bootstrap.py / docker_doctor.py
-四个脚本都要做同样四件事 —— 找 docker、跑命令、探端口、改 json。以前各写一份，
-改一处忘三处（2026-10-22 就出现过 wire.py 认的 docker 路径和 keeper 里的不一样）。
-现在统一从这里取。
+为什么单独抽一个文件：wire.py / docker_mgr.py 都要做同样四件事 —— 找 docker、
+跑命令、探端口、改 json。以前各写一份，改一处忘三处（2026-10-22 就出现过 wire.py
+认的 docker 路径和 keeper 里的不一样）。现在统一从这里取。
 
 **所有外部命令都经过 run()**，它认 `QQBOT_DOCKER_BIN` / `QQBOT_DISM_BIN` /
-`QQBOT_WINGET_BIN` 三个环境变量覆盖可执行文件路径 —— tools/docker_selftest.py
-靠这个塞假 docker 进去，把整条链路在没装 Docker 的机器上跑一遍。
+`QQBOT_WINGET_BIN` 三个环境变量覆盖可执行文件路径，回归测试靠这个塞假 docker 进去。
 """
 import io
 import json
@@ -29,7 +27,7 @@ ENV_FILE = os.path.join(HERE, ".env")
 ENV_EXAMPLE = os.path.join(HERE, ".env.example")
 STATE_DIR = os.path.join(ROOT, "state")
 BACKUP_DIR = STATE_DIR
-# 测试态隔离（2026-11-04 审计）：docker_selftest 会跑 wire 的备份逻辑，
+# 测试态隔离（2026-11-04 审计）：回归测试会跑 wire 的备份逻辑，
 # 不能把「假配置的备份」写进生产 state/。QBOT_TEST 下统一落到临时目录。
 if os.environ.get("QBOT_TEST"):
     import tempfile
@@ -319,7 +317,7 @@ def napcat_status(timeout=6):
 
     2026-10-22 19:2x 修：QQ 长连接重连时 `/get_status` 的 `online` 会**闪一下 false**
     （实测：bot 正在正常收发消息，体检却报"账号离线"）。单次探测会误报，
-    keeper 虽然有三连击去抖，但 docker_doctor 是一锤定音，容易骗人。
+    keeper 虽然有三连击去抖，但单次体检报出来容易骗人。
     现在拿到 False 就隔 2 秒再探一次，两次都 False 才认。
     """
     if not port_open(NAPCAT_PORT):

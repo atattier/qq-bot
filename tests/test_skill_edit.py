@@ -192,17 +192,28 @@ def main():
         import qbot_skill_tools as T
         pics = os.path.join(tmp, "pics")
         os.makedirs(pics)
-        # 拿真实素材里最小的几张「菲比」，保证是真图（发送前要认魔数）
+        # 拿真实素材里最小的几张「菲比」，保证是真图（发送前要认魔数）；
+        # 公开仓不带 images/（.gitignore），没有素材时现场合成几张 gif 顶上。
+        _NAMES = ("干饭菲比.gif", "生气菲比.gif", "无语菲比.gif")
         src_dir = os.path.join(ROOT, "images", "emoji")
         cands = sorted((os.path.join(src_dir, f) for f in os.listdir(src_dir)
                         if "菲比" in f and f.lower().endswith(".gif")),
-                       key=lambda p: os.path.getsize(p))
+                       key=lambda p: os.path.getsize(p)) if os.path.isdir(src_dir) else []
         real = cands[:3]
-        ok("能取到真实菲比素材", len(real) == 3, [os.path.basename(p) for p in real])
-        # 改名成有语义的名字，方便验「关键词优先命中」（内容还是真 gif）
-        for src, dst in zip(real, ("干饭菲比.gif", "生气菲比.gif", "无语菲比.gif")):
-            shutil.copy2(src, os.path.join(pics, dst))
-        shutil.copy2(real[0], os.path.join(pics, "无关梗图.gif"))
+        if len(real) == 3:
+            for src, dst in zip(real, _NAMES):
+                shutil.copy2(src, os.path.join(pics, dst))
+            shutil.copy2(real[0], os.path.join(pics, "无关梗图.gif"))
+        else:
+            print("   (提示) 本机没有菲比素材，改用合成 gif")
+            from PIL import Image as _Img
+            # 噪声图：图库会丢掉 <2KB 的（多半是坏图），纯色 gif 太小会被筛掉
+            for i, dst in enumerate(_NAMES):
+                _Img.frombytes("RGB", (128, 128), os.urandom(128 * 128 * 3)).save(
+                    os.path.join(pics, dst), "GIF")
+            _Img.frombytes("RGB", (128, 128), os.urandom(128 * 128 * 3)).save(
+                os.path.join(pics, "无关梗图.gif"), "GIF")
+            real = [os.path.join(pics, n) for n in _NAMES]
         with open(os.path.join(pics, "超大菲比.gif"), "wb") as f:
             f.write(b"GIF89a" + b"\0" * (5 * 1024 * 1024))
         before_files = sorted(os.listdir(pics))

@@ -2134,14 +2134,9 @@ function render(d){
      main.forEach(function(it){rows.appendChild(row(it));});
      if(adv.length)rows.appendChild(advFold(adv));
      if(!main.length&&!adv.length)rows.appendChild(el("p","empty","暂无开关"));
-     /* 大脑卡：说清为什么少了几项、怎么放出来（主人 2026-10-20：一堆不相关的按键看不动） */
-     if(bs&&bs.hid)rows.appendChild(el("p","empty",
-       "这里只列「"+(bs.cur||"未选")+"」用得上的项；另有 "+bs.hid+
-       " 项属于别的大脑（qoder / DSH / 云端 API），把上面「大脑」切过去就自动放出。"));
      /* 识图组：把「最后一次是谁答的 / 别的档为什么没答上」摊开给主人看。
-        主人抱怨「识图很差」时，最缺的就是这个 —— 光看配置不知道实际跑成什么样。
         数据来自 /api/config 的 see_last（reverser.last_chain()，只留最近一条）。 */
-     if(g.group==="识图"){rows.appendChild(seeDiag(g));rows.appendChild(webaiConvBox(items));rows.appendChild(webaiLoginBox(items));}}
+     if(g.group==="识图"){rows.appendChild(seeDiag(g));}}
    card.appendChild(rows);grid.appendChild(card);
    CARDS.push({el:card,cat:card.getAttribute("data-cat"),
                n:((g.chat||g.info)?1:items.length),ms:g.min_span||0});});
@@ -2237,96 +2232,6 @@ function syncCatNav(){
    bs[i].setAttribute("aria-selected",
      bs[i].getAttribute("data-cat")===sel?"true":"false");}}
 function pad(n){return (n<10?"0":"")+n;}
-function webaiConvBox(items){
- /* 网页通道「只在哪个对话里问」。后端切换在上面的「网页后端 / 识图网页后端」
-    两行里改，这里只负责「刷新 → 选一条 → 绑定」。
-    ⚠️ 刷新会真起浏览器读侧栏（二三十秒），所以**只能由主人点按钮触发** ——
-       绝不能放进页面加载流程，否则每开一次后台都卡半分钟。 */
- var be="",cur="";
- items.forEach(function(it){
-   if(it.key==="webai.backend")be=it.value||"";
-   if(it.key==="webai.convs."+(be||"doubao")+".url")cur=it.value||"";});
- if(!be)be="doubao";
- var box=el("div","slots");
- var r=el("div","knob");
- var top=el("div","knob__top");
- var lab=el("div","knob__lab");
- lab.appendChild(el("span","knob__name","网页对话"));
- lab.appendChild(el("span","tag",be));
- top.appendChild(lab);r.appendChild(top);
- var d=el("div","knob__desc");
- d.textContent="让网页版只在指定的那一个对话里问答，不再每次新开（否则侧栏会被刷出一堆废弃对话）。"
-  +"点「刷新列表」读出 "+be+" 上的对话，选一条点「绑定这个对话」。"
-  +"两家对话链接格式不同，绑定只对当前后端（"+be+"）生效。";
- r.appendChild(d);
- var bar=el("div","wladd");bar.style.marginTop="8px";
- var sel=el("select","field");sel.style.flex="1";sel.style.width="auto";
- if(cur){var o0=document.createElement("option");o0.value=cur;
-   o0.textContent="当前已绑："+cur;sel.appendChild(o0);}
- var rf=el("button","btn","刷新列表");rf.type="button";
- var bd=el("button","btn","绑定这个对话");bd.type="button";
- bar.appendChild(sel);bar.appendChild(rf);bar.appendChild(bd);
- r.appendChild(bar);
- rf.onclick=function(){
-   say("正在起浏览器读 "+be+" 的侧栏对话…（约 20~40 秒）",true);
-   fetch("/api/webai_convs",{method:"POST",headers:{"Content-Type":"application/json",
-     "X-Bridge-Token":TOKEN,"X-QQ-Source":"web"},body:JSON.stringify({backend:be})})
-   .then(function(rr){return rr.json();}).then(function(dd){
-     sel.innerHTML="";
-     if(!(dd&&dd.ok)){say((dd&&dd.error)||"没抓到对话",false);return;}
-     var cs=dd.convs||[];
-     cs.forEach(function(c){
-       var o=document.createElement("option");
-       o.value=c.url||"";
-       o.textContent=(c.title||"(无标题)")+"　—　"+(c.url||"");
-       sel.appendChild(o);});
-     say(cs.length?("拿到 "+cs.length+" 条对话，选一条点「绑定这个对话」")
-                  :"这个后端没读到对话（多半是没登录）",!!cs.length);})
-   .catch(function(e){say("请求失败："+e,false);});};
- bd.onclick=function(){
-   if(!sel.value){say("先点「刷新列表」选一条对话",false);return;}
-   set({key:"webai.convs."+be+".url",value:sel.value});};
- box.appendChild(r);
- return box;}
-function webaiLoginBox(items){
- /* 网页后端登录。豆包 / DeepSeek 的登录态会周期性过期，过期后识图和查资料就一直失败
-    （旧实现检测到没登录还会反复弹 Chrome 窗，已改成「不弹 + 冷却 + 秒级回落 API」）。
-    这里给两个按钮：点了**故意**弹一个有头浏览器让人登，登上后自动清冷却、立刻恢复。
-    ⚠️ 会弹窗是故意的 —— 要人扫码/输账号，没法无人值守。 */
- var be="";
- items.forEach(function(it){ if(it.key==="webai.backend")be=it.value||""; });
- if(!be)be="doubao";
- var box=el("div","slots");
- var r=el("div","knob");
- var top=el("div","knob__top");
- var lab=el("div","knob__lab");
- lab.appendChild(el("span","knob__name","网页后端登录"));
- lab.appendChild(el("span","tag","当前 "+be));
- top.appendChild(lab);r.appendChild(top);
- var d=el("div","knob__desc");
- d.textContent="网页版（豆包 / DeepSeek）的登录态隔几天就会过期，过期后识图、查资料会一直失败。"
-  +"点下面按钮会**故意弹出一个 Chrome 窗口**，在里面扫码/登录就行；登上后自动恢复，不用重启 bot。"
-  +"（不登录也不影响 bot 说话 —— 识图会自动改走硅基流动的 Qwen3-VL，只是不带联网查证。）"
-  +"也可以直接双击项目里的 login_doubao.bat / login_deepseek.bat。";
- r.appendChild(d);
- var bar=el("div","wladd");bar.style.marginTop="8px";
- ["doubao","deepseek"].forEach(function(b){
-   var x=el("button","btn","登录 "+b);x.type="button";
-   x.onclick=function(){loginWeb(b,x);};
-   bar.appendChild(x);});
- r.appendChild(bar);
- box.appendChild(r);
- return box;}
-function loginWeb(b,btn){
- say("正在弹出 "+b+" 的登录窗口…（最长等 5 分钟，登上自动恢复）",true);
- btn.disabled=true;
- fetch("/api/webai_login",{method:"POST",headers:{"Content-Type":"application/json",
-   "X-Bridge-Token":TOKEN,"X-QQ-Source":"web"},body:JSON.stringify({backend:b})})
- .then(function(rr){return rr.json();}).then(function(dd){
-   say((dd&&dd.msg)||(dd&&dd.error)||"已触发",!!(dd&&dd.ok));
-   if(dd&&dd.ok){setTimeout(function(){btn.disabled=false;},300000);}
-   else{btn.disabled=false;}})
- .catch(function(e){say("请求失败："+e,false);btn.disabled=false;});}
 function personaCard(g){
  /* 人格管理（2026-10-25 主人要）：人设 = roles/*.md 一个文件一个。
     选一个 → 改名/改正文 → 保存（含改名）、新建、删除、直接切换。
@@ -2750,19 +2655,15 @@ function infoRows(list,rows){
   box.appendChild(r);});
  rows.appendChild(foldBox(list.length+" 项群聊能力（点开看说明）",box,DESCON));}
 function brainSplit(items){
- /* 「大脑」卡只列当前大脑用得上的项：knob 上带 brain=qoder|dsh|api 的按大脑收起，
-    没带的（大脑本身、备用、模型选择、思考强度、两个上岗开关）恒显。
-    2026-10-20 主人：不能把只属于 dsh / qoder 的旋钮跟选择项摆一排——选了谁就调谁。
-    2026-10-29 晚：「思考强度」改为真·按大脑调档（云端=reasoning_effort / dsh=dsh.
-    reasoning_effort / qoder=老组合档），恒显；_set_think_level 内部按大脑分流。 */
+ /* 「大脑」卡只列当前大脑用得上的项：knob 上带 brain 且不是 api 的按大脑收起，
+    没带的（大脑本身、备用、模型选择、思考强度）恒显。 */
  var cur="";items.forEach(function(it){if(it.key==="ai.provider")cur=it.value;});
- cur=(""+(cur||"")).toLowerCase();if(cur==="agent")cur="qoder";
- var LOCAL={qoder:1,dsh:1,workbuddy:1,zcode:1},vis=[],hid=0;
+ cur=(""+(cur||"")).toLowerCase();
+ var vis=[],hid=0;
  items.forEach(function(it){
    if(it.web_hidden){hid++;return;}
    var b=it.brain;
-   if(!b){vis.push(it);return;}
-   if(b===cur||(b==="api"&&cur&&!LOCAL[cur]))vis.push(it);else hid++;});
+   if(!b||b==="api"||b===cur)vis.push(it);else hid++;});
  return {vis:vis,hid:hid,cur:cur};}
 
 /* depends_on（2026-10-30）：这一项当前该不该藏。

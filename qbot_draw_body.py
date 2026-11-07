@@ -582,7 +582,7 @@ def _moss_probe(messages):
     """给 SubjectBook 挑词/查词用的模型回调：**优先 Studio 端点**。
 
     ⚠️ 2026-10-25：原来走 `_draw_llm()`（enhance_provider=siliconflow）和
-    `_draw_webllm()`（豆包），前者 402 余额不足、后者要起浏览器，
+    `_draw_webllm()`（联网小模型），前者 402 余额不足、后者慢，
     于是「主体查证整步失败（HTTP 402），直接照原样画」—— 珂莱塔照样被画成白毛。
     Studio 端点 1~3 秒就有答案，直接用它。
 
@@ -627,7 +627,7 @@ def _moss_web_card():
        原因：`_moss_subject_hint()` 调的是 `book.lookup(text, probe=..., web=None)` ——
        `web=None` 等于**只让模型凭记忆答**，答不出就吐「未查到确切出处」，
        然后又因为 `_is_null_answer` 判空 ⇒ 当没查到 ⇒ 布局模型拿六个字瞎编。
-       comfy 那条路是靠 `_draw_webllm()`（豆包网页版）真联网；Moss 这条完全没接。
+       comfy 那条路是靠 `_draw_webllm()` 真联网；Moss 这条完全没接。
        现在接上 **bot 自带的免密钥搜索**（`web_search_any`：付费 key → 搜狗/百度/360/Bing），
        实测「妄想天使 绝区零」4.2 秒拿到 6 条、确认出自《绝区零》。
        **先搜再答**：搜到的是原始网页摘要，塞给 Studio 端点压成 WHO/LOOK/TAGS 卡。
@@ -1461,238 +1461,10 @@ def _draw_llm(style=None):
     return _call
 
 
-def _subject_doubao_on(c=None):
-    """查证后端是不是豆包。旋钮优先于 config（主人随时切，别重启）。"""
-    c = _comfy_cfg() if c is None else c
-    _sb = knob_find("查证后端")
-    _v = str((knob_get(_sb) if _sb else c.get("subject_backend")) or "豆包").strip().lower()
-    return _v not in ("智谱", "zhipu", "zhipu_fast", "off", "关", "false", "0")
-
-
-def _draw_tagline(style=None):
-    """豆包直出「@画师 + 角色串」的快路，交给 SubjectBook 当 web_tags 用。
-
-    签名 `(name, text) -> card dict or None`。跟 `_draw_webllm` 的区别：
-      * `_draw_webllm`：豆包只"查"，资料还得让小模型压成 WHO/LOOK/TAGS 卡；
-      * 这里：**豆包直接吐 tag 串**（三行，很短），拿到就用，不再倒一手。
-
-    主人 2026-09-16 要的就是这个："使用了豆包的情况下直接让豆包给你画师或角色串就行"。
-    返回 None（关了/切智谱/豆包没回话）时 SubjectBook 自动回落完整卡那条老路。
-    """
-    if comfy_gen is None:
-        return None
-    c = _comfy_cfg()
-    if not c.get("enhance", True):
-        return None
-    cap = min(max(float(c.get("subject_timeout_sec", 30)), 50), 75)
-
-    def _ask(name, text):
-        # 旋钮可能中途被切，所以每次都重问一句，不在闭包里写死
-        if not name or not _subject_doubao_on() or not webai_ok():
-            return None
-        q = "%s\n\n要查的词：%s\n%s" % (
-            comfy_gen.SUBJECT_TAGLINE_SYS, name,
-            ("它出现在这段画面描述里：%s" % str(text)[:100]) if text else "")
-        ans = webai_ask(q, timeout=cap)
-        webai_note(bool(ans))
-        if not ans:
-            log.warning("豆包直出 tag 串：%s 没回话", name)
-            return None
-        card = comfy_gen.tagline_card(name, ans)
-        if card:
-            log.info("豆包直出 tag 串：%s → 画师「%s」角色「%s」（%s）",
-                     name, card.get("artist") or "-", (card.get("tags") or "-")[:70],
-                     (card.get("who") or "")[:30])
-        else:
-            log.info("豆包直出 tag 串：%s 没解析出能用的 tag", name)
-        return card
-    return _ask
-
-
-def webai_identify(image, style=None):
-    """图生图认人：把原图发给豆包识图，直接要「@画师 + 角色串」。
-
-    返回跟 `reverser.identify` 同构的 dict，调用方不用改。三种情况都返回 known=False
-    （via 里写明原因，方便看日志），区别在**要不要回落视觉模型**：
-      * 没启用豆包 / 豆包通道挂了 / 豆包没回话 → 回落（它压根没看图）；
-      * 豆包回了但没解析出 tag → **不回落**（它看过图了，再问一遍 VL 纯属浪费 20 秒）。
-    """
-    out = {"known": False, "name": "", "series": "", "confidence": 0.0,
-           "brief": "", "tags": "", "artist": "", "via": "豆包·没用上"}
-    if comfy_gen is None or not image or not Path(str(image)).is_file():
-        out["via"] = "豆包·没图"
-        return out
-    if not _subject_doubao_on():
-        out["via"] = "豆包·未启用"
-        return out
-    if not webai_ok():
-        out["via"] = "豆包·通道不可用"
-        return out
-    c = _comfy_cfg()
-    cap = min(max(float(c.get("subject_timeout_sec", 30)), 60), 90)
-    ans = webai_ask(comfy_gen.SUBJECT_VISION_SYS, image=str(image), timeout=cap)
-    webai_note(bool(ans))
-    if not ans:
-        out["via"] = "豆包·没回话"
-        log.warning("豆包识图没回话（回落视觉模型）")
-        return out
-    card = comfy_gen.tagline_card("", ans)
-    # 画师也算收获（anima 档画风全靠它），只有角色串没有时同样算认出；
-    # 2026-09-17 起 WHO-only 也算（单字角色名 黍/令/夕/年 豆包常只答得出是谁）——
-    # known=True 就不会回落 VL 白等 20 秒，群消息也能带一句「认出是谁」。
-    if not card or not (card.get("tags") or card.get("artist") or card.get("who")):
-        out["via"] = "豆包·没认出"
-        log.info("豆包识图：没解析出 tag（%s）", (ans or "")[:100])
-        return out
-    out.update(known=True, name=(card.get("who") or "")[:120], series="",
-               confidence=0.9, brief=("是谁：" + (card.get("who") or ""))[:200],
-               tags=card.get("tags") or "", artist=card.get("artist") or "",
-               via="豆包识图")
-    log.info("豆包识图：%s | 画师「%s」| tag「%s」",
-             (card.get("who") or "")[:30], out["artist"] or "-", out["tags"][:70])
-    return out
-
-
-# 聊天识图走「网页版看图 + 联网确认」那一张嘴**默认**用哪个后端
-# （真正生效的值由 `see_web_backend()` 从 `webai.see_backend` 读，别直接用这个常量）。
-# ⚠️ 2026-10-07 主人实测定的：**DeepSeek 网页版**。理由（同一张丰川祥子图）：
-#   · DeepSeek 网页版 → ✅ **答对**「丰川祥子 / BanG Dream! It's MyGO!!!!!」并给出联网依据
-#   · 豆包网页版   → ❌ 报 toyama kasumi（错），且慢（54s）
-#   · API 免费档（deepseek-flash / glm-4v）→ 认不出；本地 qwen3-vl-4b → 自信报错名
-#   · 魔搭 Nex-N2.5-Pro → ✅ 答对但 3 次挂 2 次（不可靠）
-# ⇒ 网页版带**真联网搜索**，是唯一稳定答对的通道。豆包留作备选（旋钮可切）。
-SEE_WEB_BACKEND_DEFAULT = "deepseek"
-
-
-def see_web_backend():
-    """聊天识图问哪一家网页版 —— **读配置，别写死**（2026-10-25 修）。
-
-    🔴 原来「看图问答」那条路的网页兜底直接写死 `backend=SEE_WEB_BACKEND_DEFAULT`
-    （常量 "deepseek"），于是主人在面板上把「识图网页后端」切成豆包**完全无效** ——
-    面板显示 doubao、实际去问 deepseek，而 deepseek 网页版登录态早就没了，
-    表现就是「面板上明明配着豆包，识图却一直不起作用」。
-    """
-    try:
-        v = str((CFG.get("webai") or {}).get("see_backend") or "").strip().lower()
-    except Exception:  # noqa: BLE001
-        v = ""
-    return v or SEE_WEB_BACKEND_DEFAULT
-
-
-def see_web_on():
-    """「网页识图」总开关（see.web）。关着就完全不碰网页版，每次省 7~13 秒白等。"""
-    return bool((CFG.get("see") or {}).get("web", False))
-
-
-def webai_identify_chat(image, timeout=None):
-    """聊天识图：把图发给**网页版模型（默认 DeepSeek，带联网搜索）**——**先看懂整张图**，
-    是某作品角色就**顺便**认出是谁。
-
-    ⚠️ 2026-10-16 主人要求改（原话：「聊天端的认人改成认图，要理解图片的含义而不是单单
-       辨认角色。图片也可能是其他内容，都要认出来」）。旧版**只问「是哪个动漫/游戏角色」**，
-       于是非角色的图（风景／物品／截图／梗图）它一概不管，角色图也只回一个名字、不解释画面。
-       现在改成**理解图片**：先照实说清「这是什么图、画面里有什么、在发生什么」，
-       只有画面主体确实是作品角色时才补 NAME/SERIES。
-    返回 dict：{"known","name","series","confidence","brief","tags","scene","via"}。
-      · known=True 仅当真的给出了角色名；
-      · scene 恒为「看懂的画面」中文描述（没认出角色时也有，供调用方接话）；
-      · 与 webai_identify（豆包，给图生图要 tag 用）的区别：这里**不要 tag、不要画师**；
-      · 任何失败都返回 known=False（via 写明原因），绝不抛。
-    """
-    out = {"known": False, "name": "", "series": "", "confidence": 0.0,
-           "brief": "", "tags": "", "scene": "", "via": "网页识图·没用上"}
-    if not image or not Path(str(image)).is_file():
-        out["via"] = "网页识图·没图"
-        return out
-    # 2026-10-24：豆包网页版一发出消息就把登录态踢掉（`?from_logout=1`），
-    # 网页识图已经不可用。`see.web=false` 直接跳过，每次省 140 秒白等。
-    if not bool((CFG.get("see") or {}).get("web", True)):
-        out["via"] = "网页识图·已关（see.web=false，直接走 API 视觉链）"
-        return out
-    if not webai_ok():
-        out["via"] = "网页识图·通道冷却中"
-        return out
-    be = see_web_backend()
-    # 网页版起浏览器慢（30~60s），给足；超时就当这档没答上来，回落 API 链。
-    cap = float(timeout or (CFG.get("webai") or {}).get("see_timeout") or 120)
-    q = ("请看懂我发的这张图，说清楚它是什么、画面里有什么、在发生什么。"
-         "**图不一定是角色**——可能是动漫/游戏插画、真人照片、动物、风景、食物、"
-         "物品商品、截图（聊天记录／网页／代码／报错／账单）、表情包或梗图、海报封面、"
-         "文档图表等，都要照实说清楚。"
-         "**只有画面主体确实是某部已有动漫/游戏/影视作品或虚拟主播里的特定角色时，"
-         "才联网搜索确认后补充角色是谁，不要凭印象猜；不是作品角色就直说「不是角色」，"
-         "绝对不要编一个角色名。**"
-         "按这个格式回（每项一行，没有的就留空）：\n"
-         "SCENE: 一到两句中文，说清这是什么图、画面里有什么、在发生什么\n"
-         "NAME: 角色名的英文或罗马字写法（不是作品角色就留空）\n"
-         "SERIES: 作品名的英文或罗马字写法（不是就留空）\n"
-         "WHY: 一句中文，说你凭什么认出这个角色的（没认出角色就留空）")
-    try:
-        # 复用指定对话：**不显式传**，交给 webai_ask 按 backend（= be）自己去取。
-        # ⚠️ 2026-10-21：原先这里写死传顶层 conv_url（DeepSeek 那条），
-        #    一旦「识图后端」切成豆包，就把 DeepSeek 的链接喂给了豆包 ⇒ 串台。
-        ans = webai_ask(q, backend=be, image=str(image), timeout=cap)
-    except Exception as e:
-        log.info("网页识图：%s 后端出错 %s", be, e)
-        ans = ""
-    webai_note(bool(ans))
-    if not ans:
-        out["via"] = "网页识图·没回话(%s)" % be
-        return out
-    txt = ans.strip()
-    # 跨行正则抓「字段名:」到「下一个字段名/行尾」之间的内容。
-    # ⚠️ 2026-10-07 实测：DeepSeek 网页版会把多行**挤成一行**回来
-    #    （`SCENE: xx NAME: yy SERIES: zz WHY: ...`），按行解析一个字段都抓不到。
-    def _grab(field):
-        m = re.search(
-            r"(?:^|\n|\s)%s\s*[:：]\s*(.*?)(?=\s(?:SCENE|NAME|SERIES|WHY)\s*[:：]|$)" % field,
-            txt, re.I | re.S)
-        return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
-
-    sc, nm, se, why = _grab("SCENE"), _grab("NAME"), _grab("SERIES"), _grab("WHY")
-    nm = re.sub(r"[（(].*?[)）]", "", nm).strip()      # 名字后的中文括注去掉
-    se = re.sub(r"[（(].*?[)）]", "", se).strip()
-    # 去掉行内可能残留的 markdown 星号/引号
-    nm = nm.strip("*\"'` ").strip()
-    se = se.strip("*\"'` ").strip()
-    # 没按格式给 SCENE（老式/随意回答）→ 拿整段当画面描述，去掉残留字段行
-    if not sc:
-        sc = re.sub(r"(?:^|\s)(?:NAME|SERIES|WHY)\s*[:：].*$", "", txt, flags=re.I | re.S)
-        sc = re.sub(r"\s+", " ", sc).strip()
-    # 它只回了「认不出/不确定」这类 → 没画面可讲，别把这句话当描述
-    if re.fullmatch(r"[\s。.！!]*(认不出|看不懂|不确定|不清楚|无法识别|不是角色)[\s。.！!]*",
-                    sc or ""):
-        sc = ""
-    # 名字显然不是角色名（太长／就是「不是角色」之类）→ 当作没认出
-    if nm and (len(nm) > 60 or re.search(
-            r"(不是角色|没有角色|none|n/?a|unknown|not\s+a\s+character)", nm, re.I)):
-        nm = ""
-    out["scene"] = sc[:400]
-    if not nm:
-        # **看懂但没认出角色**也算成功：scene 已拿到，调用方据此接话
-        out["via"] = "网页识图·只看懂没认出角色(%s)" % be
-        log.info("网页识图：只拿到画面描述（%s）｜%s", be, sc[:100] or "（空）")
-        return out
-    out.update(known=True, name=nm[:80], series=se[:80], confidence=0.9,
-               brief=("是谁：%s%s" % (nm, ("（%s）" % se) if se else ""))[:200],
-               via="网页识图·%s" % be)
-    log.info("网页识图：%s%s | 依据：%s | 画面：%s",
-             nm, ("（%s）" % se) if se else "", why[:50], sc[:60])
-    return out
-
-
 def _draw_webllm(style=None):
-    """查设定用的那张嘴。
+    """查设定用的那张嘴：先联网搜资料，再交给小模型压成 WHO/LOOK/TAGS 卡片。
 
-    2026-09-16 起**豆包网页版**当"联网查资料的那一位"（自带联网搜索，主人实测判断角色准）：
-    豆包先给一段自然语言资料 → 再交给小模型压成 WHO/LOOK/TAGS 卡片（卡片格式仍由小模型保）。
-    豆包没回话就整段回落「智谱 web_search + 小模型整理」，**文生图的查设定**和
-    **图生图认人后的查证**都走这一个函数，改这里两边同时生效。
-    想切回老路子：`设置 查证后端 智谱`（config comfyui.subject_backend）。
-
-    ⚠️ 两个真机踩出来的坑：① 别让豆包直接产出 WHO/LOOK/TAGS —— 它要吐三十几个 tag，
-    生成慢到超时（`❌ TimeoutError`），所以它只负责"查"，格式交给小模型；
-    ② 那条通道要起浏览器（20 秒上下），**只当查设定这张嘴，主回复链路永远不碰它**。
+    **文生图的查设定**和**图生图认人后的查证**都走这一个函数。
     """
     if comfy_gen is None:
         return None
@@ -1704,29 +1476,12 @@ def _draw_webllm(style=None):
     name = s.get("subject_provider") or c.get("subject_provider") \
         or s.get("enhance_provider") or c.get("enhance_provider") or "zhipu_fast"
     cap = float(c.get("subject_timeout_sec", 30))
-    use_doubao = _subject_doubao_on(c)
-    doubao_cap = min(max(cap, 50), 75)
-
-    def _doubao_src(query):
-        """让豆包联网查一段资料回来（短问答，不催它按格式输出）。"""
-        if not query:
-            return ""
-        ans = webai_ask(DOUBAO_ASK % query, timeout=doubao_cap)
-        webai_note(bool(ans))
-        if not ans:
-            log.warning("查设定：豆包没回话，回落智谱搜索")
-            return ""
-        return "【豆包联网查到的资料，以它为准】\n" + ans
 
     def _call(messages, query=""):
-        src = _doubao_src(query) if (use_doubao and webai_ok()) else ""
-        if not src:                        # 豆包关了 / 没回话 → 老路子：智谱联网搜索
-            snips = web_search_any(query, count=int(c.get("subject_search_count", 6))) if query else ""
-            if snips:
-                src = "【智谱联网查到的资料，以它为准】\n" + snips
+        snips = web_search_any(query, count=int(c.get("subject_search_count", 6))) if query else ""
         msgs = list(messages)
-        if src:
-            msgs.append({"role": "user", "content": src})
+        if snips:
+            msgs.append({"role": "user", "content": "【联网查到的资料，以它为准】\n" + snips})
         return chat_once(name, msgs, max_timeout=cap)
     return _call
 
@@ -1745,9 +1500,7 @@ def _subject_book():
             path=STATE / "subjects.json",
             enabled=True,
             max_names=c.get("subject_max_names", 2),
-            budget_sec=c.get("subject_budget_sec", 45),
-            # 豆包直出「画师+角色串」的快路；切回智谱时它自己每次都返回 None
-            web_tags=_draw_tagline())
+            budget_sec=c.get("subject_budget_sec", 45))
     return _subject_book_inst
 
 
@@ -1865,8 +1618,8 @@ def do_draw(job):
                                      landscape=job.get("landscape"),
                                      aspect=job.get("aspect"),
                                      book=_subject_book(),
-                                     # 2026-09-16 主人定：图生图不走豆包（认人查证回落智谱链），
-                                     # 豆包只伺候文生图的查设定。
+                                     # 图生图不做联网查证（认人回落视觉模型链），
+                                     # 联网查证只用于文生图的设定。
                                      web_llm=(None if job.get("i2i") else _draw_webllm(style)),
                                      lookup=job.get("lookup", True),
                                      image=job.get("i2i"), denoise=job.get("denoise"))

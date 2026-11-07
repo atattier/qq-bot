@@ -73,7 +73,6 @@ bot.reverser = type("R", (), {
     "describe": staticmethod(lambda p, c: "一只鸡蛋"),
     "identify": staticmethod(lambda p, c, *a, **k: {"known": False}),
 })()
-bot.webai_identify_chat = lambda *a, **k: {"known": False}
 # 🔴 必须显式关掉两条「一跳」路径（总控大脑 / 一图直达）：不关就**真联网**，
 #    本文件第一次跑就因此耗了 2 分钟、还叫坏了 B4~B7 四项（模型答的是
 #    「图没加载出来呀」，跟我们测的闸门无关）。这两条各有专门守卫：

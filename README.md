@@ -91,7 +91,6 @@ GET http://127.0.0.1:8088/admin?token=...  # 网页控制台
 | `QQBOT_PYTHON` | keeper 启动 bot 用的解释器，默认当前解释器 |
 | `QQBOT_DOCKER_BIN` | docker.exe 路径，默认自动探测 |
 | `QQBOT_SOVITS_HOME` | GPT-SoVITS 目录，默认 `~/GPT-SoVITS` |
-| `QQBOT_WEBAI_DIR` / `QQBOT_WEBAI_PYTHON` | 可选的 webai-agent 子进程目录与解释器 |
 | `QQBOT_COMFY_WORKFLOWS` | 真机测试用的 ComfyUI 工作流目录 |
 | `QQBOT_REV_TEST_IMG` | 反推真机测试用的图片 |
 | `QQBOT_NAPCAT_WIN_CFG` | Windows 版 NapCat 配置目录（同步 token 用） |

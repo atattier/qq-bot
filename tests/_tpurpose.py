@@ -238,8 +238,8 @@ _src = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
                          "bot.py"), encoding="utf-8").read()
 _tick_src = _src.split("def idle_opener_tick", 1)[1].split("\ndef ", 1)[0]
 chk("wiring 顺序：mood/既有硬闸在 purpose 之前",
-    _tick_src.index("silent_on() or external_brain()") < _tick_src.index("qbot_purpose.enabled()")
-    and _tick_src.index("agent_working(gid)") < _tick_src.index("qbot_purpose.enabled()"))
+    _tick_src.index("silent_on()") < _tick_src.index("qbot_purpose.enabled()")
+    and _tick_src.index("qbot_session.flag(gid, \"sim\", True)") < _tick_src.index("qbot_purpose.enabled()"))
 chk("purpose 发送复用 send_bubbles（不新增通道）",
     "def _purpose_send" in _src and "send_bubbles(gid, text)" in _src)
 

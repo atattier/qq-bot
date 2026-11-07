@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title 方案B 一键落地（起容器 + 接线 + 切模式 + 验收）
+title NapCat docker up + wire
 cd /d "%~dp0"
 
-rem 方案B的总入口：可以反复双击，已完成的阶段自动跳过。
-rem 第一次会在「启用 WSL 功能」之后要求重启；重启后再双击一次继续。
+rem 起 NapCat 容器，再把宿主机上的 bot 接到容器里的 OneBot。
+rem 第一次用之前先在 docker-napcat\.env 填 NAPCAT_ACCOUNT。
 net session >nul 2>&1
 if %ERRORLEVEL% == 0 goto :isadmin
 echo Requesting administrator rights...
@@ -12,8 +12,15 @@ powershell -Command "Start-Process -FilePath '%~f0' -Verb runAs"
 exit /b
 
 :isadmin
-python -u tools\docker_bootstrap.py
+python -u tools\docker_mgr.py up
+if errorlevel 1 goto :fail
+python -u docker-napcat\wire.py
 echo.
-echo 退出码 %errorlevel%（10 = 需要重启电脑后再双击一次）
-echo 按任意键关闭这个窗口。
+echo done (exit=%errorlevel%). Press any key to close this window.
+pause >nul
+exit /b
+
+:fail
+echo.
+echo 容器没起来。看上面的报错，或用 docker_status.bat 查状态。
 pause >nul

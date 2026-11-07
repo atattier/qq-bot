@@ -284,7 +284,7 @@ def main():
     print(" 2) http://127.0.0.1:%d/webui  扫码（首次一次，之后登录态在 .config 卷里）"
           % U.WEBUI_PORT)
     print(" 3) restart_bot.bat      重启 bot 让新的监听地址生效")
-    print(" 4) docker_doctor.bat    端到端验收（容器→宿主机这条路通不通）")
+    print(" 4) docker_status.bat    查看容器状态")
     return 0
 
 

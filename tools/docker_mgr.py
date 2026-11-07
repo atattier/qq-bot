@@ -36,12 +36,12 @@ def cmd_up():
     rc, out = U.docker(["compose", "up", "-d"], timeout=900, cwd=U.HERE)
     print("\n%s" % (out or "")[-1200:])
     if rc != 0:
-        print("\n[!] 起不来。先跑 docker_doctor.bat 看断在哪；"
+        print("\n[!] 起不来。先跑 docker_status.bat 看容器状态；"
               "最常见是 3000 端口被 Windows 注入版 NapCat 占着。")
         return 1
     print("\n容器已启动。")
     print("  扫码登录: http://127.0.0.1:%d/webui （口令见 docker-napcat/.env）" % U.WEBUI_PORT)
-    print("  验收    : docker_doctor.bat")
+    print("  状态    : docker_status.bat")
     return 0
 
 
@@ -92,7 +92,7 @@ def cmd_status():
         print("账号: 离线 —— 去 http://127.0.0.1:%d/webui 扫码" % U.WEBUI_PORT)
         return 1
     print("账号: 探不到（%s）" % detail)
-    print("\n⚠️ 还没通。跑 docker_doctor.bat 逐环体检。")
+    print("\n⚠️ 还没通。跑 docker_status.bat 查容器状态，再跑 docker_wire.bat 重新接线。")
     return 1
 
 

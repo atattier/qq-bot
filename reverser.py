@@ -187,7 +187,7 @@ SEE_DEFAULTS = {
 #
 # ⚠️ 两条硬边界（必须清楚，否则会以为开关坏了）：
 #   ① 只有**云端 API 档**（openai 协议、能收 image_url）才可能真看图；
-#      qoder / dsh / agent 这些大脑本身不收图 ⇒ 跟随它们等于识图必挂，
+#      不收图的大脑（本地 CLI 那类）⇒ 跟随它们等于识图必挂，
 #      所以 `follow_brain` 只认 `ai.providers` 里有 url 的云端后端。
 #   ② 跟随的是**模型名**，不是「后端类型」。大脑若是 ollama 本地档，
 #      跟随它也走本地 ollama（不联网、不审查），这是**特性不是 bug**。
@@ -1941,7 +1941,7 @@ def who_line(ident):
     if not ident or not ident.get("known"):
         return ""
     who = (ident.get("name") or "").strip()
-    if not who:      # 豆包识图有时只认出画师、说不出是谁——那就别在群里喊「认出是「」」
+    if not who:      # 视觉模型有时只认出画师、说不出是谁——那就别在群里喊「认出是「」」
         return ""
     se = ident.get("series") or ""
     return "认出是「%s」%s，按它的设定画的" % (who, "（%s）" % se if se else "")

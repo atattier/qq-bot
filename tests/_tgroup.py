@@ -78,9 +78,6 @@ bot.reverser = type("R", (), {
 })()
 bot.chat = lambda msgs, *a, **k: ("x", "哈哈这猫好圆润")
 bot._fetch_rev_image = lambda d: "fake.jpg"
-# 隔离网络（2026-11-04）：看图链路会先走 webai_identify_chat；以前它网络失败返回 {}，
-# 现在环境能连上/偶尔抛错，会让这几条「认不出就闭嘴」的用例变成真联网的碰运气。
-bot.webai_identify_chat = lambda src: {}
 # 本机 config 开了 ai.omni_brain ⇒ 看图会走真「总控大脑」（真 LLM，12s+），
 # 这条 SAFE 用例必须打桩在旧链路，否则结果取决于网络/模型当天发挥。
 bot._omni_on = lambda: False
@@ -169,40 +166,5 @@ chk("ats 照常收集", _ats == ["222002"], _ats)
 chk("换号后名字表更新", "低空段云" in bot.bot_names(), bot.bot_names())
 chk("事件照常投递", len(CAP2) == 1)
 bot.SELF_ID, bot.SELF_NAME = 123450002, "小鲸"
-
-# 9) agent 干活时：插话让路 + 太闷要应一声（2026-10-20「看着像放弃」）
-import threading as _th, time as _t
-G = 123450001
-bot.CFG.setdefault("sim", {})["enabled"] = True
-bot.CFG.setdefault("agent", {})["ack_after_sec"] = 0.35
-bot._agent_inflight.clear()
-bot._last_agent_send.pop(G, None)
-_real_locked = bot._run_agent_locked
-CHAT_SEEN = []
-def _spy_chat(msgs, *a, **k):
-    CHAT_SEEN.append(msgs[0]["content"])
-    return "x", "这题我在算，等我两分钟喵"
-bot.chat = _spy_chat
-bot._run_agent_locked = lambda gid, content, quote="", who="", uid="", **kw: (
-    _t.sleep(0.45) or (True, "答案正文", False))
-BUB.clear()
-_r1 = _th.Thread(target=bot.run_agent, args=(G, "做题")); _r1.start()
-_t.sleep(0.25)
-chk("干活中算 in-flight", bot.agent_working(G))
-BUB.clear(); CHAT_SEEN.clear()
-bot.sim_join(G, "群友甲", "不是为什么啊")
-chk("干活时插话让路", not CHAT_SEEN and not BUB, (CHAT_SEEN, BUB))
-_r1.join(timeout=5)
-chk("跑完清 in-flight", not bot.agent_working(G))
-chk("闷太久应一声", any("在做了" in s for s in CHAT_SEEN) and BUB, (CHAT_SEEN[:1], BUB))
-# agent 这一轮里已经自己开过口的，不再补应声
-bot._run_agent_locked = lambda gid, content, quote="", who="", uid="", **kw: (
-    bot._last_agent_send.__setitem__(int(gid), _t.time()), _t.sleep(0.45),
-    (True, "答案正文", False))[-1]
-CHAT_SEEN.clear(); BUB.clear()
-_th2 = _th.Thread(target=bot.run_agent, args=(G, "再做题")); _th2.start(); _th2.join(timeout=5)
-chk("本轮已发言就不应声", not BUB, BUB)
-bot._run_agent_locked = _real_locked
-bot._last_agent_send.pop(G, None)
 
 print("RESULT:", "PASS" if bad == 0 else "FAIL")

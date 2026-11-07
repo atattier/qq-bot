@@ -45,7 +45,7 @@ FAKE = {
     "host": "ATATIER", "py": "3.14.7",
 }
 INFO = {"name": "小鲸", "napcat": True, "comfy": False, "groups": 1, "skills": 3,
-        "role": "小鲸", "brain": "qoder",
+        "role": "小鲸", "brain": "api",
         "sent": {"per_hour": 12, "per_minute": 2, "circuit_left_sec": 0},
         "extra": "记忆：16 个人 / 0 条事实 / 327 轮对话"}
 

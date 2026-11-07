@@ -80,23 +80,6 @@ for gid, label in ((-int(XIAOJING), "私聊"), (123450001, "群聊")):
     check("C/%s/无 uid 不许认成主人" % label, "对面就是主人本人" in blk, False)
     check("C/%s/无 uid 仍给主人名单" % label, OWNER in blk, True)
 
-# ---------------- D. agent 侧私聊分支同口径 ----------------
-sys_txt_other = bot.agent_system_text(-int(XIAOJING), who="小鲸", uid=XIAOJING)
-check("D1/agent 私聊·小鲸 标明不是主人", "对面**不是主人**" in sys_txt_other, True)
-check("D2/agent 私聊·小鲸 不许写死对面是主人", "对面是主人一个人" in sys_txt_other, False)
-check("D3/agent 私聊·小鲸 仍写明主人 QQ", OWNER in sys_txt_other, True)
-
-sys_txt_owner = bot.agent_system_text(-int(OWNER), who="不提了", uid=OWNER)
-check("D4/agent 私聊·主人 正常认主", "对面是主人一个人" in sys_txt_owner, True)
-check("D5/agent 私聊·主人 不带『不是主人』",
-      "对面**不是主人**" in sys_txt_owner, False)
-
-sys_txt_grp = bot.agent_system_text(123450001, who="群友甲", uid=BUHAN)
-check("D6/agent 群聊·群友 标明不是主人", "**不是主人**" in sys_txt_grp, True)
-
-sys_txt_grp2 = bot.agent_system_text(123450001, who="atatier", uid=OWNER)
-check("D7/agent 群聊·主人 认得出", "就是你的主人" in sys_txt_grp2, True)
-
-print("A/B/C/D 共 %d 项断言，失败 %d" % (len(A_CASES) * 5 + len(B_CASES) * 6 + 4 + 7, bad))
+print("A/B/C 共 %d 项断言，失败 %d" % (len(A_CASES) * 5 + len(B_CASES) * 6 + 4, bad))
 print("RESULT:", "PASS" if bad == 0 else "FAIL (%d 项)" % bad)
 sys.exit(1 if bad else 0)

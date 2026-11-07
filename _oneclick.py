@@ -274,7 +274,7 @@ def main(argv):
             return 1
         if not wait_port(NAPCAT_PORT, WAIT_NAPCAT_START, "NapCat 就绪"):
             log("NapCat 容器在 %ds 内没就绪。常见原因：Docker 还在初始化 / 需要扫码登录 / "
-                "容器反复重启（跑 docker_doctor.bat 看断在哪环）。" % WAIT_NAPCAT_START)
+                "容器反复重启（跑 docker_status.bat 看容器状态）。" % WAIT_NAPCAT_START)
             log("不退出，继续交给 keeper 等（它每 30 秒重试一次）")
 
     st, acct = napcat_login_state(cfg)

@@ -91,26 +91,33 @@ bot._vg_state["busy"] = False
 # 7) 提示词/成片节点：**当前 config 生效的那份**工作流
 #    （2026-10-08 起 = 「H3fast 一采.json」：只跑一采、latent 传递与二采已删）
 import comfy_gen
-CFG_C = bot._comfy_cfg()
-_cw = bot._vg_cfg()["workflow"]
-g, meta = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])
-cand = [k for k, v in g.items() if v["class_type"] == "PrimitiveStringMultiline"]
-chk("转换图里找得到提示词节点", bool(cand), cand)
-pk = max(cand, key=lambda k: len(str(g[k]["inputs"].get("text")
-                                      or g[k]["inputs"].get("value") or "")))
-chk("提示词节点是最长文本的那个 PrimitiveStringMultiline", bool(pk), pk)
-chk("meta.kind = video（认得出视频输出）", meta.get("kind") == "video", meta.get("kind"))
-# 一采版必须满足的三条（不然就退回二采/空壳提交了）
-_sam = [k for k, v in g.items() if v["class_type"] == "SamplerCustomAdvanced"]
-chk("只剩一个采样器（二采链已删）", len(_sam) == 1, _sam)
-_mc = [k for k, v in g.items() if "MotionContext" in v["class_type"]]
-chk("没有 MotionContext（latent 传递已删）", not _mc, _mc)
-_prev = [k for k, v in g.items() if v["class_type"] in ("PreviewImage", "SaveImage")]
-chk("没有 PreviewImage/SaveImage 抢输出", not _prev, _prev)
-# 一采必须吃完整 sigma（不是二采切出来的前 4 步）
-_sig = g.get("157", {}).get("inputs", {}).get("sigmas")
-chk("一采 sigmas 接的是 BasicScheduler（完整步数）",
-    isinstance(_sig, list) and g.get(str(_sig[0]), {}).get("class_type") == "BasicScheduler", _sig)
+_HAVE_VG_WF = True
+try:
+    comfy_gen.wf_load(bot._comfy_cfg(), bot._vg_cfg()["workflow"])
+except Exception:
+    _HAVE_VG_WF = False
+    print("   (跳过) 本机没有视频工作流文件")
+if _HAVE_VG_WF:
+    CFG_C = bot._comfy_cfg()
+    _cw = bot._vg_cfg()["workflow"]
+    g, meta = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])
+    cand = [k for k, v in g.items() if v["class_type"] == "PrimitiveStringMultiline"]
+    chk("转换图里找得到提示词节点", bool(cand), cand)
+    pk = max(cand, key=lambda k: len(str(g[k]["inputs"].get("text")
+                                          or g[k]["inputs"].get("value") or "")))
+    chk("提示词节点是最长文本的那个 PrimitiveStringMultiline", bool(pk), pk)
+    chk("meta.kind = video（认得出视频输出）", meta.get("kind") == "video", meta.get("kind"))
+    # 一采版必须满足的三条（不然就退回二采/空壳提交了）
+    _sam = [k for k, v in g.items() if v["class_type"] == "SamplerCustomAdvanced"]
+    chk("只剩一个采样器（二采链已删）", len(_sam) == 1, _sam)
+    _mc = [k for k, v in g.items() if "MotionContext" in v["class_type"]]
+    chk("没有 MotionContext（latent 传递已删）", not _mc, _mc)
+    _prev = [k for k, v in g.items() if v["class_type"] in ("PreviewImage", "SaveImage")]
+    chk("没有 PreviewImage/SaveImage 抢输出", not _prev, _prev)
+    # 一采必须吃完整 sigma（不是二采切出来的前 4 步）
+    _sig = g.get("157", {}).get("inputs", {}).get("sigmas")
+    chk("一采 sigmas 接的是 BasicScheduler（完整步数）",
+        isinstance(_sig, list) and g.get(str(_sig[0]), {}).get("class_type") == "BasicScheduler", _sig)
 
 # 7b) 成片帧率：VHS_VideoCombine.frame_rate / CreateVideo.fps 都要归一化成 24
 #     帧数由 ComfyMathExpression 的 round(a*24) 算出（a=秒）；封装帧率写成 8 时
@@ -123,12 +130,13 @@ def _frs(gg):
         elif v.get("class_type") == "CreateVideo":
             out[k] = ("fps", v["inputs"].get("fps"))
     return out
-_before = _frs(g)
-chk("转换图里有成片节点（VHS_VideoCombine 或 CreateVideo）", bool(_before), _before)
-bot._vg_force_fr24(g)
-_after = _frs(g)
-chk("归一化后全是 24fps（原始 %s）" % _before,
-    bool(_after) and all(x[1] == 24 for x in _after.values()), _after)
+if _HAVE_VG_WF:
+    _before = _frs(g)
+    chk("转换图里有成片节点（VHS_VideoCombine 或 CreateVideo）", bool(_before), _before)
+    bot._vg_force_fr24(g)
+    _after = _frs(g)
+    chk("归一化后全是 24fps（原始 %s）" % _before,
+        bool(_after) and all(x[1] == 24 for x in _after.values()), _after)
 # 两种来源都要按：根本没有该键 + 文件里带老值 8.0
 _fake = {"299": {"class_type": "VHS_VideoCombine", "inputs": {}},
          "408": {"class_type": "VHS_VideoCombine", "inputs": {"frame_rate": 8.0}},
@@ -146,34 +154,35 @@ chk("时长解析直接认「8秒」", bot._vg_secs_from_desc("一只猫在雨�
 chk("时长解析认「6 seconds」", bot._vg_secs_from_desc("walk 6 seconds") == 6.0)
 chk("时长解析认中文「七秒」", bot._vg_secs_from_desc("七秒的舞蹈") == 7.0)
 chk("没写秒数就不改（返回 None）", bot._vg_secs_from_desc("让它动起来") is None)
-_g3 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
-_sec, _node = bot._vg_apply_duration(_g3, "镜头推进，12秒", hi=30.0)
-chk("写进工作流的秒数节点并真的改了值",
-    _sec == 12.0 and _node and float(_g3[_node]["inputs"]["value"]) == 12.0, (_sec, _node))
-_g4 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
-chk("描述里没秒数就不动那个节点",
-    bot._vg_apply_duration(_g4, "随便动一下", hi=30.0) == (None, None))
+if _HAVE_VG_WF:
+    _g3 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
+    _sec, _node = bot._vg_apply_duration(_g3, "镜头推进，12秒", hi=30.0)
+    chk("写进工作流的秒数节点并真的改了值",
+        _sec == 12.0 and _node and float(_g3[_node]["inputs"]["value"]) == 12.0, (_sec, _node))
+    _g4 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
+    chk("描述里没秒数就不动那个节点",
+        bot._vg_apply_duration(_g4, "随便动一下", hi=30.0) == (None, None))
 
-# 7d) 画布比例 / 百万像素可调（2026-10-08 主人要求：0.6MP、默认 3:4）
-#     ⚠️ ResolutionSelector 的 aspect_ratio 是 COMBO，只认那 8 个名字，逐字相同
-chk("比例候选只有 ResolutionSelector 认的那 8 档",
-    bot._vg_aspect_choices() == ["3:4", "9:16", "1:1", "4:3", "16:9", "2:3", "3:2", "21:9"],
-    bot._vg_aspect_choices())
-chk("短名映射到节点 COMBO 全名", bot._vg_aspect_full("3:4") == "3:4 (Portrait Standard)")
-chk("默认比例是 3:4", bot.VIDEO_ASPECT_DEFAULT == "3:4")
-chk("默认百万像素是 0.6", float(bot._vg_cfg().get("megapixels")) == 0.6)
-chk("不认识的比例会被 check 拦下", bot._vg_aspect_check("6:19")[0] is False)
-chk("支持的比例 check 放行", bot._vg_aspect_check("16:9")[0] is True)
-chk("百万像素越界会被拦", bot._vg_mp_check("9")[0] is False and bot._vg_mp_check("0.6")[0] is True)
-_g5 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
-_asp, _full, _n = bot._vg_apply_aspect(_g5, "16:9", 0.8)
-_rsel = [v for v in _g5.values() if v.get("class_type") == "ResolutionSelector"]
-chk("按 config 覆盖 ResolutionSelector 真的写进去了",
-    _n >= 1 and _rsel and _rsel[0]["inputs"].get("aspect_ratio") == "16:9 (Widescreen)"
-    and float(_rsel[0]["inputs"].get("megapixels")) == 0.8, (_asp, _full, _n))
-_g6 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
-chk("比例传空串 = 不动工作流",
-    bot._vg_apply_aspect(_g6, "") == (None, None, 0))
+    # 7d) 画布比例 / 百万像素可调（2026-10-08 主人要求：0.6MP、默认 3:4）
+    #     ⚠️ ResolutionSelector 的 aspect_ratio 是 COMBO，只认那 8 个名字，逐字相同
+    chk("比例候选只有 ResolutionSelector 认的那 8 档",
+        bot._vg_aspect_choices() == ["3:4", "9:16", "1:1", "4:3", "16:9", "2:3", "3:2", "21:9"],
+        bot._vg_aspect_choices())
+    chk("短名映射到节点 COMBO 全名", bot._vg_aspect_full("3:4") == "3:4 (Portrait Standard)")
+    chk("默认比例是 3:4", bot.VIDEO_ASPECT_DEFAULT == "3:4")
+    chk("默认百万像素是 0.6", float(bot._vg_cfg().get("megapixels")) == 0.6)
+    chk("不认识的比例会被 check 拦下", bot._vg_aspect_check("6:19")[0] is False)
+    chk("支持的比例 check 放行", bot._vg_aspect_check("16:9")[0] is True)
+    chk("百万像素越界会被拦", bot._vg_mp_check("9")[0] is False and bot._vg_mp_check("0.6")[0] is True)
+    _g5 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
+    _asp, _full, _n = bot._vg_apply_aspect(_g5, "16:9", 0.8)
+    _rsel = [v for v in _g5.values() if v.get("class_type") == "ResolutionSelector"]
+    chk("按 config 覆盖 ResolutionSelector 真的写进去了",
+        _n >= 1 and _rsel and _rsel[0]["inputs"].get("aspect_ratio") == "16:9 (Widescreen)"
+        and float(_rsel[0]["inputs"].get("megapixels")) == 0.8, (_asp, _full, _n))
+    _g6 = comfy_gen.wf_to_api(comfy_gen.wf_load(CFG_C, _cw)[1])[0]
+    chk("比例传空串 = 不动工作流",
+        bot._vg_apply_aspect(_g6, "") == (None, None, 0))
 
 # 7e) 产物识别：**键名随节点走**（2026-10-08 主人「视频运行好了为啥不发出去」实锤）
 #     旧 VHS_VideoCombine ⇒ gifs；新 SaveVideo ⇒ images。只认 gifs = 成功也误报「没有产出」。

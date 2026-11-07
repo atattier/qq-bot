@@ -1,4 +1,4 @@
-"""离线测 agent 工具面：/api/* 路由 + qq-mcp-server.py 的 stdio MCP。不发真消息。"""
+"""离线测本地 API 工具面：/api/* 路由 + qq-mcp-server.py 的 stdio MCP。不发真消息。"""
 import sys
 import os as _os, sys as _sys
 _ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
@@ -225,15 +225,5 @@ except Exception:
     p.kill()
 
 srv.shutdown()
-
-print("== 6 agent 环境/命令行拼装 ==")
-print("  agent_enabled:", bot.agent_enabled(), "selected:", bot.agent_selected())
-e = bot.agent_env()
-print("  清掉的 SDK 变量还在吗:", [k for k in bot.AGENT_ENV_SCRUB if k in e])
-print("  QQBOT_API/TOKEN:", e.get("QQBOT_API"), (e.get("QQBOT_TOKEN") or "")[:6] + "...")
-print("  mcp file:", bot.agent_mcp_file(),
-      json.dumps(json.load(open("state/agent-mcp.json", encoding="utf-8")), ensure_ascii=False)[:150])
-print("  system 长度:", len(bot.agent_system_text(G, "阿坤")))
-print(bot.agent_system_text(G, "阿坤")[:520])
 
 print("\nsave_config 已全程桩掉，生产 config.json / state/slang.json 零接触")

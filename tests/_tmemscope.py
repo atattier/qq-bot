@@ -7,7 +7,7 @@
   当前会话自身记忆正常可见；记忆卡沿用原有 group/private 过滤。
 
 覆盖真实注入链：_memory_ctx_blocks（ai_reply 的公共记忆段）、
-agent_system_text、sim_join、profile_block、render_recent、render_person、
+sim_join、profile_block、render_recent、render_person、
 recall_block。全部打桩，不联网、不发 QQ。
 """
 import os
@@ -83,13 +83,6 @@ for own, (cid, src, who, uid) in SCOPES.items():
         ("FACT_%s_ALPHA" % own) in rb and not foreign(rb, own), rb[:100])
 pb = M.profile_block(GA, scope=GA)
 chk("profile_block 群 A 只含 A 的事实", "FACT_GA_ALPHA" in pb and not foreign(pb, "GA"), pb[:120])
-
-print("== ③ Agent Prompt ==")
-for own in ("GA", "PA"):
-    cid, src, who, uid = SCOPES[own]
-    txt = bot.agent_system_text(cid, who, uid, query="FACT")
-    chk("agent %s 只含自己" % own,
-        ("FACT_%s_ALPHA" % own) in txt and not foreign(txt, own), txt[:120])
 
 print("== ④ sim_join Prompt ==")
 CAP = []

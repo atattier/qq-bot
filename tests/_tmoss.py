@@ -28,7 +28,7 @@ _SRC = os.path.join(WF_DIR, "Moss_int8_t2i.json")
 _DST = os.path.join(WF_DIR, "Moss_宫格.json")
 
 # 2026-11-05 U3：本测试硬依赖本机 ComfyUI 工作流文件（MANUAL 注册时加的守卫）。
-# 文件缺失就 SKIP——.workbuddy/memory/2026-10-29.md:33 记过一次「文件不在 → 假失败」。
+# 文件缺失就 SKIP——踩过一次「文件不在 → 假失败」。
 if not os.path.isfile(_SRC):
     print("SKIP: 找不到 %s（宫格档工作流不在本机，跳过而不是假失败）" % _SRC)
     sys.exit(0)

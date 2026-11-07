@@ -242,11 +242,10 @@ if st == 200:
         (_h.get("Content-Type"), len(body)))
 
 print("\n=== 修订①：四种大脑模式数量对账链 ===")
-LOCAL = {"qoder": 1, "dsh": 1, "workbuddy": 1, "zcode": 1}
+LOCAL = set()
 SYS = ["大脑", "识图", "人格", "语音", "私聊", "管理", "只读"]
-# 2026-11-03 衰减记忆卡 +2 旋钮（bool→主区 / int→高级），各模式基准 +2
-_expect = {"custom": (52, 56), "deepseek": (52, 56), "qoder": (51, 55), "dsh": (52, 56)}
-for brain in ("custom", "deepseek", "qoder", "dsh"):
+_expect = {"custom": (43, 47), "deepseek": (43, 47)}
+for brain in ("custom", "deepseek"):
     for follow in (True, False):
         st = {"api": 0, "wh": 0, "br": 0, "dep": 0, "main": 0, "adv": 0}
         for k in bot.KNOBS:

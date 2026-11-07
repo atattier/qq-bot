@@ -273,7 +273,7 @@ def _check_docker_wiring():
             log("!! 容器网关 IP 变了（现在 %s，config 里没有）—— 容器上报会打不进来。"
                 "跑一次 docker_wire.bat 再重启 bot。" % ip)
     except Exception:
-        pass   # 探不到就算了，docker_doctor 会兜底查
+        pass   # 探不到就算了，docker_status.bat 可人工确认
 
 
 # ——————————————————————— NapCat 账号在线探活（2026-10-14 加） ———————————————————————

@@ -665,7 +665,7 @@ def pick_artist(cfg, st, prompt, brief, llm=None, web_llm=None, dex_tags="", dex
         return ""
     force_web = str(mode).lower() in ("free", "自由", "联网")
     pool = [] if force_web else _artist_pool(cfg, st)
-    # 查证（豆包直出）顺带给的 @画师：同样过官方目录，防编造把画风带歪
+    # 查证（联网小模型）顺带给的 @画师：同样过官方目录，防编造把画风带歪
     dex_artist = str(dex_artist or "").strip()
     if dex_artist and not dex_artist.startswith("@"):
         dex_artist = "@" + dex_artist
@@ -777,7 +777,7 @@ def _is_series_name(n):
 # ---------------------------------------------------------------------------
 # 成品 tag 串 / 画师串的判定（2026-09-16 加）
 # 主人给的如果已经是 danbooru tag 串或带 @ 的画师串，说明画风/角色他自己定好了，
-# 再丢给豆包查一遍纯属白等 20~30 秒（还要起浏览器）。判成"成品"就直接出图。
+# 再丢给联网模型查一遍纯属白等 20~30 秒。判成"成品"就直接出图。
 # ---------------------------------------------------------------------------
 _CJK_ANY_RE = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff]")
 # danbooru tag 的合法字符：小写英文/数字/下划线/空格/括号/少量标点。
@@ -894,142 +894,6 @@ SUBJECT_CARD_SYS = (
     "除了这三行什么都别输出，不要 markdown、不要编号、不要客套。")
 
 
-# ---------------------------------------------------------------------------
-# 豆包直出「画师 + 角色串」（2026-09-16 加）
-# 豆包网页版自带联网、认角色准，但**让它吐 WHO/LOOK/TAGS 那套完整卡会超时**
-# （LOOK 要 30~70 词 + TAGS 十来个 tag，实测 51 秒只回一行 ❌ TimeoutError）。
-# 所以走豆包时换这套**短**提示词：只要一行中文是谁 + 一行 @画师 + 一行 tag 串。
-# 拿到就用，不再让小模型压第二遍。
-# ---------------------------------------------------------------------------
-SUBJECT_TAGLINE_SYS = (
-    "你是给画图模型补提示词的助手。用户要画「某个角色/作品/专有名词」，"
-    "请联网查证后**只输出下面三行**，不要解释、不要 markdown、不要编号：\n"
-    "WHO: 一句中文（30 字以内），说清是谁、出自哪部作品。\n"
-    "ARTIST: 最贴近该角色原作画风的画师英文名，写成 `@xxx`（下划线换成空格）；"
-    "不确定就写「无」。\n"
-    "TAGS: 一行 danbooru tag，全小写英文，**空格代替下划线**，"
-    "**只用一个英文逗号分隔**（每个 tag 内部可以有空格，比如 `long hair`）。"
-    "顺序＝角色名, 作品名, 外观 tag（外观按「颜色在前部位在后」写成 `silver hair` 这种）。"
-    "**总共不超过 10 个 tag**，发色瞳色各只写一个。"
-    "角色名/作品名只有确知英文原名时才写，**拿不准就跳过、只写外观 tag**；"
-    "**实在查不到原作设定，TAGS 行也必须给**——写通用外观 tag（发型/发色/瞳色/服饰），别整行空着；"
-    "**绝不许写中文 tag**（danbooru 不认），也不许编造没把握的名字。")
-
-
-def parse_tagline_reply(out):
-    """解析豆包那三行。返回 (who, artist, tags)；拿不到就该项空串。
-
-    豆包偶尔不按格式来，所以还有两层兜底：
-      * 整段就是一串纯 ASCII 逗号分隔的 tag → 直接当 TAGS；
-      * 没写 ARTIST 但 TAGS 里有 @ 开头的 token → 那是画师。
-    """
-    # 豆包认不出时会直说「认不出/不知道」——那不是角色名，别让它在群消息里冒充
-    _UNSURE = re.compile(r"^(认不出|认不出来|认不到|不知道|不清楚|无法确定|无法确认|未查到|没查到|无)")
-
-    who = artist = tags = ""
-    for line in (out or "").splitlines():
-        l = line.strip().lstrip("-*•0123456789. ").strip()
-        up = l.upper()
-        if up.startswith("WHO"):
-            who = re.sub(r"^WHO\s*[:：]\s*", "", l, flags=re.I).strip()
-            if _UNSURE.match(who.strip("。.!！?？ ")):
-                who = ""
-        elif up.startswith("ARTIST") or up.startswith("画师"):
-            v = re.sub(r"^(ARTIST|画师)\s*[:：]\s*", "", l, flags=re.I).strip()
-            if v and v not in ("无", "无。", "none", "None", "N/A", "-"):
-                artist = v
-        elif up.startswith("TAGS") or up.startswith("TAG"):
-            tags = re.sub(r"^TAGS?\s*[:：]\s*", "", l, flags=re.I).strip()
-            if tags and tags in ("无", "无。", "none", "None", "N/A", "-"):
-                tags = ""          # 跟 ARTIST 一个待遇：写「无」就是没有
-    if not tags and out:
-        # 整段就是一串 tag（豆包没写字段名）
-        body = "\n".join(x for x in out.splitlines()
-                         if not x.strip().upper().startswith("WHO")
-                         and not x.strip().upper().startswith("ARTIST")).strip()
-        if body and not _CJK_ANY_RE.search(body) and "," in body \
-                and len(re.split(r"[,，]", body)) >= 3:
-            tags = re.sub(r"\s+", " ", body)
-    # TAGS 里混着 @画师：拆出来，别让它进角色串
-    if tags and "@" in tags:
-        keep, artists = [], []
-        for t in tags.split(","):
-            t = t.strip()
-            if t.startswith("@") or t.lstrip("(").startswith("@"):
-                artists.append(t)
-            elif t:
-                keep.append(t)
-        tags = ", ".join(keep)
-        if not artist and artists:
-            artist = artists[0]
-    # 豆包爱把解说混进 ARTIST（真机 2026-09-16 实测「ARTIST: @画师 punnyasha 原创 OC，粉发 Alexis…」
-    # ——它把提示词里的「写成 `@xxx`」理解成了「@画师 + 名字」）。只留第一个 ASCII 画师 token，
-    # 后面的中文/句号全是它自己加的解说；`free style (yohan1754)` 这种带括号后缀的要整段保留。
-    if artist:
-        a = artist.lstrip("@").strip()
-        a = re.sub(r"^(?:@?画师|artist)\s*[:：]?\s*", "", a, flags=re.I).strip()
-        m = re.match(r"[A-Za-z0-9_ '\-]*(?:\([A-Za-z0-9_ '\-]*\))?", a)
-        a = ((m.group(0) if m else "")).strip(" ('-")
-        artist = ("@" + a) if a else ""
-    if artist and not artist.startswith("@"):
-        artist = "@" + artist
-    return who[:160], artist.strip(), re.sub(r"\s*,\s*", ", ", tags).strip(" ,")
-
-
-# 图生图「把原图发给豆包识图」专用（2026-09-16 加）：比文字版多一句"看图说话"。
-# 豆包网页版能收图（页面有隐藏 input[type=file]，实测 27 秒出结果）。
-SUBJECT_VISION_SYS = (
-    "请看我发的这张图，联网确认图里画的是谁（角色名、出自哪部作品）。"
-    "**只输出下面三行**，不要解释、不要 markdown、不要编号：\n"
-    "WHO: 一句中文（30 字以内），说清是谁、出自哪部作品；认不出就写「认不出」。\n"
-    "ARTIST: 这张图画风对应的画师英文名，写成 `@xxx`（下划线换空格）；不确定就写「无」。\n"
-    "TAGS: 一行 danbooru tag，全小写英文、**空格代替下划线**、"
-    "**只用一个英文逗号分隔**。顺序＝角色名, 作品名, 外观 tag"
-    "（外观按「颜色在前部位在后」写成 `pink hair` 这种）。**总共不超过 10 个 tag**。"
-    "角色名/作品名只有确知英文原名时才写，**拿不准就跳过、只写画面里看得见的外观 tag**；"
-    "**就算认不出画的是谁，TAGS 行也必须给**——写画面里看得见的发型/发色/瞳色/服饰，别只回一行 ARTIST；"
-    "**绝不许写中文 tag**，也不许编造拿不准的名字。")
-
-
-def tagline_card(name, ans):
-    """把豆包那三行回答整理成设定卡 dict；没拿到能用的东西就返回 None。
-
-    跟 `_ask_card` 一样过三道护栏：中文 tag 丢、`@画师` 不在官方目录丢、
-    疑似照抄提示词示范值丢。多带一个 `artist` 字段（老卡片没有）。
-    """
-    who, artist, tags = parse_tagline_reply(ans)
-    if not tags and not artist:
-        # 2026-09-17：豆包只答 WHO（单字角色名 黍/令/夕/年 常见——danbooru 没它们的
-        # 成品 tag，但 WHO 是真认出来了）别整卡丢掉；who 也空（认不出/没回话）才 None。
-        # who-only 卡没有 tags/look，SubjectBook._fetch_card 那边照旧回落完整卡，不影响查证质量。
-        return ({"who": who[:160], "look": "", "tags": "", "artist": "", "ts": time.time()}
-                if who else None)
-    role = _split_role_artist(tags)[0] if tags else ""
-    if role and _cjk_head(role):                 # danbooru 不认中文/假名 tag
-        log.info("豆包 tag 串是中文（%s），弃用", role[:40])
-        role = ""
-    if role and _demo_echo(role, name, who):     # 防把提示词示范值当答案抄进缓存
-        log.warning("豆包 tag 串疑似照抄示范值（%s），丢掉", role[:60])
-        role = ""
-    if artist and not _dex_artist_ok(artist):
-        # ⚠️ AnimaDex samples 只抓到 10 个画师（全量在 animadex.net 要账号导出），拿样本
-        # 目录当白名单会误杀真画师（真机 2026-09-16：豆包识图认出 @punnyasha 被丢）。
-        # 豆包是带联网查证的——主人定的信任级就是「用了豆包就直接拿它给的画师/角色串」，
-        # 所以这里只挡**格式不像画师名**的（中英混写的编造长句、超长）；老链路（pick_artist、
-        # 用户手写 @画师）仍走全量 _dex_artist_ok，别动。
-        if re.fullmatch(r"@[A-Za-z0-9_ '\-]{1,40}", artist):
-            log.info("豆包画师「%s」不在样本目录，按联网查证结果保留", artist[:40])
-        else:
-            log.info("豆包给的画师 tag「%s」格式不像画师名，丢掉", artist[:60])
-            artist = ""
-    if not role and not artist:
-        if who:      # 同上：tag/画师全没了，WHO 还在就留着（别把认出来的人白丢）
-            return {"who": who[:160], "look": "", "tags": "", "artist": "", "ts": time.time()}
-        return None
-    return {"who": who[:160], "look": re.sub(r"\s+", " ", tags).strip()[:600],
-            "tags": role, "artist": artist, "ts": time.time()}
-
-
 def _role_tag_of(s):
     """把「名字」变成 danbooru 能认的 tag 写法（小写、空格替下划线、去非 ASCII）。"""
     t = re.sub(r"[\s_]+", " ", str(s or "").strip()).strip().lower()
@@ -1063,8 +927,7 @@ def _merge_role_tags(name, series, tags):
 class SubjectBook:
     """查过的角色外观设定缓存。probe＝不联网的快速模型，web＝能联网的模型。"""
 
-    def __init__(self, path=None, enabled=True, max_names=2, budget_sec=45, max_entries=300,
-                 web_tags=None):
+    def __init__(self, path=None, enabled=True, max_names=2, budget_sec=45, max_entries=300):
         self.path = Path(path) if path else None
         self.enabled = bool(enabled)
         self.max_names = max(1, int(max_names))
@@ -1073,21 +936,9 @@ class SubjectBook:
         self._cards = {}
         self._lock = threading.Lock()
         self._loaded = False
-        # 豆包直出「画师+角色串」的快路：(name, text) -> dict or None。
-        # 有它就不用小模型再压一遍 WHO/LOOK/TAGS（见 SUBJECT_TAGLINE_SYS 的说明）。
-        self._web_tags = web_tags
 
     def _fetch_card(self, name, text, f):
-        """拿一张设定卡：先走豆包快路，没拿到再回落完整卡（小模型/智谱那条老路）。"""
-        if self._web_tags:
-            try:
-                c = self._web_tags(name, text)
-            except Exception as e:
-                log.warning("豆包直出 tag 串失败（%s），回落完整卡", e)
-                c = None
-            if c and (c.get("tags") or c.get("look")):
-                return c
-            log.info("主体查证：「%s」豆包没给出 tag 串，回落完整卡", name)
+        """拿一张设定卡：交给小模型压成 WHO/LOOK/TAGS，失败重试一次。"""
         for attempt in (1, 2):     # provider 偶发 400/超时；单条失败不该拖垮整步查证
             try:
                 return self._ask_card(name, text, f)
@@ -1257,7 +1108,7 @@ class SubjectBook:
         if not self.enabled or not (probe or web):
             return "", []
         # 主人自己给了成品 tag 串 / 画师串：画风角色他都定好了，别再联网查一遍白等
-        # （豆包那条通道要起浏览器，一次 20~30 秒）。中英混写（`@画师 画个初音`）不算成品。
+        # （联网查证一次 20~30 秒）。中英混写（`@画师 画个初音`）不算成品。
         if looks_like_tagline(text):
             log.info("主体查证跳过：提示词已是成品 tag 串/画师串（%d 字）", len(text or ""))
             return "", []
@@ -1343,7 +1194,7 @@ class SubjectBook:
         return brief, _merge_role_tags(name, series, card.get("tags") or ""), who
 
     def artist_for(self, names):
-        """取查证时顺带拿到的 @画师（豆包直出那条路会给）。没有就 ""。"""
+        """取查证时顺带拿到的 @画师（联网查证那条路会给）。没有就 ""。"""
         for n in (names or []):
             with self._lock:
                 if not self._loaded:

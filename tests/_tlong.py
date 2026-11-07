@@ -101,10 +101,6 @@ chk("普通聊天不动原上限", cap.get("max_tokens") == 2000, cap.get("max_t
 bot._post_json = _real_post
 
 print("== 提示词允许长文 ==")
-t = bot.agent_system_text(123450001, "甲", "123450005")
-chk("agent 有「3b 长文例外」", "3b." in t and "不超过 4 条" in t)
-chk("agent 有「4b 配表情包」完整段落",
-    "4b." in t and "别发完再解释图里画的什么" in t)
 import qbot_persona  # noqa: E402
 chk("恒定律里也有长文例外", "一整篇东西" in qbot_persona.BASE_RULES)
 
@@ -122,10 +118,6 @@ chk("「这小说好看吗」不算写文", bot.write_task("这小说好看吗")
 chk("说了字数也算写文", bot.write_task("给我写500字"))
 m = bot.build_messages(123450001, BAIT, "", extra=[bot.write_directive(BAIT)])
 chk("API 大脑 system 末尾带硬要求", "本轮硬性要求：写正文" in m[0]["content"])
-ag = bot.agent_system_text(123450001, "甲", "123450005", bot.write_directive(BAIT))
-chk("agent system 也带（且在最末）",
-    "本轮硬性要求：写正文" in ag and ag.rstrip().endswith("不要解释你在做什么。"))
-chk("agent 不传 hint 时不带", "本轮硬性要求" not in bot.agent_system_text(123450001, "甲", "1"))
 chk("恒定律里也提醒别掰扯身份", "别自证身份" in qbot_persona.BASE_RULES)
 
 print("== 明确要求不许被人设盖掉 ==")

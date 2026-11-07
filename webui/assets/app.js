@@ -196,7 +196,6 @@
               <span class="kv__k">黑话</span><span class="kv__v">确认 {{ (s.slang_confirmed||[]).length }} / 待审 {{ (s.slang_pending||[]).length }}</span>
               <span class="kv__k">表达</span><span class="kv__v">确认 {{ (s.expr_confirmed||[]).length }} / 待审 {{ (s.expr_pending||[]).length }}</span>
               <span class="kv__k">记忆</span><span class="kv__v">{{ s.memory && s.memory.facts != null ? s.memory.facts + " 条" : "—" }}</span>
-              <span class="kv__k">网页识图</span><span class="kv__v" :class="(s.webai&&s.webai.ok)?'kv__v--ok':''">{{ s.webai ? (s.webai.ok ? "可用" : "不可用") : "—" }}</span>
             </div>
           </template>
           <div v-else-if="st.state==='loading'" class="sk" style="height:96px"></div>
@@ -569,8 +568,6 @@
       visItems(g) {
         /* 复刻 /admin brainSplit + depHidden：只列当前大脑用得上的项（主人 2026-10-20 定） */
         let cur = String(this.vmap["ai.provider"] || "").toLowerCase();
-        if (cur === "agent") cur = "qoder";
-        const LOCAL = { qoder: 1, dsh: 1, workbuddy: 1, zcode: 1 };
         const nb = x => {
           if (typeof x === "boolean") return x;
           const t = String(x == null ? "" : x).trim().toLowerCase();
@@ -580,7 +577,7 @@
         (g.items || []).forEach(it => {
           if (it.web_hidden) return;
           const b = it.brain;
-          if (b && !(b === cur || (b === "api" && cur && !LOCAL[cur]))) return;
+          if (b && b !== "api" && b !== cur) return;
           const d = it.depends_on;
           if (d && d.key) {
             const v = this.vmap[d.key];
@@ -842,8 +839,6 @@
       visItems(g) {
         if (!g) return [];
         let cur = String(this.vmap["ai.provider"] || "").toLowerCase();
-        if (cur === "agent") cur = "qoder";
-        const LOCAL = { qoder: 1, dsh: 1, workbuddy: 1, zcode: 1 };
         const nb = x => {
           if (typeof x === "boolean") return x;
           const t = String(x == null ? "" : x).trim().toLowerCase();
@@ -853,7 +848,7 @@
         (g.items || []).forEach(it => {
           if (it.web_hidden) return;
           const b = it.brain;
-          if (b && !(b === cur || (b === "api" && cur && !LOCAL[cur]))) return;
+          if (b && b !== "api" && b !== cur) return;
           const d = it.depends_on;
           if (d && d.key) {
             const v = this.vmap[d.key];

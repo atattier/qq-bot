@@ -116,10 +116,10 @@ chk("回话提示要管理员", any("管理员" in x for x in r))
 
 # ⑤ 权限收紧：旧话术 模型 / 联网 现在也要管理员
 print("\n=== ⑤ 权限收紧：「模型」「联网」以前谁都能改，现在要管理员 ===")
-bot.CFG["ai"]["provider"] = "agent"
+bot.CFG["ai"]["provider"] = "deepseek"
 SAVED.clear()
 r = say("模型 zhipu_fast", uid=999111, role="member")
-chk("群友「模型 zhipu_fast」被拒", bot.CFG["ai"]["provider"] == "agent" and not SAVED, r)
+chk("群友「模型 zhipu_fast」被拒", bot.CFG["ai"]["provider"] == "deepseek" and not SAVED, r)
 bot.CFG["ai"]["search"]["enabled"] = True
 SAVED.clear()
 r = say("联网 off", uid=999111, role="member")
@@ -127,23 +127,27 @@ chk("群友「联网 off」被拒", bot.CFG["ai"]["search"]["enabled"] is True a
 # 2026-10-21：zhipu_fast 标 dead:true 已不进下拉，改用 siliconflow 验证管理员切档
 r = say("模型 siliconflow")
 chk("管理员「模型 siliconflow」成功", bot.CFG["ai"]["provider"] == "siliconflow", r)
+_old_dead = bot.CFG["ai"]["providers"].get("zhipu_fast", {}).get("dead")
+bot.CFG["ai"]["providers"].setdefault("zhipu_fast", {})["dead"] = True
 r = say("模型 zhipu_fast")
 chk("「模型 zhipu_fast」被拒（dead 不进下拉）", bot.CFG["ai"]["provider"] == "siliconflow", r)
+if _old_dead is None:
+    bot.CFG["ai"]["providers"]["zhipu_fast"].pop("dead", None)
+else:
+    bot.CFG["ai"]["providers"]["zhipu_fast"]["dead"] = _old_dead
 r = say("联网 off")
 chk("管理员「联网 off」成功", bot.CFG["ai"]["search"]["enabled"] is False, r)
 r = say("联网 开")
 chk("「联网 开」成功", bot.CFG["ai"]["search"]["enabled"] is True, r)
 
-# ⑥ 思考强度（2026-10-29 晚新语义）：思考档**跟着当前大脑走**——
-#    API 大脑=写 ai.providers.<name>.think（reasoning_effort），绝不换大脑；
-#    qoder 大脑=老组合档（快=切 siliconflow 云端快答、标准/深=工具面）。
-print("\n=== ⑥ 「设置 思考强度 …」→ 按当前大脑分流 ===")
-# ⑥-a qoder 组合档：快 → 切 siliconflow（设计行为）
-say("设置 大脑 qoder")
+# ⑥ 思考强度（2026-10-29 晚语义）：思考档**跟着当前大脑走**——
+#    写 ai.providers.<name>.think（reasoning_effort），绝不换大脑。
+print("\n=== ⑥ 「设置 思考强度 …」→ 只写当前大脑的 think ===")
 say("设置 思考强度 快")
-chk("qoder 下 快 → 切到 siliconflow 云端快答",
-    bot.CFG["ai"]["provider"] == "siliconflow", bot.CFG["ai"]["provider"])
-# ⑥-b 到了 API 大脑就是纯参数：标准/深 只写 think，不碰大脑
+chk("快 → think=minimal 且大脑不动",
+    bot.CFG["ai"]["provider"] == "siliconflow"
+    and bot.CFG["ai"]["providers"]["siliconflow"].get("think") == "minimal",
+    (bot.CFG["ai"]["provider"], bot.CFG["ai"]["providers"]["siliconflow"].get("think")))
 say("设置 思考强度 标准")
 chk("siliconflow 下 标准 → think=medium 且大脑不动",
     bot.CFG["ai"]["provider"] == "siliconflow"
@@ -153,18 +157,6 @@ say("设置 思考强度 深")
 chk("siliconflow 下 深 → think=high",
     bot.CFG["ai"]["providers"]["siliconflow"].get("think") == "high",
     bot.CFG["ai"]["providers"]["siliconflow"].get("think"))
-# ⑥-c 回 qoder：标准/深 = 工具面组合档
-say("设置 大脑 qoder")
-say("设置 思考强度 标准")
-chk("qoder 下 标准 → full_tools=False",
-    bot.CFG["ai"]["provider"] in ("agent", "qoder")
-    and bot.CFG["agent"].get("full_tools") is False,
-    (bot.CFG["ai"]["provider"], bot.CFG["agent"].get("full_tools")))
-say("设置 思考强度 深")
-chk("qoder 下 深 → full_tools=True",
-    bot.CFG["ai"]["provider"] in ("agent", "qoder")
-    and bot.CFG["agent"].get("full_tools") is True,
-    (bot.CFG["ai"]["provider"], bot.CFG["agent"].get("full_tools")))
 chk("思考强度反查一致（现在是深）", bot.knob_get(bot.knob_find("思考强度")) == "深",
     bot.knob_get(bot.knob_find("思考强度")))
 
@@ -221,64 +213,17 @@ SAVED.clear()
 r = say("设置 档 创作")
 print("   回话:", r)
 chk("画图档=anima（2026-09-16 预设跟着两条线走）", bot.CFG["comfyui"]["default_style"] == "anima")
-chk("思考强度=深（provider=agent+full_tools）",
-    bot.CFG["ai"]["provider"] in ("agent", "qoder") and bot.CFG["agent"].get("full_tools") is True)
+_pname = bot.CFG["ai"]["provider"]
+chk("思考强度=深（当前大脑 think=high）",
+    bot.CFG["ai"]["providers"][_pname].get("think") == "high",
+    (_pname, bot.CFG["ai"]["providers"][_pname].get("think")))
 chk("配图门控=free", bot.CFG["images"].get("marker") == "free", bot.CFG["images"].get("marker"))
 chk("预设档只写回一次 config", len(SAVED) == 1, SAVED)
 r = say("设置 档 不存在的档")
 chk("不存在的预设档被拒", any("没这个预设档" in x for x in r), r)
 
-# ⑩ agent 权限档位（2026-10-27 加：主人要「网页能调他权限」）
-print("\n=== ⑩ 「设置 权限档位」同时改 permission_mode + allow_write ===")
-_old_mode = bot.CFG["agent"].get("permission_mode")
-_old_write = bot.CFG["agent"].get("allow_write")
-try:
-    _e = bot.knob_find("权限档位")
-    chk("旋钮「权限档位」存在", bool(_e), _e and _e.get("key"))
-    chk("四档可选", [str(x) for x in bot.knob_values(_e)] ==
-        ["计划模式", "变更前确认", "自主模式", "完全访问"], bot.knob_values(_e))
-    r = say("设置 权限档位 自主模式")
-    chk("自主模式 → accept_edits", bot.CFG["agent"].get("permission_mode") == "accept_edits",
-        bot.CFG["agent"].get("permission_mode"))
-    chk("自主模式 → allow_write=True", bot.CFG["agent"].get("allow_write") is True,
-        bot.CFG["agent"].get("allow_write"))
-    chk("反查=自主模式", bot.knob_get(_e) == "自主模式", bot.knob_get(_e))
-    r = say("设置 权限档位 完全访问")
-    chk("完全访问 → bypass_permissions",
-        bot.CFG["agent"].get("permission_mode") == "bypass_permissions",
-        bot.CFG["agent"].get("permission_mode"))
-    r = say("设置 权限档位 计划模式")
-    chk("计划模式 → plan 且不能写",
-        bot.CFG["agent"].get("permission_mode") == "plan"
-        and bot.CFG["agent"].get("allow_write") is False,
-        (bot.CFG["agent"].get("permission_mode"), bot.CFG["agent"].get("allow_write")))
-    r = say("设置 权限档位 乱填一个")
-    chk("乱填被拒（回话带可选值）", any("只能填" in x for x in r), r)
-finally:
-    bot.CFG["agent"]["permission_mode"] = _old_mode
-    bot.CFG["agent"]["allow_write"] = _old_write
 r = say("设置 档 创作", uid=999111, role="member")
 chk("群友切预设档被拒", any("管理员" in x for x in r), r)
-
-# ⑪ agent 仅主人（2026-10-27 加：agent 白名单里有 Bash，非主人不能碰本机）
-print("\n=== ⑪ 「agent仅主人」：非主人回落 API 大脑 ===")
-_old_only = bot.CFG["agent"].get("only_owner")
-try:
-    _owner_uid = "123450005"      # 测试桩里设的 admin.master_qq
-    _guest_uid = "999111"          # 不在名单的普通群友
-    bot.CFG["agent"]["only_owner"] = True
-    chk("开着：主人可驱动", bot.agent_owner_ok(_owner_uid) is True, _owner_uid)
-    chk("开着：群友被拦", bot.agent_owner_ok(_guest_uid) is False, _guest_uid)
-    bot.CFG["agent"]["only_owner"] = False
-    chk("关着：群友也放行", bot.agent_owner_ok(_guest_uid) is True, _guest_uid)
-    _e2 = bot.knob_find("agent仅主人")
-    chk("旋钮「agent仅主人」存在", bool(_e2), _e2 and _e2.get("key"))
-    r = say("设置 agent仅主人 开")
-    chk("口令能开", bot.CFG["agent"].get("only_owner") is True, bot.CFG["agent"].get("only_owner"))
-    r = say("设置 agent仅主人 关")
-    chk("口令能关", bot.CFG["agent"].get("only_owner") is False, bot.CFG["agent"].get("only_owner"))
-finally:
-    bot.CFG["agent"]["only_owner"] = _old_only
 
 # ⑫ 只读项 + 铁律：autostart 不给开关
 print("\n=== ⑫ 只读项与铁律：密钥改不了、autostart 不可开 ===")
@@ -344,121 +289,129 @@ print("\n=== ⑰ 工作流库：文件档休眠中，画图档 = 内置三档 ==
 _stems = [n for n, _f in bot._wf_library()]
 chk("没配 wf_allow 时文件档全休眠（2026-09-30 现状）", _stems == [], _stems)
 _c0 = dict(bot.CFG["comfyui"]); _c0["wf_allow"] = ["Anima2.5D_恢复版"]
-chk("wf_allow 指名收录后能扫到（备份文件照样不长成档）",
-    [n for n, _f in bot.comfy_gen.wf_library(_c0)] == ["Anima2.5D_恢复版"], None)
+try:
+    _wf_scan = [n for n, _f in bot.comfy_gen.wf_library(_c0)]
+except Exception as _e:
+    _wf_scan = None
+if not _wf_scan:
+    print("  (跳过) 本机没有 Anima2.5D_恢复版 工作流文件")
+else:
+    chk("wf_allow 指名收录后能扫到（备份文件照样不长成档）",
+        _wf_scan == ["Anima2.5D_恢复版"], _wf_scan)
 _vals = bot.knob_values(bot.knob_find("画图档"))
 chk("画图档枚举 = 四档（写实 krea2 + 动画 anima + 厚涂 + 宫格，"
     "前三档 2026-09-30 主人定，宫格 2026-10-16 主人加）",
     _vals == ["krea2", "anima", "厚涂", "宫格"], _vals)
-_libs = [i for g in d["groups"] for i in g["items"] if i.get("lib")]
-chk("画图档把 lib 数据带给了网页（磁贴跟着菜单走，四档）", len(_libs) == 1 and len(_libs[0]["lib"]) == 4,
-    [(i["label"], [w.get("name") for w in (i.get("lib") or [])])
-     for g in d["groups"] for i in g["items"]])
+# 工作流文件是主人本机的 ComfyUI 资产，公开仓里不带；没有就跳过这几条
+_HAS_WF_ASSETS = bool(bot._wf_library()) or any(
+    (v or {}).get("workflow")
+    for v in (bot.CFG["comfyui"].get("styles") or {}).values())
+if _HAS_WF_ASSETS:
+    _libs = [i for g in d["groups"] for i in g["items"] if i.get("lib")]
+    chk("画图档把 lib 数据带给了网页（磁贴跟着菜单走，四档）",
+        len(_libs) == 1 and len(_libs[0]["lib"]) == 4,
+        [(i["label"], [w.get("name") for w in (i.get("lib") or [])])
+         for g in d["groups"] for i in g["items"]])
+else:
+    print("  (跳过) 本机没有工作流文件，lib 磁贴不验")
 _ok, _why = bot._check_style("Anima工作流")
 chk("已删文件档被拒且报可选档", not _ok and "厚涂" in _why, _why)
 
-# ⑰b 查证后端（2026-09-16 加：主人要「联网查询改用豆包」）
-_kn = bot.knob_find("查证后端")
-chk("查证后端旋钮在", bool(_kn), _kn)
-chk("查证后端可选值 = 豆包/智谱", bot.knob_values(_kn) == ["豆包", "智谱"], bot.knob_values(_kn))
-# 默认值校验只在「没配过」时成立；真 config 里主人随时可能已显式切过（旋钮会写回），
-# 那时这条不适用（2026-09-17 起：config 已显式设了智谱，别拿真配置验默认值）
-if "subject_backend" in bot._comfy_cfg():
-    print("  (跳过) 查证后端已被显式配置为 %r，默认值校验不适用" % bot._comfy_cfg()["subject_backend"])
-else:
-    chk("查证后端默认豆包（没配过时）", bot.knob_get(_kn) in ("豆包", None), bot.knob_get(_kn))
-_okb, _whyb = bot.knob_set("查证后端", "智谱", privileged=True, persist=False)
-chk("能把查证后端切成智谱", _okb and bot.knob_get(_kn) == "智谱", _whyb)
-_okb2, _ = bot.knob_set("查证后端", "豆包", privileged=True, persist=False)
-chk("能切回豆包", _okb2 and bot.knob_get(_kn) == "豆包")
-_badb, _whybad = bot.knob_set("查证后端", "元宝", privileged=True, persist=False)
-chk("乱填会被拒", not _badb, _whybad)
 _ok, _why = bot._check_style("sd15")
 chk("sd15 依旧被拒", not _ok, _why)
-_s = bot._style_dict("厚涂")
-chk("厚涂档解析成 wf 引擎 + 指到改名后的工作流文件",
-    _s.get("engine") == "wf" and _s.get("workflow") == "Krea2_古风二次元.json", _s)
-_sk = bot._style_dict("krea2")
-chk("写实档 = 双工作流（文生图 2.5D + 画同款 V3 漫转写实）",
-    _sk.get("workflow") == "Krea2_2.5D风格.json"
-    and _sk.get("i2i_workflow") == "Krea2_漫转写实真人V3.json", _sk)
+if _HAS_WF_ASSETS:
+    _s = bot._style_dict("厚涂")
+    chk("厚涂档解析成 wf 引擎 + 指到改名后的工作流文件",
+        _s.get("engine") == "wf" and _s.get("workflow") == "Krea2_古风二次元.json", _s)
+    _sk = bot._style_dict("krea2")
+    chk("写实档 = 双工作流（文生图 2.5D + 画同款 V3 漫转写实）",
+        _sk.get("workflow") == "Krea2_2.5D风格.json"
+        and _sk.get("i2i_workflow") == "Krea2_漫转写实真人V3.json", _sk)
 _okfb, _whyfb = bot.knob_set("兜底档", "厚涂", privileged=True, persist=False)
 chk("厚涂能当兜底档设", _okfb, _whyfb)
-_old_default = bot.CFG["comfyui"]["default_style"]
-bot.CFG["comfyui"]["default_style"] = "厚涂"   # 直接写 config 继续验解析链路
-_n, _s2 = bot.comfy_gen._style(bot.CFG["comfyui"])
-chk("出图链路按这个档名解析出 wf 引擎", _n == "厚涂" and _s2.get("engine") == "wf", (_n, _s2))
-bot.CFG["comfyui"]["default_style"] = _old_default  # 还原，别影响后面的收尾校验
+if _HAS_WF_ASSETS:
+    _old_default = bot.CFG["comfyui"]["default_style"]
+    bot.CFG["comfyui"]["default_style"] = "厚涂"   # 直接写 config 继续验解析链路
+    _n, _s2 = bot.comfy_gen._style(bot.CFG["comfyui"])
+    chk("出图链路按这个档名解析出 wf 引擎", _n == "厚涂" and _s2.get("engine") == "wf", (_n, _s2))
+    bot.CFG["comfyui"]["default_style"] = _old_default  # 还原，别影响后面的收尾校验
 
 # ⑱ 文本槽（2026-09-30 重写：样本换成 Anima2.5D_恢复版——旧样本 Anima工作流.json 已被主人清理）
 print("\n=== ⑱ 文本槽（样本：Anima2.5D_恢复版） ===")
 # SAFE 隔离：Anima2.5D_恢复版 磁盘文件可能在 ComfyUI 被连线，打桩隔离使文本槽测试不依赖外部状态
 import copy
-_orig_wf_load = bot.comfy_gen.wf_load
-def _mock_wf_load(cfg, name):
-    p, doc = _orig_wf_load(cfg, name)
-    if "Anima2.5D" in str(name):
-        doc = copy.deepcopy(doc)
-        for n in doc.get("nodes", []):
-            if n.get("title") == "画师串":
-                for inp in n.get("inputs", []):
-                    inp["link"] = None
-    return p, doc
-bot.comfy_gen.wf_load = _mock_wf_load
-
+_have_wf_slots = False
 try:
-    _slots = bot.comfy_gen.wf_text_slots(bot.CFG["comfyui"], "Anima2.5D_恢复版")
-    chk("恢复版文本槽 = 画师串（拼接模式唯一文本格）",
-        [s["title"] for s in _slots] == ["画师串"], _slots)
-    _gdoc = bot.comfy_gen.wf_load(bot.CFG["comfyui"], "Anima2.5D_恢复版.json")[1]
-    chk("_wf_apply_texts 报告改到的标题",
-        bot.comfy_gen._wf_apply_texts(_gdoc.get("nodes"), {"画师串": "@test_artist,"}) == {"画师串"},
-        None)
-    _g3, _i3 = bot.comfy_gen.wf_to_api(
-        bot.comfy_gen.wf_load(bot.CFG["comfyui"], "Anima2.5D_恢复版.json")[1],
-        texts={"画师串": "@test_artist,"})
-    chk("画师串覆盖进图（恢复版把它接在拼接器 string_1）",
-        any(v["class_type"] == "JoinStringMulti"
-            and str((v["inputs"] or {}).get("string_1")) == "@test_artist,"
-            for v in _g3.values()), None)
-    _gw, _whw = bot.comfy_gen.graph_workflow(
-        bot.CFG["comfyui"], {"workflow": "Anima2.5D_恢复版.json"}, "纳西妲在跳舞",
-        "lowres", 0, 0, 12345, "qqbot")
-    _join = " ".join(str((v["inputs"] or {}).get("string_1")) + " " + str((v["inputs"] or {}).get("string_2"))
-                     for v in _gw.values()
-                     if isinstance(v, dict) and v.get("class_type") == "JoinStringMulti")
-    chk("拼接模式：描述写进画师串格", "纳西妲在跳舞" in _join, _join[:160])
-    chk("负向词没混进正向拼接", "lowres" not in _join, None)
-    # 临时 wf_allow 打开文件档，验 action_wf_text 全链路（用完还原）
-    _allow_old = bot.CFG["comfyui"].get("wf_allow")
-    bot.CFG["comfyui"]["wf_allow"] = ["Anima2.5D_恢复版"]
-    r = bot.action_wf_text("Anima2.5D_恢复版", "画师串", "@覆盖测试,")
-    chk("action_wf_text 覆盖生效并写回",
-        r.get("ok") and (bot.CFG["comfyui"].get("wf_texts") or {}).get("画师串") == "@覆盖测试,",
-        (r, bot.CFG["comfyui"].get("wf_texts")))
-    r = bot.action_wf_text("Anima2.5D_恢复版", "画师串", "")
-    chk("空值保存 = 撤覆盖用回原值",
-        r.get("ok") and "画师串" not in (bot.CFG["comfyui"].get("wf_texts") or {}), r)
-    r = bot.action_wf_text("不存在的档", "画师串", "x")
-    chk("库里没的档被拒", not r.get("ok"), r)
-    r = bot.action_wf_text("Anima2.5D_恢复版", "没有这个格子", "x")
-    chk("节点里没有的标题被拒", not r.get("ok"), r)
-    _libs2 = [i for g in bot.action_config()["groups"] for i in g["items"] if "lib_texts" in i]
-    chk("画图档把 lib_texts 带给了网页（临时 wf_allow 下有恢复版的画师串槽）",
-        len(_libs2) == 1 and _libs2[0]["lib_texts"]
-        and _libs2[0]["lib_texts"][0]["wf"] == "Anima2.5D_恢复版",
-        [(i["label"], i.get("lib_texts")) for g in bot.action_config()["groups"]
-         for i in g["items"] if "lib_texts" in i])
-    _slots2 = _libs2[0]["lib_texts"][0]["slots"]
-    _h2 = {s["title"]: s.get("hint") for s in _slots2}
-    chk("文本槽带了用法提示（画师串→animadex）",
-        "animadex.net" in (_h2.get("画师串") or ""), _h2)
-    if _allow_old is None:
-        bot.CFG["comfyui"].pop("wf_allow", None)
-    else:
-        bot.CFG["comfyui"]["wf_allow"] = _allow_old
-finally:
-    bot.comfy_gen.wf_load = _orig_wf_load
+    bot.comfy_gen.wf_load(bot.CFG["comfyui"], "Anima2.5D_恢复版.json")
+    _have_wf_slots = True
+except Exception:
+    print("  (跳过) 本机没有 Anima2.5D_恢复版 工作流文件")
+if _have_wf_slots:
+    _orig_wf_load = bot.comfy_gen.wf_load
+    def _mock_wf_load(cfg, name):
+        p, doc = _orig_wf_load(cfg, name)
+        if "Anima2.5D" in str(name):
+            doc = copy.deepcopy(doc)
+            for n in doc.get("nodes", []):
+                if n.get("title") == "画师串":
+                    for inp in n.get("inputs", []):
+                        inp["link"] = None
+        return p, doc
+    bot.comfy_gen.wf_load = _mock_wf_load
+
+    try:
+        _slots = bot.comfy_gen.wf_text_slots(bot.CFG["comfyui"], "Anima2.5D_恢复版")
+        chk("恢复版文本槽 = 画师串（拼接模式唯一文本格）",
+            [s["title"] for s in _slots] == ["画师串"], _slots)
+        _gdoc = bot.comfy_gen.wf_load(bot.CFG["comfyui"], "Anima2.5D_恢复版.json")[1]
+        chk("_wf_apply_texts 报告改到的标题",
+            bot.comfy_gen._wf_apply_texts(_gdoc.get("nodes"), {"画师串": "@test_artist,"}) == {"画师串"},
+            None)
+        _g3, _i3 = bot.comfy_gen.wf_to_api(
+            bot.comfy_gen.wf_load(bot.CFG["comfyui"], "Anima2.5D_恢复版.json")[1],
+            texts={"画师串": "@test_artist,"})
+        chk("画师串覆盖进图（恢复版把它接在拼接器 string_1）",
+            any(v["class_type"] == "JoinStringMulti"
+                and str((v["inputs"] or {}).get("string_1")) == "@test_artist,"
+                for v in _g3.values()), None)
+        _gw, _whw = bot.comfy_gen.graph_workflow(
+            bot.CFG["comfyui"], {"workflow": "Anima2.5D_恢复版.json"}, "纳西妲在跳舞",
+            "lowres", 0, 0, 12345, "qqbot")
+        _join = " ".join(str((v["inputs"] or {}).get("string_1")) + " " + str((v["inputs"] or {}).get("string_2"))
+                         for v in _gw.values()
+                         if isinstance(v, dict) and v.get("class_type") == "JoinStringMulti")
+        chk("拼接模式：描述写进画师串格", "纳西妲在跳舞" in _join, _join[:160])
+        chk("负向词没混进正向拼接", "lowres" not in _join, None)
+        # 临时 wf_allow 打开文件档，验 action_wf_text 全链路（用完还原）
+        _allow_old = bot.CFG["comfyui"].get("wf_allow")
+        bot.CFG["comfyui"]["wf_allow"] = ["Anima2.5D_恢复版"]
+        r = bot.action_wf_text("Anima2.5D_恢复版", "画师串", "@覆盖测试,")
+        chk("action_wf_text 覆盖生效并写回",
+            r.get("ok") and (bot.CFG["comfyui"].get("wf_texts") or {}).get("画师串") == "@覆盖测试,",
+            (r, bot.CFG["comfyui"].get("wf_texts")))
+        r = bot.action_wf_text("Anima2.5D_恢复版", "画师串", "")
+        chk("空值保存 = 撤覆盖用回原值",
+            r.get("ok") and "画师串" not in (bot.CFG["comfyui"].get("wf_texts") or {}), r)
+        r = bot.action_wf_text("不存在的档", "画师串", "x")
+        chk("库里没的档被拒", not r.get("ok"), r)
+        r = bot.action_wf_text("Anima2.5D_恢复版", "没有这个格子", "x")
+        chk("节点里没有的标题被拒", not r.get("ok"), r)
+        _libs2 = [i for g in bot.action_config()["groups"] for i in g["items"] if "lib_texts" in i]
+        chk("画图档把 lib_texts 带给了网页（临时 wf_allow 下有恢复版的画师串槽）",
+            len(_libs2) == 1 and _libs2[0]["lib_texts"]
+            and _libs2[0]["lib_texts"][0]["wf"] == "Anima2.5D_恢复版",
+            [(i["label"], i.get("lib_texts")) for g in bot.action_config()["groups"]
+             for i in g["items"] if "lib_texts" in i])
+        _slots2 = _libs2[0]["lib_texts"][0]["slots"]
+        _h2 = {s["title"]: s.get("hint") for s in _slots2}
+        chk("文本槽带了用法提示（画师串→animadex）",
+            "animadex.net" in (_h2.get("画师串") or ""), _h2)
+        if _allow_old is None:
+            bot.CFG["comfyui"].pop("wf_allow", None)
+        else:
+            bot.CFG["comfyui"]["wf_allow"] = _allow_old
+    finally:
+        bot.comfy_gen.wf_load = _orig_wf_load
 
 # ⑱b 档位菜单白名单 + 使用说明（2026-09-30 三档 + 2026-10-16 宫格档）
 print("\n=== ⑱b 档位菜单白名单 + 使用说明 ===")
@@ -575,24 +528,11 @@ finally:
 
 # ⑲ 收尾：确认没动到真 config.json
 print("\n=== ⑲ 收尾校验：真 config.json 必须一个字节都没被改 ===")
-# ---- 大脑分组的归属（2026-10-21 主人：dsh/qoder 专属旋钮不该跟「大脑」选择摆一排）----
+# ---- 大脑分组的归属（2026-10-21 主人：专属旋钮不该跟「大脑」选择摆一排）----
 _br = bot.knob_items("大脑")
 chk("大脑组每项归属字段合法",
-    all(i.get("brain") in (None, "qoder", "dsh", "api") for i in _br),
-    [i["key"] for i in _br if i.get("brain") not in (None, "qoder", "dsh", "api")])
-chk("DSH模型 网页不单列（与「模型选择」同一个值）",
-    next(i for i in _br if i["key"] == "dsh.model").get("web_hidden") is True)
-_gates = [i for i in _br if i["key"] in ("agent.enabled", "dsh.enabled")]
-chk("两个上岗开关网页已隐藏（2026-10-28 主人要求删掉）",
-    len(_gates) == 2 and all(g.get("web_hidden") for g in _gates))
-_hide4 = [i for i in _br if i["key"] in (
-    "agent.timeout_sec", "agent.ack_after_sec", "agent.enabled", "dsh.enabled")]
-chk("四个无用旋钮网页不列（注册表仍保留）",
-    len(_hide4) == 4 and all(i.get("web_hidden") for i in _hide4),
-    [(i["label"], i.get("web_hidden")) for i in _hide4])
-chk("隐藏≠删掉：老口令仍能命中（qoder超时 / DSH大脑）",
-    bool(bot.knob_find("qoder超时")) and bool(bot.knob_find("DSH大脑")))
-_LOCAL = ("qoder", "dsh", "workbuddy", "zcode")
+    all(i.get("brain") in (None, "api") for i in _br),
+    [i["key"] for i in _br if i.get("brain") not in (None, "api")])
 
 
 def _vis(prov):
@@ -601,32 +541,30 @@ def _vis(prov):
         if i.get("web_hidden"):
             continue
         b = i.get("brain")
-        if not b or b == prov or (b == "api" and prov and prov not in _LOCAL):
+        if not b or b == prov or b == "api":
             n += 1
     return n
 
 
-_cnt = {p2: _vis(p2) for p2 in ("qoder", "dsh", "deepseek", "siliconflow", "workbuddy")}
-# 2026-10-27 上限 10 → 12：qoder 组新增「权限档位」「agent仅主人」两个安全旋钮
-# （agent 白名单里有 Bash，这两项直接决定它能不能碰本机，不能为了省位置砍掉）。
+_cnt = {p2: _vis(p2) for p2 in ("deepseek", "siliconflow")}
 chk("换任何大脑都只留 ≤12 项（注册表 %d 项）" % len(_br), max(_cnt.values()) <= 12, _cnt)
+
+
 def _labels(prov):
     out = []
     for i in _br:
         if i.get("web_hidden"):
             continue
         b = i.get("brain")
-        if not b or b == prov or (b == "api" and prov and prov not in _LOCAL):
+        if not b or b == prov or b == "api":
             out.append(i["label"])
     return out
 
 
 _net = ("联网", "搜索档", "搜索条数")
-chk("联网三件套只跟云端档走",
-    all(n in _labels("deepseek") for n in _net)
-    and not any(n in _labels("qoder") for n in _net)
-    and not any(n in _labels("dsh") for n in _net),
-    {p2: _labels(p2) for p2 in ("qoder", "dsh")})
+chk("联网三件套跟着云端档走",
+    all(n in _labels("deepseek") for n in _net),
+    _labels("deepseek"))
 
 # ⑳ meme 插件卡旋钮（2026-11-05 控制台接入）：挂插件列表组、重建不丢、口令热改
 print("\n=== ⑳ meme 插件卡旋钮 ===")
